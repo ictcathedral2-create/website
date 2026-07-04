@@ -409,7 +409,7 @@ nav {
 
 /* ─── GIVING ─── */
 .giving-hero {
-  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 50%, #1E3A7A 100%);
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 50%, var(--gold-dark) 100%);
   padding: 4rem 2rem; text-align: center;
 }
 .amount-grid { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; margin: 1.5rem 0; }
@@ -519,6 +519,39 @@ nav {
 .tab-btn { padding: 0.6rem 1.25rem; border-radius: 9px; font-size: 0.875rem; font-weight: 500; border: none; background: transparent; cursor: pointer; color: var(--gray-600); transition: all 0.2s; }
 .tab-btn.active { background: white; color: var(--navy); font-weight: 600; box-shadow: 0 1px 8px rgba(0,0,0,0.08); }
 
+/* ─── EVENT DETAILS MODAL ─── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 2000;
+  background: rgba(14,32,68,0.6); backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 1.5rem; animation: fadeSlideUp 0.2s ease both;
+}
+.modal-card {
+  background: white; border-radius: 20px; max-width: 480px; width: 100%;
+  overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.dark-mode .modal-card { background: #131D35 !important; }
+.modal-header {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+  padding: 1.75rem 2rem; color: white; position: relative;
+}
+.modal-close {
+  position: absolute; top: 1rem; right: 1rem;
+  background: rgba(255,255,255,0.12); border: none; color: white;
+  width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
+  font-size: 1rem; display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+.modal-close:hover { background: rgba(255,255,255,0.25); }
+.modal-date-badge {
+  display: inline-flex; flex-direction: column; align-items: center;
+  background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.4);
+  border-radius: 12px; padding: 0.5rem 1rem; margin-bottom: 0.75rem;
+}
+.modal-body { padding: 2rem; }
+.modal-body p { color: var(--gray-600); line-height: 1.75; font-size: 0.95rem; }
+.dark-mode .modal-body p { color: #A0A8B8 !important; }
+
 /* ─── ANIMATIONS ─── */
 @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes fadeSlideLeft { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: translateX(0); } }
@@ -551,7 +584,7 @@ nav {
 `;
 
 const TEAM = [
-    { initials: "JM", name: "Rev. James Mwangi", role: "Youth Chaplain", bio: "Passionate servant leader guiding St Paul's youth with faith and grace for over 12 years." },
+    { initials: "JM", name: "Rev. James Mwangi", role: "Youth Chaplain", bio: "Passionate servant leader guiding ACK St Pauls youth with faith and grace for over 12 years." },
     { initials: "GW", name: "Grace Wanjiku", role: "Youth Coordinator", bio: "Energetic coordinator building bridges between teens, young adults, and the wider community." },
     { initials: "DK", name: "David Kamau", role: "Worship Leader", bio: "Anointed musician leading the youth in powerful, Spirit-filled worship every Sunday." },
     { initials: "RN", name: "Rachel Njeri", role: "Outreach Director", bio: "Compassionate leader championing community impact and social transformation for God's glory." },
@@ -572,11 +605,35 @@ const SERMONS = [
     { tag: "Series · Unshakeable", title: "Standing Firm in the Storm", pastor: "Rev. James Mwangi", date: "Jun 15, 2026", icon: "⚓" },
 ];
 
+// Computes the next occurrence of a given "nth weekday of the month" (e.g. 2nd Saturday),
+// rolling over to next month automatically once this month's occurrence has passed.
+function getNextNthWeekday(weekIndex, dayOfWeek, hour = 0, minute = 0) {
+    const now = new Date();
+    const build = (year, month) => {
+        const firstWeekday = new Date(year, month, 1).getDay();
+        const day = 1 + ((dayOfWeek - firstWeekday + 7) % 7) + (weekIndex - 1) * 7;
+        return new Date(year, month, day, hour, minute, 0, 0);
+    };
+    let candidate = build(now.getFullYear(), now.getMonth());
+    if (candidate < now) candidate = build(now.getFullYear(), now.getMonth() + 1);
+    return candidate;
+}
+
+// Coffee Date: 2nd Saturday of every month, 3:00 PM
+const NEXT_COFFEE_DATE = getNextNthWeekday(2, 6, 15, 0);
+
 const EVENTS = [
-    { day: "15", month: "Aug", title: "Youth Annual Conference 2026", time: "Fri–Sun · All day", desc: "Three days of worship, teaching, prayer, and community. Theme: 'Ignite — Set the World Ablaze'." },
-    { day: "26", month: "Jul", title: "Worship Night — Open Heavens", time: "Sat · 5:00 PM – 9:00 PM", desc: "An evening of extended praise, intercession, and powerful ministry. Bring a friend!" },
-    { day: "09", month: "Aug", title: "Community Clean-Up Drive", time: "Sat · 7:00 AM – 12:00 PM", desc: "Serving Nairobi CBD and surrounding neighborhoods. Gloves and refreshments provided." },
-    { day: "22", month: "Aug", title: "Mid-Year Youth Camp — Ngong Hills", time: "Fri–Sun · Overnight", desc: "Outdoor retreat with devotionals, team challenges, bonfire nights, and deep fellowship." },
+    {
+        day: String(NEXT_COFFEE_DATE.getDate()).padStart(2, "0"),
+        month: NEXT_COFFEE_DATE.toLocaleString("en-US", { month: "short" }),
+        title: "Coffee Date",
+        time: "2nd Saturday of every month · 3:00 PM",
+        desc: "A relaxed monthly hangout over coffee and snacks — good conversation, good company, and a chance to connect beyond Sunday. Open to all youth and newcomers.",
+    },
+    { day: "02", month: "Aug", title: "Worship Experience", time: "Sun · 4:00 PM – 6:30 PM", desc: "An immersive evening of praise, worship, and prophetic ministry for the whole youth community. Come ready to encounter God's presence." },
+    { day: "16", month: "Aug", title: "ICT Literacy Training", time: "Sun · 2:00 PM – 5:00 PM", desc: "Hands-on computer and digital skills training equipping youth with practical ICT knowledge for school, work, and ministry." },
+    { day: "23", month: "Aug", title: "Prayer Retreat", time: "Sun · 9:00 AM – 4:00 PM", desc: "A day set apart for fasting, prayer, and seeking God's direction together as a youth community. Meals and materials provided." },
+    { day: "30", month: "Aug", title: "Sports Day", time: "Sun · 9:00 AM – 3:00 PM", desc: "Friendly games, football, and fun activities bringing the youth together in fellowship, teamwork, and fitness." },
 ];
 
 const BLOG_POSTS = [
@@ -634,7 +691,7 @@ export default function App() {
     const [statsVisible, setStatsVisible] = useState(false);
     const [activeTab, setActiveTab] = useState("Video");
     const statsRef = useRef(null);
-    const countdown = useCountdown("2026-08-15T08:00:00");
+    const countdown = useCountdown(NEXT_COFFEE_DATE);
 
     const prayerWidget = useFormSubmit("prayerRequests", { name: "", request: "" }, ["request"]);
 
@@ -661,8 +718,8 @@ export default function App() {
                         <a className="nav-logo" onClick={() => navigate("Home")} style={{ cursor: "pointer" }}>
                             <div className="logo-cross">✝</div>
                             <div>
-                                <div className="logo-text">St Paul's ACK</div>
-                                <div className="logo-sub">Cathedral Youths</div>
+                                <div className="logo-text">ACK St Pauls</div>
+                                <div className="logo-sub">Youths</div>
                             </div>
                         </a>
                         <div className="nav-links">
@@ -717,7 +774,7 @@ export default function App() {
                             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
                                 <div className="logo-cross">✝</div>
                                 <div>
-                                    <div className="footer-brand-name">St Paul's ACK Cathedral</div>
+                                    <div className="footer-brand-name">ACK St Pauls Youths</div>
                                     <div className="footer-brand-sub">Youth Ministry</div>
                                 </div>
                             </div>
@@ -736,22 +793,20 @@ export default function App() {
                         </div>
                         <div>
                             <div className="footer-col-title">Service Times</div>
-                            <div className="footer-link">Sunday School · 8:00 AM</div>
-                            <div className="footer-link">Main Service · 9:30 AM</div>
-                            <div className="footer-link">Youth Service · 11:30 AM</div>
-                            <div className="footer-link">Wednesday Bible Study · 6:00 PM</div>
-                            <div className="footer-link">Friday Prayer Night · 7:00 PM</div>
+                            <div className="footer-link">Devotion · 8:00 AM</div>
+                            <div className="footer-link">Youth Service · 8:30 AM</div>
+                            <div className="footer-link">Bible Study · 11:00 AM</div>
                         </div>
                         <div>
                             <div className="footer-col-title">Contact</div>
                             <div className="footer-link">📍 State House Rd, Nairobi, Kenya</div>
                             <div className="footer-link">📞 +254 700 000 000</div>
-                            <div className="footer-link">✉️ youths@stpaulsack.org</div>
-                            <div className="footer-link">🌐 www.stpaulsackyouths.org</div>
+                            <div className="footer-link">✉️ youths@ackstpauls.org</div>
+                            <div className="footer-link">🌐 www.ackstpaulsyouths.org</div>
                         </div>
                     </div>
                     <div className="footer-bottom">
-                        <span>© 2026 St Paul's ACK Cathedral Youths. All rights reserved.</span>
+                        <span>© 2026 ACK St Pauls Youths. All rights reserved.</span>
                         <span>Built with ♥ for God's Glory · Nairobi, Kenya</span>
                     </div>
                 </footer>
@@ -833,7 +888,7 @@ function HomePage({ countdown, navigate, statsRef, stat1, stat2, stat3, stat4, d
                             Where Youth<br /><span>Encounter God</span><br />& Change the World
                         </h1>
                         <p className="hero-desc">
-                            A generation rising in faith, purpose, and power. Join St Paul's ACK Cathedral Youths — Nairobi's most vibrant youth community.
+                            A generation rising in faith, purpose, and power. Join ACK St Pauls Youths — Nairobi's most vibrant youth community.
                         </p>
                         <div className="hero-btns">
                             <button className="btn btn-gold" onClick={() => navigate("Connect")}>Join Us Today</button>
@@ -849,14 +904,14 @@ function HomePage({ countdown, navigate, statsRef, stat1, stat2, stat3, stat4, d
                     <div className="hero-visual animate-float">
                         <div className="service-card">
                             <div style={{ fontSize: "0.78rem", textTransform: "uppercase", letterSpacing: "0.12em", color: "var(--gold-light)", fontWeight: 700, marginBottom: "0.75rem" }}>
-                                🕊 This Sunday at St Paul's
+                                🕊 This Sunday at ACK St Pauls
                             </div>
                             <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.2rem", fontWeight: 700, color: "white", marginBottom: "0.25rem" }}>
                                 "Rise Up & Shine"
                             </div>
                             <div style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.6)" }}>Isaiah 60:1 · Rev. James Mwangi</div>
                             <div className="service-times-grid">
-                                {[["Sunday School", "8:00 AM"], ["Youth Service", "11:30 AM"], ["Wed Bible Study", "6:00 PM"], ["Fri Prayer Night", "7:00 PM"]].map(([n, t]) => (
+                                {[["Devotion", "8:00 AM"], ["Youth Service", "8:30 AM"], ["Bible Study", "11:00 AM"]].map(([n, t]) => (
                                     <div key={n} className="service-time-item">
                                         <span className="service-time-name">{n}</span>
                                         <span className="service-time-val">{t}</span>
@@ -871,7 +926,7 @@ function HomePage({ countdown, navigate, statsRef, stat1, stat2, stat3, stat4, d
                                     </div>
                                 ) : (
                                     <>
-                                        <div className="countdown-label">⏰ Next Youth Conference In</div>
+                                        <div className="countdown-label">⏰ Next Coffee Date In</div>
                                         <div className="countdown-grid">
                                             {[["d", "Days"], ["h", "Hrs"], ["m", "Min"], ["s", "Sec"]].map(([k, l]) => (
                                                 <div key={k} className="countdown-unit">
@@ -894,7 +949,7 @@ function HomePage({ countdown, navigate, statsRef, stat1, stat2, stat3, stat4, d
                     <div className="overline">Welcome Home</div>
                     <h2 className="section-title" style={{ marginBottom: "1rem" }}>A Family Built on Faith</h2>
                     <p className="section-desc" style={{ maxWidth: 700 }}>
-                        Whether you're exploring faith for the first time or growing deeper in your walk with Christ, St Paul's ACK Cathedral Youths is your community. We gather, worship, learn, and serve together — because we are better together.
+                        Whether you're exploring faith for the first time or growing deeper in your walk with Christ, ACK St Pauls Youths is your community. We gather, worship, learn, and serve together — because we are better together.
                     </p>
                     <div style={{ display: "flex", gap: "1rem", justifyContent: "center", marginTop: "2rem", flexWrap: "wrap" }}>
                         <button className="btn btn-gold" onClick={() => navigate("About")}>Our Story</button>
@@ -1028,9 +1083,9 @@ function HomePage({ countdown, navigate, statsRef, stat1, stat2, stat3, stat4, d
 function AboutPage({ navigate, dark }) {
     return (
         <>
-            <div style={{ background: "linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%)", padding: "8rem 2rem 4rem", textAlign: "center" }}>
-                <div className="overline" style={{ color: "var(--gold)" }}>Our Story</div>
-                <h1 className="section-title white" style={{ fontSize: "3rem", maxWidth: 700, margin: "0 auto 1rem" }}>About St Paul's ACK Cathedral Youths</h1>
+            <div style={{ background: "linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 50%, var(--gold-dark) 100%)", padding: "8rem 2rem 4rem", textAlign: "center" }}>
+                <div className="overline" style={{ color: "var(--gold-light)" }}>Our Story</div>
+                <h1 className="section-title white" style={{ fontSize: "3rem", maxWidth: 700, margin: "0 auto 1rem" }}>About ACK St Pauls Youths</h1>
                 <p className="section-desc white" style={{ maxWidth: 600, margin: "0 auto" }}>A legacy of faith, a present of purpose, a future of hope.</p>
             </div>
 
@@ -1041,13 +1096,13 @@ function AboutPage({ navigate, dark }) {
                             <div className="overline">Our History</div>
                             <h2 className="section-title" style={{ textAlign: "left", marginBottom: "1.25rem" }}>Rooted in Faith Since 1954</h2>
                             <p style={{ color: "var(--gray-600)", lineHeight: 1.8, marginBottom: "1rem" }}>
-                                St Paul's Anglican Church of Kenya Cathedral has been a spiritual landmark in Nairobi for over seven decades. The Youth Ministry was established in the 1970s as a response to the growing need for intentional discipleship among the young people of the cathedral family.
+                                ACK St Pauls (Anglican Church of Kenya) has been a spiritual landmark in Nairobi for over seven decades. The Youth Ministry was established in the 1970s as a response to the growing need for intentional discipleship among the young people of the church family.
                             </p>
                             <p style={{ color: "var(--gray-600)", lineHeight: 1.8, marginBottom: "1rem" }}>
                                 From humble beginnings with a handful of passionate teenagers, the ministry has grown into one of the largest and most impactful youth communities in Nairobi, now boasting over 850 active members across multiple programmes.
                             </p>
                             <p style={{ color: "var(--gray-600)", lineHeight: 1.8 }}>
-                                Today, St Paul's ACK Cathedral Youths stands as a testament to God's faithfulness — a vibrant, multicultural community united by a singular passion: to know Christ and make Him known.
+                                Today, ACK St Pauls Youths stands as a testament to God's faithfulness — a vibrant, multicultural community united by a singular passion: to know Christ and make Him known.
                             </p>
                         </div>
                         <div className="about-image-mock">
@@ -1152,8 +1207,8 @@ function AboutPage({ navigate, dark }) {
 function MinistriesPage({ navigate, dark }) {
     return (
         <>
-            <div style={{ background: "linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 100%)", padding: "8rem 2rem 4rem", textAlign: "center" }}>
-                <div className="overline" style={{ color: "rgba(255,255,255,0.8)" }}>Get Involved</div>
+            <div style={{ background: "linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 50%, var(--gold-dark) 100%)", padding: "8rem 2rem 4rem", textAlign: "center" }}>
+                <div className="overline" style={{ color: "var(--gold-light)" }}>Get Involved</div>
                 <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "3rem", fontWeight: 900, color: "white", marginBottom: "1rem" }}>Youth Ministries</h1>
                 <p style={{ fontSize: "1.1rem", color: "rgba(255,255,255,0.85)", maxWidth: 550, margin: "0 auto" }}>Six dynamic arms of ministry where every young person finds their place, purpose, and calling.</p>
             </div>
@@ -1188,8 +1243,8 @@ function MinistriesPage({ navigate, dark }) {
 function SermonsPage({ navigate, dark, activeTab, setActiveTab }) {
     return (
         <>
-            <div style={{ background: "linear-gradient(135deg, var(--navy) 0%, #1E3A7A 100%)", padding: "8rem 2rem 4rem", textAlign: "center" }}>
-                <div className="overline" style={{ color: "var(--gold)" }}>The Word</div>
+            <div style={{ background: "linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 50%, var(--gold-dark) 100%)", padding: "8rem 2rem 4rem", textAlign: "center" }}>
+                <div className="overline" style={{ color: "var(--gold-light)" }}>The Word</div>
                 <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "3rem", fontWeight: 900, color: "white", marginBottom: "1rem" }}>Sermons & Media</h1>
                 <p style={{ color: "rgba(255,255,255,0.75)", maxWidth: 520, margin: "0 auto" }}>Be transformed by the renewing of your mind — Romans 12:2. Access our complete sermon library.</p>
             </div>
@@ -1272,6 +1327,7 @@ function SermonsPage({ navigate, dark, activeTab, setActiveTab }) {
 }
 
 function EventsPage({ navigate, dark }) {
+    const [detailsEvent, setDetailsEvent] = useState(null);
     const registration = useFormSubmit(
         "eventRegistrations",
         { fullName: "", phone: "", email: "", eventTitle: EVENTS[0].title, specialRequirements: "" },
@@ -1290,10 +1346,10 @@ function EventsPage({ navigate, dark }) {
 
     return (
         <>
-            <div style={{ background: "linear-gradient(135deg, var(--orange) 0%, var(--gold-dark) 100%)", padding: "8rem 2rem 4rem", textAlign: "center" }}>
-                <div className="overline" style={{ color: "rgba(255,255,255,0.8)" }}>What's Happening</div>
+            <div style={{ background: "linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 50%, var(--gold-dark) 100%)", padding: "8rem 2rem 4rem", textAlign: "center" }}>
+                <div className="overline" style={{ color: "var(--gold-light)" }}>What's Happening</div>
                 <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "3rem", fontWeight: 900, color: "white", marginBottom: "1rem" }}>Events & Activities</h1>
-                <p style={{ color: "rgba(255,255,255,0.85)", maxWidth: 540, margin: "0 auto" }}>Conferences, worship nights, camps, outreach, and more — join us for life-changing experiences.</p>
+                <p style={{ color: "rgba(255,255,255,0.85)", maxWidth: 540, margin: "0 auto" }}>Coffee dates, worship experiences, trainings, retreats, and more — join us for life-changing experiences.</p>
             </div>
             <div className="section section-cream">
                 <div className="container">
@@ -1316,11 +1372,37 @@ function EventsPage({ navigate, dark }) {
                                 </div>
                                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", flexShrink: 0 }}>
                                     <button className="btn btn-gold btn-sm" onClick={() => handleRegisterClick(e.title)}>Register</button>
-                                    <button className="btn btn-navy btn-sm" onClick={() => handleRegisterClick(e.title)}>Details</button>
+                                    <button className="btn btn-navy btn-sm" onClick={() => setDetailsEvent(e)}>Details</button>
                                 </div>
                             </div>
                         ))}
                     </div>
+
+                    {detailsEvent && (
+                        <div className="modal-overlay" onClick={() => setDetailsEvent(null)}>
+                            <div className="modal-card" onClick={ev => ev.stopPropagation()}>
+                                <div className="modal-header">
+                                    <button className="modal-close" onClick={() => setDetailsEvent(null)} aria-label="Close">✕</button>
+                                    <div className="modal-date-badge">
+                                        <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.4rem", fontWeight: 700, color: "var(--gold-light)", lineHeight: 1 }}>{detailsEvent.day}</div>
+                                        <div style={{ fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.08em", opacity: 0.8 }}>{detailsEvent.month}</div>
+                                    </div>
+                                    <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.4rem", fontWeight: 700 }}>{detailsEvent.title}</div>
+                                    <div style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.7)", marginTop: 4 }}>📅 {detailsEvent.time}</div>
+                                </div>
+                                <div className="modal-body">
+                                    <p>{detailsEvent.desc}</p>
+                                    <button
+                                        className="btn btn-gold"
+                                        style={{ width: "100%", justifyContent: "center", marginTop: "1.5rem" }}
+                                        onClick={() => { handleRegisterClick(detailsEvent.title); setDetailsEvent(null); }}
+                                    >
+                                        Register for This Event →
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
                     <div className="section-header" style={{ marginTop: "4rem" }} id="event-registration-form">
                         <div className="overline">Register Today</div>
@@ -1392,8 +1474,8 @@ function ConnectPage({ navigate, dark }) {
 
     return (
         <>
-            <div style={{ background: "linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%)", padding: "8rem 2rem 4rem", textAlign: "center" }}>
-                <div className="overline" style={{ color: "var(--gold)" }}>We'd Love to Hear From You</div>
+            <div style={{ background: "linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 50%, var(--gold-dark) 100%)", padding: "8rem 2rem 4rem", textAlign: "center" }}>
+                <div className="overline" style={{ color: "var(--gold-light)" }}>We'd Love to Hear From You</div>
                 <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "3rem", fontWeight: 900, color: "white", marginBottom: "1rem" }}>Connect With Us</h1>
                 <p style={{ color: "rgba(255,255,255,0.75)", maxWidth: 520, margin: "0 auto" }}>Whether you're new, returning, or just curious — reach out. We have a place for you here.</p>
             </div>
@@ -1463,13 +1545,13 @@ function ConnectPage({ navigate, dark }) {
                             <div className="map-container" style={{ marginBottom: "1.5rem" }}>
                                 <div className="map-pin-mock">
                                     <div style={{ fontSize: "2.5rem" }}>📍</div>
-                                    <div className="map-label">St Paul's ACK Cathedral</div>
+                                    <div className="map-label">ACK St Pauls Youths</div>
                                 </div>
                                 <div style={{ position: "absolute", inset: 0, background: "repeating-linear-gradient(0deg, rgba(14,32,68,0.04) 0px, rgba(14,32,68,0.04) 1px, transparent 1px, transparent 40px), repeating-linear-gradient(90deg, rgba(14,32,68,0.04) 0px, rgba(14,32,68,0.04) 1px, transparent 1px, transparent 40px)", borderRadius: 16 }} />
                             </div>
                             <div className="card" style={{ padding: "1.5rem", marginBottom: "1.5rem" }}>
                                 <div style={{ display: "grid", gap: "1rem" }}>
-                                    {[["📍", "Address", "State House Road, Nairobi, Kenya"], ["📞", "Phone", "+254 700 000 000"], ["✉️", "Email", "youths@stpaulsack.org"], ["🕐", "Office Hours", "Mon–Fri · 8:00 AM – 5:00 PM"]].map(([icon, label, val], i) => (
+                                    {[["📍", "Address", "State House Road, Nairobi, Kenya"], ["📞", "Phone", "+254 700 000 000"], ["✉️", "Email", "youths@ackstpauls.org"], ["🕐", "Office Hours", "Mon–Fri · 8:00 AM – 5:00 PM"]].map(([icon, label, val], i) => (
                                         <div key={i} style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
                                             <div style={{ width: 36, height: 36, background: "var(--cream)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.1rem", flexShrink: 0 }}>{icon}</div>
                                             <div><div style={{ fontSize: "0.78rem", color: "var(--gray-400)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>{label}</div><div style={{ fontSize: "0.92rem", color: "var(--navy)", fontWeight: 500, marginTop: 2 }}>{val}</div></div>
@@ -1505,7 +1587,7 @@ function ConnectPage({ navigate, dark }) {
 
                             <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.4rem", fontWeight: 700, color: "var(--navy)", margin: "1.5rem 0 1rem" }}>Follow Us</h3>
                             <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
-                                {[["📘", "Facebook", "@StPaulsACKYouths"], ["📸", "Instagram", "@stpaulsyouths"], ["▶️", "YouTube", "St Pauls ACK Youths"], ["🐦", "Twitter / X", "@StPaulsYouths"]].map(([icon, name, handle], i) => (
+                                {[["📘", "Facebook", "@ACKStPaulsYouths"], ["📸", "Instagram", "@ackstpaulsyouths"], ["▶️", "YouTube", "ACK St Pauls Youths"], ["🐦", "Twitter / X", "@ACKStPaulsYouths"]].map(([icon, name, handle], i) => (
                                     <div key={i} className="card" style={{ padding: "0.85rem 1.25rem", display: "flex", alignItems: "center", gap: "0.75rem", flex: "1 1 auto", cursor: "pointer" }}>
                                         <span style={{ fontSize: "1.3rem" }}>{icon}</span>
                                         <div><div style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--navy)" }}>{name}</div><div style={{ fontSize: "0.78rem", color: "var(--gray-400)" }}>{handle}</div></div>
@@ -1664,8 +1746,8 @@ function BlogPage({ navigate, dark }) {
 
     return (
         <>
-            <div style={{ background: "linear-gradient(135deg, #1A3660 0%, var(--gold-dark) 100%)", padding: "8rem 2rem 4rem", textAlign: "center" }}>
-                <div className="overline" style={{ color: "rgba(255,255,255,0.8)" }}>Word & Wisdom</div>
+            <div style={{ background: "linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 50%, var(--gold-dark) 100%)", padding: "8rem 2rem 4rem", textAlign: "center" }}>
+                <div className="overline" style={{ color: "var(--gold-light)" }}>Word & Wisdom</div>
                 <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "3rem", fontWeight: 900, color: "white", marginBottom: "1rem" }}>Blog & Devotionals</h1>
                 <p style={{ color: "rgba(255,255,255,0.8)", maxWidth: 520, margin: "0 auto" }}>Articles, testimonies, devotionals, and scripture reflections to fuel your faith journey.</p>
             </div>
