@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { useFormSubmit } from "./hooks/useFormSubmit";
+import { useFirebaseCollection } from "./hooks/useFirebaseCollection";
+import { useYouTubeVideos } from "./hooks/useYouTubeVideos";
 import { validateEmail } from "./validation";
 
-const NAV_LINKS = ["Home", "About", "Ministries", "Sermons", "Events", "Connect", "Give", "Blog"];
+const NAV_LINKS = ["Home", "Ministries", "Sermons", "Events", "Connect", "Give", "Testimonies", "About"];
 
 const styles = `
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600&display=swap');
@@ -611,12 +613,6 @@ const MINISTRIES = [
     { icon: "📖", color: "rgba(14,32,68,0.1)", title: "Pastoral Ministry", desc: "Providing spiritual oversight, discipleship, teaching, and pastoral guidance to nurture the whole church family in Christ." },
 ];
 
-const SERMONS = [
-    { tag: "Series · Faith Forward", title: "When God Seems Silent", pastor: "Rev. James Mwangi", date: "Jun 29, 2026", icon: "🎙️" },
-    { tag: "Series · Identity in Christ", title: "You Are Chosen", pastor: "Grace Wanjiku", date: "Jun 22, 2026", icon: "✝️" },
-    { tag: "Series · Unshakeable", title: "Standing Firm in the Storm", pastor: "Rev. James Mwangi", date: "Jun 15, 2026", icon: "⚓" },
-];
-
 // Computes the next occurrence of a given "nth weekday of the month" (e.g. 2nd Saturday),
 // rolling over to next month automatically once this month's occurrence has passed.
 function getNextNthWeekday(weekIndex, dayOfWeek, hour = 0, minute = 0) {
@@ -648,13 +644,6 @@ const EVENTS = [
     { day: "30", month: "Aug", title: "Sports Day", time: "Sun · 9:00 AM – 3:00 PM", desc: "Friendly games, football, and fun activities bringing the youth together in fellowship, teamwork, and fitness." },
 ];
 
-const BLOG_POSTS = [
-    { emoji: "🌄", cat: "Devotional", title: "Rising Early with God: The Power of Morning Prayer", excerpt: "How a simple 15-minute morning devotion can completely reshape your entire day and spiritual walk.", author: "Grace Wanjiku", date: "Jul 1, 2026" },
-    { emoji: "💬", cat: "Testimony", title: "From the Streets of Mathare to the Pulpit", excerpt: "Emmanuel's transformational story of how the youth group became his family and faith became his anchor.", author: "Emmanuel Omondi", date: "Jun 25, 2026" },
-    { emoji: "📜", cat: "Scripture", title: "Jeremiah 29:11 — A Promise for Your Season", excerpt: "Unpacking God's words of hope to a generation that often feels lost, forgotten, or behind in life.", author: "David Kamau", date: "Jun 18, 2026" },
-];
-
-const GIVING_AMOUNTS = [200, 500, 1000, 2500, 5000];
 
 function useCountdown(targetDate) {
     const [time, setTime] = useState({ d: 0, h: 0, m: 0, s: 0, expired: false });
@@ -698,8 +687,6 @@ export default function App() {
     const [dark, setDark] = useState(false);
     const [prayerOpen, setPrayerOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [selectedAmount, setSelectedAmount] = useState(1000);
-    const [customAmount, setCustomAmount] = useState("");
     const [statsVisible, setStatsVisible] = useState(false);
     const [activeTab, setActiveTab] = useState("Video");
     const statsRef = useRef(null);
@@ -776,8 +763,8 @@ export default function App() {
                 {activePage === "Sermons" && <SermonsPage navigate={navigate} dark={dark} activeTab={activeTab} setActiveTab={setActiveTab} />}
                 {activePage === "Events" && <EventsPage navigate={navigate} dark={dark} />}
                 {activePage === "Connect" && <ConnectPage navigate={navigate} dark={dark} />}
-                {activePage === "Give" && <GivePage selectedAmount={selectedAmount} setSelectedAmount={setSelectedAmount} customAmount={customAmount} setCustomAmount={setCustomAmount} dark={dark} />}
-                {activePage === "Blog" && <BlogPage navigate={navigate} dark={dark} />}
+                {activePage === "Give" && <GivePage dark={dark} />}
+                {activePage === "Testimonies" && <TestimoniesPage navigate={navigate} dark={dark} />}
 
                 {/* ─── FOOTER ─── */}
                 <footer className="footer">
@@ -1252,72 +1239,77 @@ function MinistriesPage({ navigate, dark }) {
 }
 
 function SermonsPage({ navigate, dark, activeTab, setActiveTab }) {
+    const { videos, loading, error } = useYouTubeVideos();
+
     return (
         <>
             <div style={{ background: "linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 50%, var(--gold-dark) 100%)", padding: "8rem 2rem 4rem", textAlign: "center" }}>
                 <div className="overline" style={{ color: "var(--gold-light)" }}>The Word</div>
                 <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "3rem", fontWeight: 900, color: "white", marginBottom: "1rem" }}>Sermons & Media</h1>
-                <p style={{ color: "rgba(255,255,255,0.75)", maxWidth: 520, margin: "0 auto" }}>Be transformed by the renewing of your mind — Romans 12:2. Access our complete sermon library.</p>
+                <p style={{ color: "rgba(255,255,255,0.75)", maxWidth: 520, margin: "0 auto" }}>Be transformed by the renewing of your mind — Romans 12:2. Watch our full video library, straight from our YouTube channel.</p>
             </div>
             <div className="section section-cream">
                 <div className="container">
                     <div className="tab-nav">
-                        {["Video", "Podcast", "Livestream", "Gallery"].map(t => (
+                        {["Video", "Gallery"].map(t => (
                             <button key={t} className={`tab-btn${activeTab === t ? " active" : ""}`} onClick={() => setActiveTab(t)}>{t}</button>
                         ))}
                     </div>
 
                     {activeTab === "Video" && (
                         <>
-                            <div className="grid-3">
-                                {SERMONS.map((s, i) => (
-                                    <div key={i} className="card sermon-card">
-                                        <div className="sermon-thumb">
-                                            <div style={{ position: "absolute", fontSize: "3rem", opacity: 0.15 }}>{s.icon}</div>
-                                            <div className="play-btn">▶</div>
-                                        </div>
-                                        <div className="sermon-content">
-                                            <div className="sermon-tag">{s.tag}</div>
-                                            <div className="sermon-title">{s.title}</div>
-                                            <div className="sermon-pastor">{s.pastor} · {s.date}</div>
-                                            <button className="btn btn-gold btn-sm" style={{ marginTop: "0.75rem" }}>Watch Now</button>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </>
-                    )}
-
-                    {activeTab === "Podcast" && (
-                        <div style={{ display: "grid", gap: "1rem" }}>
-                            {SERMONS.map((s, i) => (
-                                <div key={i} className="card" style={{ padding: "1.5rem", display: "flex", alignItems: "center", gap: "1.5rem" }}>
-                                    <div style={{ width: 56, height: 56, borderRadius: "50%", background: "var(--navy)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.5rem", flexShrink: 0 }}>{s.icon}</div>
-                                    <div style={{ flex: 1 }}>
-                                        <div className="sermon-tag">{s.tag}</div>
-                                        <div className="sermon-title">{s.title}</div>
-                                        <div className="sermon-pastor">{s.pastor} · {s.date}</div>
-                                    </div>
-                                    <button className="btn btn-navy btn-sm">🎧 Listen</button>
+                            {loading && (
+                                <div style={{ textAlign: "center", padding: "3rem 0", color: "var(--gray-400)" }}>Loading videos from YouTube…</div>
+                            )}
+                            {!loading && error && (
+                                <div className="card" style={{ padding: "2.5rem", textAlign: "center" }}>
+                                    <div style={{ fontSize: "2rem", marginBottom: "0.75rem" }}>📡</div>
+                                    <p style={{ color: "var(--gray-600)", marginBottom: "1.25rem" }}>{error}</p>
+                                    <a
+                                        href="https://youtube.com/@ackcathedralyouthembu"
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="btn btn-gold btn-sm"
+                                    >
+                                        Visit Our YouTube Channel →
+                                    </a>
                                 </div>
-                            ))}
-                        </div>
-                    )}
-
-                    {activeTab === "Livestream" && (
-                        <div className="card" style={{ padding: "3rem", textAlign: "center" }}>
-                            <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>📡</div>
-                            <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.5rem", fontWeight: 700, color: "var(--navy)", marginBottom: "0.75rem" }}>Live Every Sunday at 11:30 AM</div>
-                            <p style={{ color: "var(--gray-600)", marginBottom: "1.5rem" }}>Join thousands streaming our youth services live. Turn on notifications to never miss a service.</p>
-                            <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
-                                <button className="btn btn-gold">▶ Watch on YouTube</button>
-                                <button className="btn btn-navy">📘 Watch on Facebook</button>
-                            </div>
-                            <div style={{ marginTop: "1.5rem", padding: "1rem", background: "var(--cream)", borderRadius: 12, display: "inline-block" }}>
-                                <div style={{ fontSize: "0.8rem", color: "var(--gray-400)" }}>Next Livestream:</div>
-                                <div style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, color: "var(--navy)", fontSize: "1.1rem" }}>Sunday, Jul 12 · 11:30 AM EAT</div>
-                            </div>
-                        </div>
+                            )}
+                            {!loading && !error && videos.length === 0 && (
+                                <div style={{ textAlign: "center", padding: "3rem 0", color: "var(--gray-400)" }}>No videos found yet. Check back soon!</div>
+                            )}
+                            {!loading && !error && videos.length > 0 && (
+                                <div className="grid-3">
+                                    {videos.map(v => (
+                                        <a
+                                            key={v.id}
+                                            href={`https://www.youtube.com/watch?v=${v.id}`}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="card sermon-card"
+                                            style={{ textDecoration: "none", display: "block" }}
+                                        >
+                                            <div
+                                                className="sermon-thumb"
+                                                style={{
+                                                    backgroundImage: `linear-gradient(rgba(14,32,68,0.35), rgba(14,32,68,0.45)), url(${v.thumbnail})`,
+                                                    backgroundSize: "cover",
+                                                    backgroundPosition: "center",
+                                                }}
+                                            >
+                                                <div className="play-btn">▶</div>
+                                            </div>
+                                            <div className="sermon-content">
+                                                <div className="sermon-title">{v.title}</div>
+                                                <div className="sermon-pastor">
+                                                    {new Date(v.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                                                </div>
+                                            </div>
+                                        </a>
+                                    ))}
+                                </div>
+                            )}
+                        </>
                     )}
 
                     {activeTab === "Gallery" && (
@@ -1613,18 +1605,14 @@ function ConnectPage({ navigate, dark }) {
     );
 }
 
-function GivePage({ selectedAmount, setSelectedAmount, customAmount, setCustomAmount, dark }) {
-    const giving = useFormSubmit(
-        "givingRecords",
-        { firstName: "", lastName: "", email: "", category: "Tithes & Offerings", frequency: "One-Time Gift" },
-        ["firstName", "lastName", "email"]
-    );
+function GivePage({ dark }) {
+    const [copied, setCopied] = useState("");
 
-    const finalAmount = Number(customAmount || selectedAmount || 0);
-
-    const handleGiveSubmit = () => {
-        if (!validateEmail(giving.formData.email) || finalAmount <= 0) return;
-        giving.handleSubmit({ amount: finalAmount });
+    const copyToClipboard = (text, label) => {
+        navigator.clipboard?.writeText(text).then(() => {
+            setCopied(label);
+            setTimeout(() => setCopied(""), 2000);
+        });
     };
 
     return (
@@ -1632,197 +1620,118 @@ function GivePage({ selectedAmount, setSelectedAmount, customAmount, setCustomAm
             <div className="giving-hero">
                 <div className="overline" style={{ color: "var(--gold)" }}>Give & Support</div>
                 <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "3rem", fontWeight: 900, color: "white", marginBottom: "1rem" }}>Online Giving</h1>
-                <p style={{ color: "rgba(255,255,255,0.8)", maxWidth: 540, margin: "0 auto 2rem" }}>
+                <p style={{ color: "rgba(255,255,255,0.8)", maxWidth: 540, margin: "0 auto" }}>
                     "Each of you should give what you have decided in your heart to give, not reluctantly or under compulsion, for God loves a cheerful giver." — 2 Cor 9:7
                 </p>
-                <div className="amount-grid">
-                    {GIVING_AMOUNTS.map(a => (
-                        <button key={a} className={`amount-btn${selectedAmount === a ? " selected" : ""}`} onClick={() => { setSelectedAmount(a); setCustomAmount(""); }}>
-                            KSh {a.toLocaleString()}
-                        </button>
-                    ))}
-                </div>
             </div>
 
             <div className="section section-cream">
-                <div className="container">
-                    <div className="grid-2">
-                        <div>
-                            <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.75rem", fontWeight: 700, color: "var(--navy)", marginBottom: "1.5rem" }}>Make Your Gift</h2>
-                            <div className="card" style={{ padding: "2.5rem" }}>
-                                {giving.submitted ? (
-                                    <p style={{ textAlign: "center", color: "var(--navy)", fontWeight: 600, padding: "1rem 0" }}>
-                                        ✓ Thank you! Please complete your gift of KSh {finalAmount.toLocaleString()} via M-Pesa or bank transfer using the details on the right — our team will follow up to confirm.
-                                    </p>
-                                ) : (
-                                    <>
-                                        <div className="form-group">
-                                            <label className="form-label">Gift Category</label>
-                                            <select className="form-select" value={giving.formData.category} onChange={e => giving.setField("category", e.target.value)}>
-                                                <option>Tithes & Offerings</option>
-                                                <option>Youth Ministry Fund</option>
-                                                <option>Mission & Outreach</option>
-                                                <option>Building Fund</option>
-                                                <option>Scholarship Fund</option>
-                                            </select>
-                                        </div>
-                                        <div className="form-group">
-                                            <label className="form-label">Amount (KSh)</label>
-                                            <input
-                                                className="form-input"
-                                                type="number"
-                                                placeholder="Custom amount"
-                                                value={customAmount || selectedAmount}
-                                                onChange={e => { setCustomAmount(e.target.value); setSelectedAmount(null); }}
-                                            />
-                                        </div>
-                                        <div className="amount-grid" style={{ justifyContent: "flex-start", marginBottom: "1rem" }}>
-                                            {GIVING_AMOUNTS.map(a => (
-                                                <button key={a} className={`amount-btn${selectedAmount === a ? " selected" : ""}`} style={{ border: "1.5px solid rgba(201,168,76,0.4)", color: "var(--navy)" }} onClick={() => { setSelectedAmount(a); setCustomAmount(""); }}>
-                                                    {a.toLocaleString()}
-                                                </button>
-                                            ))}
-                                        </div>
-                                        <div className="form-group">
-                                            <label className="form-label">Frequency</label>
-                                            <select className="form-select" value={giving.formData.frequency} onChange={e => giving.setField("frequency", e.target.value)}>
-                                                <option>One-Time Gift</option>
-                                                <option>Weekly</option>
-                                                <option>Monthly</option>
-                                            </select>
-                                        </div>
-                                        <div className="grid-2" style={{ gap: "1rem" }}>
-                                            <div className="form-group"><label className="form-label">First Name</label><input className="form-input" placeholder="First name" value={giving.formData.firstName} onChange={e => giving.setField("firstName", e.target.value)} /></div>
-                                            <div className="form-group"><label className="form-label">Last Name</label><input className="form-input" placeholder="Last name" value={giving.formData.lastName} onChange={e => giving.setField("lastName", e.target.value)} /></div>
-                                        </div>
-                                        <div className="form-group"><label className="form-label">Email</label><input className="form-input" type="email" placeholder="your@email.com" value={giving.formData.email} onChange={e => giving.setField("email", e.target.value)} /></div>
-                                        {giving.error && <p style={{ color: "var(--orange)", fontSize: "0.8rem", marginBottom: 8 }}>{giving.error}</p>}
-                                        <button className="btn btn-gold" style={{ width: "100%", justifyContent: "center", fontSize: "1rem" }} disabled={giving.submitting} onClick={handleGiveSubmit}>
-                                            {giving.submitting ? "Submitting..." : `💛 Give KSh ${finalAmount.toLocaleString()}`}
-                                        </button>
-                                        <p style={{ fontSize: "0.78rem", textAlign: "center", color: "var(--gray-400)", marginTop: "0.75rem" }}>
-                                            This records your giving intent — complete payment via M-Pesa or bank transfer below. No card or payment details are collected here.
-                                        </p>
-                                    </>
-                                )}
-                            </div>
-                        </div>
-                        <div>
-                            <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.75rem", fontWeight: 700, color: "var(--navy)", marginBottom: "1.5rem" }}>Other Ways to Give</h2>
-                            {[
-                                { icon: "📱", title: "M-Pesa Paybill", desc: "Paybill No: 123456 · Account: STPAULS", tag: "Instant" },
-                                { icon: "🏦", title: "Bank Transfer", desc: "Equity Bank · A/C: 1234567890 · Branch: Embu", tag: "3-5 Days" },
-                                { icon: "💵", title: "Cash & Cheque", desc: "Visit the church office Mon–Fri 8AM–5PM", tag: "In-Person" },
-                            ].map((m, i) => (
-                                <div key={i} className="card" style={{ padding: "1.5rem", marginBottom: "1rem", display: "flex", gap: "1rem", alignItems: "flex-start" }}>
-                                    <div style={{ width: 48, height: 48, background: "var(--cream)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.4rem", flexShrink: 0 }}>{m.icon}</div>
-                                    <div style={{ flex: 1 }}>
-                                        <div style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, color: "var(--navy)", fontSize: "1rem" }}>{m.title}</div>
-                                        <div style={{ fontSize: "0.85rem", color: "var(--gray-600)", marginTop: 4 }}>{m.desc}</div>
-                                    </div>
-                                    <span style={{ background: "rgba(201,168,76,0.12)", color: "var(--gold-dark)", padding: "4px 10px", borderRadius: 20, fontSize: "0.72rem", fontWeight: 700, flexShrink: 0 }}>{m.tag}</span>
-                                </div>
-                            ))}
-                            <div className="card" style={{ padding: "2rem", background: "var(--navy)", textAlign: "center" }}>
-                                <div style={{ fontSize: "2rem", marginBottom: "0.75rem" }}>🌍</div>
-                                <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.15rem", fontWeight: 700, color: "white", marginBottom: "0.5rem" }}>Support Our Missions</div>
-                                <p style={{ fontSize: "0.88rem", color: "rgba(255,255,255,0.7)", lineHeight: 1.7, marginBottom: "1.25rem" }}>Your gift to our missions fund directly supports outreach programs across Embu and beyond.</p>
-                                <button className="btn btn-gold btn-sm" style={{ margin: "0 auto" }}>Give to Missions</button>
-                            </div>
+                <div className="container-sm">
+                    <div className="card" style={{ padding: "2.5rem", textAlign: "center", marginBottom: "2rem" }}>
+                        <div style={{ fontSize: "2.5rem", marginBottom: "0.5rem" }}>📱</div>
+                        <div style={{ fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--gold-dark)", fontWeight: 700, marginBottom: "0.75rem" }}>M-Pesa Lipa na M-Pesa</div>
+                        <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1rem", color: "var(--gray-600)", marginBottom: "0.35rem" }}>Paybill Number</div>
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.75rem" }}>
+                            <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "2.5rem", fontWeight: 900, color: "var(--navy)", letterSpacing: "0.05em" }}>400222</div>
+                            <button className="btn btn-navy btn-sm" onClick={() => copyToClipboard("400222", "Paybill")}>
+                                {copied === "Paybill" ? "✓ Copied" : "Copy"}
+                            </button>
                         </div>
                     </div>
+
+                    <div className="section-header">
+                        <div className="overline">Choose One</div>
+                        <h2 className="section-title">Account Number</h2>
+                        <p className="section-desc">Use the account name that matches your gift when entering the M-Pesa transaction.</p>
+                        <div className="gold-line" />
+                    </div>
+
+                    <div className="grid-3">
+                        {[
+                            { icon: "💛", name: "Offering" },
+                            { icon: "🙏", name: "Tithe" },
+                            { icon: "✨", name: "Thanksgiving" },
+                        ].map(a => (
+                            <div key={a.name} className="card" style={{ padding: "2rem", textAlign: "center" }}>
+                                <div style={{ fontSize: "2rem", marginBottom: "0.75rem" }}>{a.icon}</div>
+                                <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.2rem", fontWeight: 700, color: "var(--navy)", marginBottom: "1.25rem" }}>{a.name}</div>
+                                <button className="btn btn-gold btn-sm" style={{ width: "100%", justifyContent: "center" }} onClick={() => copyToClipboard(a.name, a.name)}>
+                                    {copied === a.name ? "✓ Copied" : "Copy Account Number"}
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+
+                    <p style={{ fontSize: "0.85rem", textAlign: "center", color: "var(--gray-400)", marginTop: "2.5rem" }}>
+                        🔒 All gifts are given directly via Safaricom M-Pesa. God bless you for your generosity.
+                    </p>
                 </div>
             </div>
         </>
     );
 }
 
-function BlogPage({ navigate, dark }) {
-    const devotionalSub = useFormSubmit("newsletterSignups", { email: "" }, ["email"]);
+function TestimoniesPage({ navigate, dark }) {
+    const { data: testimonies, loading, error } = useFirebaseCollection("submissions/testimonies", { field: "status", value: "approved" });
     const testimony = useFormSubmit(
         "testimonies",
         { name: "", category: "Testimony / Personal Story", title: "", story: "" },
         ["name", "title", "story"]
     );
 
-    const handleDevotionalSubmit = () => {
-        if (!validateEmail(devotionalSub.formData.email)) return;
-        devotionalSub.handleSubmit({ source: "blog-devotional" });
-    };
+    const sortedTestimonies = (testimonies || []).slice().sort((a, b) => b.createdAt - a.createdAt);
 
     const handleTestimonySubmit = () => {
         if (testimony.formData.story.trim().length < 50) return;
-        testimony.handleSubmit();
+        testimony.handleSubmit({ status: "pending" });
     };
 
     return (
         <>
             <div style={{ background: "linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 50%, var(--gold-dark) 100%)", padding: "8rem 2rem 4rem", textAlign: "center" }}>
                 <div className="overline" style={{ color: "var(--gold-light)" }}>Word & Wisdom</div>
-                <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "3rem", fontWeight: 900, color: "white", marginBottom: "1rem" }}>Blog & Devotionals</h1>
-                <p style={{ color: "rgba(255,255,255,0.8)", maxWidth: 520, margin: "0 auto" }}>Articles, testimonies, devotionals, and scripture reflections to fuel your faith journey.</p>
+                <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "3rem", fontWeight: 900, color: "white", marginBottom: "1rem" }}>Testimonies</h1>
+                <p style={{ color: "rgba(255,255,255,0.8)", maxWidth: 520, margin: "0 auto" }}>Real stories of what God is doing in the lives of our members — shared to encourage and inspire.</p>
             </div>
             <div className="section section-cream">
                 <div className="container">
-                    <div className="grid-3" style={{ marginBottom: "3rem" }}>
-                        {BLOG_POSTS.map((b, i) => (
-                            <div key={i} className="card blog-card" style={{ cursor: "pointer" }}>
-                                <div className="blog-thumb" style={{ background: `linear-gradient(135deg, ${["var(--navy)", "var(--gold-dark)", "#1E3A7A"][i]} 0%, ${["var(--navy-mid)", "var(--gold)", "var(--navy)"][i]} 100%)` }}>{b.emoji}</div>
-                                <div className="blog-content">
-                                    <div className="blog-cat">{b.cat}</div>
-                                    <div className="blog-title">{b.title}</div>
-                                    <div className="blog-excerpt">{b.excerpt}</div>
-                                    <div className="blog-meta"><span>{b.author}</span><span>{b.date}</span></div>
-                                    <button className="btn btn-gold btn-sm" style={{ marginTop: "0.75rem" }}>Read More →</button>
+                    {loading && (
+                        <div style={{ textAlign: "center", padding: "2rem 0", color: "var(--gray-400)" }}>Loading testimonies…</div>
+                    )}
+                    {!loading && error && (
+                        <div style={{ textAlign: "center", padding: "2rem 0", color: "var(--gray-400)" }}>Couldn't load testimonies right now. Please check back soon.</div>
+                    )}
+                    {!loading && !error && sortedTestimonies.length === 0 && (
+                        <div style={{ textAlign: "center", padding: "2rem 0", color: "var(--gray-400)" }}>No testimonies published yet — be the first to share what God has done!</div>
+                    )}
+                    {!loading && !error && sortedTestimonies.length > 0 && (
+                        <div className="grid-3" style={{ marginBottom: "3rem" }}>
+                            {sortedTestimonies.map((t, i) => (
+                                <div key={t.id} className="card blog-card">
+                                    <div className="blog-thumb" style={{ background: `linear-gradient(135deg, ${["var(--navy)", "var(--gold-dark)", "#1E3A7A"][i % 3]} 0%, ${["var(--navy-mid)", "var(--gold)", "var(--navy)"][i % 3]} 100%)` }}>🙌</div>
+                                    <div className="blog-content">
+                                        <div className="blog-cat">{t.category}</div>
+                                        <div className="blog-title">{t.title}</div>
+                                        <div className="blog-excerpt">{t.story}</div>
+                                        <div className="blog-meta">
+                                            <span>{t.name || "Anonymous"}</span>
+                                            <span>{new Date(t.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="card" style={{ padding: "2.5rem", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3rem", alignItems: "center", background: "var(--navy)", marginBottom: "2rem" }}>
-                        <div>
-                            <div className="overline" style={{ color: "var(--gold)" }}>Daily Devotional</div>
-                            <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.6rem", fontWeight: 700, color: "white", margin: "0.75rem 0" }}>Today's Scripture</h3>
-                            <div style={{ padding: "1.5rem", background: "rgba(201,168,76,0.1)", borderLeft: "3px solid var(--gold)", borderRadius: "0 12px 12px 0", marginBottom: "1.25rem" }}>
-                                <p style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", color: "rgba(255,255,255,0.9)", lineHeight: 1.75, fontSize: "1.05rem" }}>
-                                    "Trust in the Lord with all your heart and lean not on your own understanding; in all your ways submit to him, and he will make your paths straight."
-                                </p>
-                                <div style={{ color: "var(--gold)", fontWeight: 700, fontSize: "0.85rem", marginTop: "0.75rem" }}>Proverbs 3:5–6 · NIV</div>
-                            </div>
-                            <button className="btn btn-gold btn-sm">Read Full Devotional →</button>
+                            ))}
                         </div>
-                        <div>
-                            <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.2rem", fontWeight: 700, color: "white", marginBottom: "1rem" }}>📬 Get Daily Devotionals</div>
-                            <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.9rem", lineHeight: 1.7, marginBottom: "1.25rem" }}>Start your mornings with a scripture, reflection, and prayer — delivered to your inbox daily.</p>
-                            {devotionalSub.submitted ? (
-                                <p style={{ color: "var(--gold-light)", fontWeight: 600 }}>✓ Subscribed! Your first devotional arrives tomorrow.</p>
-                            ) : (
-                                <div style={{ display: "flex", gap: "0.75rem" }}>
-                                    <input
-                                        className="newsletter-input"
-                                        placeholder="Your email address"
-                                        type="email"
-                                        style={{ flex: 1 }}
-                                        value={devotionalSub.formData.email}
-                                        onChange={e => devotionalSub.setField("email", e.target.value)}
-                                    />
-                                    <button className="btn btn-gold btn-sm" disabled={devotionalSub.submitting} onClick={handleDevotionalSubmit}>
-                                        {devotionalSub.submitting ? "..." : "Subscribe"}
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    </div>
+                    )}
 
                     <div className="section-header">
                         <div className="overline">Share Your Story</div>
                         <h2 className="section-title">Submit a Testimony</h2>
-                        <p className="section-desc">Has God done something remarkable in your life? Your story could inspire thousands.</p>
+                        <p className="section-desc">Has God done something remarkable in your life? Your story could inspire thousands. Submissions are reviewed by our team before appearing on the site.</p>
                         <div className="gold-line" />
                     </div>
                     <div className="card" style={{ padding: "2.5rem", maxWidth: 650, margin: "0 auto" }}>
                         {testimony.submitted ? (
-                            <p style={{ textAlign: "center", color: "var(--navy)", fontWeight: 600, padding: "1rem 0" }}>✓ Thank you for sharing! Your testimony has been submitted for review.</p>
+                            <p style={{ textAlign: "center", color: "var(--navy)", fontWeight: 600, padding: "1rem 0" }}>✓ Thank you for sharing! Your testimony has been submitted and will appear once approved.</p>
                         ) : (
                             <>
                                 <div className="form-group"><label className="form-label">Your Name</label><input className="form-input" placeholder="Your full name" value={testimony.formData.name} onChange={e => testimony.setField("name", e.target.value)} /></div>
