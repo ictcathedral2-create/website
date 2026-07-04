@@ -565,6 +565,24 @@ nav {
 .modal-body p { color: var(--gray-600); line-height: 1.75; font-size: 0.95rem; }
 .dark-mode .modal-body p { color: #A0A8B8 !important; }
 
+/* ─── VIDEO MODAL ─── */
+.modal-card-video { max-width: 860px; background: #000 !important; position: relative; }
+.video-frame-wrap { position: relative; width: 100%; padding-top: 56.25%; background: #000; }
+.video-frame-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
+.modal-video-info { padding: 1.5rem 1.75rem; background: white; }
+.dark-mode .modal-video-info { background: #131D35 !important; }
+.modal-video-info .modal-title { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; color: var(--navy); }
+.dark-mode .modal-video-info .modal-title { color: #E8E4DC !important; }
+.modal-video-info .modal-meta { font-size: 0.82rem; color: var(--gray-400); margin-top: 4px; }
+.modal-close-video {
+  position: absolute; top: 0.75rem; right: 0.75rem; z-index: 5;
+  background: rgba(0,0,0,0.5); border: none; color: white;
+  width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
+  font-size: 1.1rem; display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+.modal-close-video:hover { background: rgba(0,0,0,0.7); }
+
 /* ─── ANIMATIONS ─── */
 @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes fadeSlideLeft { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: translateX(0); } }
@@ -1240,6 +1258,7 @@ function MinistriesPage({ navigate, dark }) {
 
 function SermonsPage({ navigate, dark, activeTab, setActiveTab }) {
     const { videos, loading, error } = useYouTubeVideos();
+    const [activeVideo, setActiveVideo] = useState(null);
 
     return (
         <>
@@ -1281,13 +1300,14 @@ function SermonsPage({ navigate, dark, activeTab, setActiveTab }) {
                             {!loading && !error && videos.length > 0 && (
                                 <div className="grid-3">
                                     {videos.map(v => (
-                                        <a
+                                        <div
                                             key={v.id}
-                                            href={`https://www.youtube.com/watch?v=${v.id}`}
-                                            target="_blank"
-                                            rel="noreferrer"
                                             className="card sermon-card"
-                                            style={{ textDecoration: "none", display: "block" }}
+                                            style={{ cursor: "pointer" }}
+                                            onClick={() => setActiveVideo(v)}
+                                            role="button"
+                                            tabIndex={0}
+                                            onKeyDown={e => { if (e.key === "Enter") setActiveVideo(v); }}
                                         >
                                             <div
                                                 className="sermon-thumb"
@@ -1305,11 +1325,37 @@ function SermonsPage({ navigate, dark, activeTab, setActiveTab }) {
                                                     {new Date(v.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                                                 </div>
                                             </div>
-                                        </a>
+                                        </div>
                                     ))}
                                 </div>
                             )}
                         </>
+                    )}
+
+                    {activeVideo && (
+                        <div className="modal-overlay" onClick={() => setActiveVideo(null)}>
+                            <div className="modal-card modal-card-video" onClick={e => e.stopPropagation()}>
+                                <button className="modal-close-video" onClick={() => setActiveVideo(null)} aria-label="Close">✕</button>
+                                <div className="video-frame-wrap">
+                                    <iframe
+                                        src={`https://www.youtube.com/embed/${activeVideo.id}?autoplay=1`}
+                                        title={activeVideo.title}
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                    />
+                                </div>
+                                <div className="modal-video-info">
+                                    <div className="modal-title">{activeVideo.title}</div>
+                                    <div className="modal-meta">
+                                        {new Date(activeVideo.publishedAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+                                        {" · "}
+                                        <a href={`https://www.youtube.com/watch?v=${activeVideo.id}`} target="_blank" rel="noreferrer" style={{ color: "var(--gold-dark)" }}>
+                                            Watch on YouTube ↗
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     )}
 
                     {activeTab === "Gallery" && (
