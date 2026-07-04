@@ -333,6 +333,17 @@ nav {
 .ministry-title { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; color: var(--navy); margin-bottom: 0.6rem; }
 .ministry-desc { font-size: 0.88rem; color: var(--gray-600); line-height: 1.65; }
 .ministry-link { font-size: 0.82rem; font-weight: 600; color: var(--gold-dark); margin-top: 1rem; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; text-decoration: none; }
+.ministry-card-full {
+  padding: 2.5rem 2rem; display: flex; flex-direction: column; align-items: center;
+  position: relative; overflow: hidden;
+}
+.ministry-card-full::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-dark));
+}
+.ministry-card-full .ministry-icon {
+  border-radius: 50%; border: 2px solid rgba(201,168,76,0.3);
+}
 .ministry-link:hover { color: var(--gold); }
 
 /* ─── SERMONS ─── */
@@ -591,12 +602,13 @@ const TEAM = [
 ];
 
 const MINISTRIES = [
-    { icon: "🌱", color: "rgba(14,32,68,0.08)", title: "Teens Ministry", desc: "A safe, fun space for 13–17 year olds to discover their faith, build lasting friendships, and grow in Christ through weekly meetings and activities." },
-    { icon: "🔥", color: "rgba(224,115,48,0.1)", title: "Young Adults", desc: "Empowering 18–35 year olds to live boldly for Christ, navigate life's challenges with faith, and build purposeful careers and relationships." },
-    { icon: "🎵", color: "rgba(201,168,76,0.12)", title: "Worship Team", desc: "A talented group of musicians and singers leading the congregation in anointed worship. Open to all gifted youth who desire to serve through music." },
-    { icon: "📖", color: "rgba(14,32,68,0.08)", title: "Bible Study", desc: "Deep, engaging weekly Bible study groups that unpack God's word, build theological foundations, and foster meaningful spiritual discussion." },
-    { icon: "🤝", color: "rgba(201,168,76,0.1)", title: "Community Outreach", desc: "Serving Nairobi's most vulnerable through food drives, hospital visits, school mentorship, and neighborhood clean-up campaigns." },
-    { icon: "👥", color: "rgba(224,115,48,0.08)", title: "Mentorship Program", desc: "Intentional one-on-one and group discipleship pairing mature believers with newer youth to walk together in faith, accountability, and life skills." },
+    { icon: "💻", color: "rgba(14,32,68,0.08)", title: "ICT Ministry", desc: "Powering the church's digital presence — livestreaming services, managing sound and media systems, and equipping members with practical ICT skills." },
+    { icon: "🎶", color: "rgba(201,168,76,0.12)", title: "Praise & Worship Ministry", desc: "Leading the congregation into God's presence through anointed singing, instrumentation, and prayerful worship in every service." },
+    { icon: "❤️", color: "rgba(224,115,48,0.1)", title: "Care Ministry", desc: "Walking alongside members through life's seasons — hospital visits, bereavement support, and practical care for those in need." },
+    { icon: "🚪", color: "rgba(14,32,68,0.08)", title: "Ushering Ministry", desc: "Warmly welcoming every visitor and member, maintaining order during services, and ensuring worship flows smoothly from start to finish." },
+    { icon: "🙏", color: "rgba(201,168,76,0.1)", title: "Intercessory Ministry", desc: "Standing in the gap through dedicated prayer — covering the church, its leadership, and the community in intercession." },
+    { icon: "🎨", color: "rgba(224,115,48,0.08)", title: "Creative Ministry", desc: "Expressing faith through art, drama, dance, and design — bringing creativity and beauty into worship and church communication." },
+    { icon: "📖", color: "rgba(14,32,68,0.1)", title: "Pastoral Ministry", desc: "Providing spiritual oversight, discipleship, teaching, and pastoral guidance to nurture the whole church family in Christ." },
 ];
 
 const SERMONS = [
@@ -778,7 +790,7 @@ export default function App() {
                                     <div className="footer-brand-sub">Youth Ministry</div>
                                 </div>
                             </div>
-                            <div className="footer-desc">A vibrant community of faith-filled youth growing together in Christ, serving Nairobi and beyond for God's glory.</div>
+                            <div className="footer-desc">A vibrant community of faith-filled youth growing together in Christ, serving Embu and beyond for God's glory.</div>
                             <div className="footer-verse">
                                 "Don't let anyone look down on you because you are young, but set an example in speech, conduct, love, faith, and purity."
                                 <cite>— 1 Timothy 4:12</cite>
@@ -799,7 +811,7 @@ export default function App() {
                         </div>
                         <div>
                             <div className="footer-col-title">Contact</div>
-                            <div className="footer-link">📍 State House Rd, Nairobi, Kenya</div>
+                            <div className="footer-link">📍 Embu Town, Embu, Kenya</div>
                             <div className="footer-link">📞 +254 700 000 000</div>
                             <div className="footer-link">✉️ youths@ackstpauls.org</div>
                             <div className="footer-link">🌐 www.ackstpaulsyouths.org</div>
@@ -807,7 +819,7 @@ export default function App() {
                     </div>
                     <div className="footer-bottom">
                         <span>© 2026 ACK St Pauls Youths. All rights reserved.</span>
-                        <span>Built with ♥ for God's Glory · Nairobi, Kenya</span>
+                        <span>Built with ♥ for God's Glory · Embu, Kenya</span>
                     </div>
                 </footer>
 
@@ -883,12 +895,12 @@ function HomePage({ countdown, navigate, statsRef, stat1, stat2, stat3, stat4, d
                 <div className="hero-cross-bg" />
                 <div className="hero-content container">
                     <div>
-                        <div className="hero-badge">✝ ACK Cathedral · Nairobi · Est. 1954</div>
+                        <div className="hero-badge">✝ ACK St Paul's Cathedral · Embu · Est. 1954</div>
                         <h1 className="hero-title">
                             Where Youth<br /><span>Encounter God</span><br />& Change the World
                         </h1>
                         <p className="hero-desc">
-                            A generation rising in faith, purpose, and power. Join ACK St Pauls Youths — Nairobi's most vibrant youth community.
+                            A generation rising in faith, purpose, and power. Join ACK St Pauls Youths — Embu's most vibrant youth community.
                         </p>
                         <div className="hero-btns">
                             <button className="btn btn-gold" onClick={() => navigate("Connect")}>Join Us Today</button>
@@ -1035,8 +1047,8 @@ function HomePage({ countdown, navigate, statsRef, stat1, stat2, stat3, stat4, d
                 <div className="container">
                     <div className="section-header">
                         <div className="overline">Get Involved</div>
-                        <h2 className="section-title">Our Youth Ministries</h2>
-                        <p className="section-desc">Six vibrant arms of ministry — find where you belong and make your mark for God.</p>
+                        <h2 className="section-title">Our Ministries</h2>
+                        <p className="section-desc">Seven vibrant arms of ministry — find where you belong and make your mark for God.</p>
                         <div className="gold-line" />
                     </div>
                     <div className="grid-3">
@@ -1096,10 +1108,10 @@ function AboutPage({ navigate, dark }) {
                             <div className="overline">Our History</div>
                             <h2 className="section-title" style={{ textAlign: "left", marginBottom: "1.25rem" }}>Rooted in Faith Since 1954</h2>
                             <p style={{ color: "var(--gray-600)", lineHeight: 1.8, marginBottom: "1rem" }}>
-                                ACK St Pauls (Anglican Church of Kenya) has been a spiritual landmark in Nairobi for over seven decades. The Youth Ministry was established in the 1970s as a response to the growing need for intentional discipleship among the young people of the church family.
+                                ACK St Paul's Cathedral (Anglican Church of Kenya) has been a spiritual landmark in Embu for over seven decades. The Youth Ministry was established in the 1970s as a response to the growing need for intentional discipleship among the young people of the church family.
                             </p>
                             <p style={{ color: "var(--gray-600)", lineHeight: 1.8, marginBottom: "1rem" }}>
-                                From humble beginnings with a handful of passionate teenagers, the ministry has grown into one of the largest and most impactful youth communities in Nairobi, now boasting over 850 active members across multiple programmes.
+                                From humble beginnings with a handful of passionate teenagers, the ministry has grown into one of the largest and most impactful youth communities in Embu, now boasting over 850 active members across multiple programmes.
                             </p>
                             <p style={{ color: "var(--gray-600)", lineHeight: 1.8 }}>
                                 Today, ACK St Pauls Youths stands as a testament to God's faithfulness — a vibrant, multicultural community united by a singular passion: to know Christ and make Him known.
@@ -1209,23 +1221,22 @@ function MinistriesPage({ navigate, dark }) {
         <>
             <div style={{ background: "linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 50%, var(--gold-dark) 100%)", padding: "8rem 2rem 4rem", textAlign: "center" }}>
                 <div className="overline" style={{ color: "var(--gold-light)" }}>Get Involved</div>
-                <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "3rem", fontWeight: 900, color: "white", marginBottom: "1rem" }}>Youth Ministries</h1>
-                <p style={{ fontSize: "1.1rem", color: "rgba(255,255,255,0.85)", maxWidth: 550, margin: "0 auto" }}>Six dynamic arms of ministry where every young person finds their place, purpose, and calling.</p>
+                <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "3rem", fontWeight: 900, color: "white", marginBottom: "1rem" }}>Our Ministries</h1>
+                <p style={{ fontSize: "1.1rem", color: "rgba(255,255,255,0.85)", maxWidth: 550, margin: "0 auto" }}>Seven dynamic arms of ministry where every member finds their place, purpose, and calling to serve.</p>
             </div>
             <div className="section section-cream">
                 <div className="container">
-                    <div className="grid-2">
+                    <div className="grid-3">
                         {MINISTRIES.map((m, i) => (
-                            <div key={i} className="card" style={{ padding: "2.5rem", display: "grid", gridTemplateColumns: "auto 1fr", gap: "1.5rem", alignItems: "flex-start" }}>
-                                <div className="ministry-icon" style={{ background: m.color, width: 64, height: 64 }}><span style={{ fontSize: "1.8rem" }}>{m.icon}</span></div>
-                                <div>
-                                    <div className="ministry-title" style={{ fontSize: "1.25rem" }}>{m.title}</div>
-                                    <div className="ministry-desc" style={{ marginTop: "0.5rem" }}>{m.desc}</div>
-                                    <div style={{ display: "flex", gap: "0.75rem", marginTop: "1.25rem" }}>
-                                        <button className="btn btn-gold btn-sm" onClick={() => navigate("Connect")}>Join This Ministry</button>
-                                        <button className="btn btn-navy btn-sm" onClick={() => navigate("Events")}>Upcoming Events</button>
-                                    </div>
+                            <div key={i} className="card ministry-card-full">
+                                <div className="ministry-icon" style={{ background: m.color, width: 68, height: 68, margin: "0 auto 1.25rem" }}>
+                                    <span style={{ fontSize: "1.9rem" }}>{m.icon}</span>
                                 </div>
+                                <div className="ministry-title" style={{ fontSize: "1.2rem", textAlign: "center" }}>{m.title}</div>
+                                <div className="ministry-desc" style={{ marginTop: "0.6rem", textAlign: "center" }}>{m.desc}</div>
+                                <button className="btn btn-gold btn-sm" style={{ marginTop: "1.5rem", width: "100%", justifyContent: "center" }} onClick={() => navigate("Connect")}>
+                                    Join This Ministry →
+                                </button>
                             </div>
                         ))}
                     </div>
@@ -1551,7 +1562,7 @@ function ConnectPage({ navigate, dark }) {
                             </div>
                             <div className="card" style={{ padding: "1.5rem", marginBottom: "1.5rem" }}>
                                 <div style={{ display: "grid", gap: "1rem" }}>
-                                    {[["📍", "Address", "State House Road, Nairobi, Kenya"], ["📞", "Phone", "+254 700 000 000"], ["✉️", "Email", "youths@ackstpauls.org"], ["🕐", "Office Hours", "Mon–Fri · 8:00 AM – 5:00 PM"]].map(([icon, label, val], i) => (
+                                    {[["📍", "Address", "Embu Town, Embu, Kenya"], ["📞", "Phone", "+254 700 000 000"], ["✉️", "Email", "youths@ackstpauls.org"], ["🕐", "Office Hours", "Mon–Fri · 8:00 AM – 5:00 PM"]].map(([icon, label, val], i) => (
                                         <div key={i} style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
                                             <div style={{ width: 36, height: 36, background: "var(--cream)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.1rem", flexShrink: 0 }}>{icon}</div>
                                             <div><div style={{ fontSize: "0.78rem", color: "var(--gray-400)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>{label}</div><div style={{ fontSize: "0.92rem", color: "var(--navy)", fontWeight: 500, marginTop: 2 }}>{val}</div></div>
@@ -1700,7 +1711,7 @@ function GivePage({ selectedAmount, setSelectedAmount, customAmount, setCustomAm
                             <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.75rem", fontWeight: 700, color: "var(--navy)", marginBottom: "1.5rem" }}>Other Ways to Give</h2>
                             {[
                                 { icon: "📱", title: "M-Pesa Paybill", desc: "Paybill No: 123456 · Account: STPAULS", tag: "Instant" },
-                                { icon: "🏦", title: "Bank Transfer", desc: "Equity Bank · A/C: 1234567890 · Branch: Nairobi CBD", tag: "3-5 Days" },
+                                { icon: "🏦", title: "Bank Transfer", desc: "Equity Bank · A/C: 1234567890 · Branch: Embu", tag: "3-5 Days" },
                                 { icon: "💵", title: "Cash & Cheque", desc: "Visit the church office Mon–Fri 8AM–5PM", tag: "In-Person" },
                             ].map((m, i) => (
                                 <div key={i} className="card" style={{ padding: "1.5rem", marginBottom: "1rem", display: "flex", gap: "1rem", alignItems: "flex-start" }}>
@@ -1715,7 +1726,7 @@ function GivePage({ selectedAmount, setSelectedAmount, customAmount, setCustomAm
                             <div className="card" style={{ padding: "2rem", background: "var(--navy)", textAlign: "center" }}>
                                 <div style={{ fontSize: "2rem", marginBottom: "0.75rem" }}>🌍</div>
                                 <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.15rem", fontWeight: 700, color: "white", marginBottom: "0.5rem" }}>Support Our Missions</div>
-                                <p style={{ fontSize: "0.88rem", color: "rgba(255,255,255,0.7)", lineHeight: 1.7, marginBottom: "1.25rem" }}>Your gift to our missions fund directly supports outreach programs across Nairobi and beyond.</p>
+                                <p style={{ fontSize: "0.88rem", color: "rgba(255,255,255,0.7)", lineHeight: 1.7, marginBottom: "1.25rem" }}>Your gift to our missions fund directly supports outreach programs across Embu and beyond.</p>
                                 <button className="btn btn-gold btn-sm" style={{ margin: "0 auto" }}>Give to Missions</button>
                             </div>
                         </div>
