@@ -3,6 +3,7 @@ import { useFormSubmit } from "./hooks/useFormSubmit";
 import { useFirebaseCollection } from "./hooks/useFirebaseCollection";
 import { useYouTubeVideos } from "./hooks/useYouTubeVideos";
 import { validateEmail } from "./validation";
+import logo from "./assets/logo.png";
 
 const NAV_LINKS = ["Home", "Ministries", "Sermons", "Events", "Connect", "Give", "Testimonies", "About"];
 
@@ -74,14 +75,14 @@ nav {
 
 .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
 .logo-cross {
-  width: 36px; height: 36px;
-  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  width: 40px; height: 40px;
   border-radius: 8px;
   display: flex; align-items: center; justify-content: center;
   font-size: 20px; color: white; font-weight: 900;
   font-family: 'Playfair Display', serif;
-  box-shadow: 0 2px 12px rgba(201,168,76,0.4);
+  overflow: hidden; flex-shrink: 0;
 }
+.logo-cross img { width: 100%; height: 100%; object-fit: contain; }
 .logo-text { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--navy); line-height: 1.2; }
 .logo-sub { font-family: 'DM Sans', sans-serif; font-size: 0.65rem; font-weight: 500; color: var(--gold); letter-spacing: 0.08em; text-transform: uppercase; }
 
@@ -733,7 +734,7 @@ export default function App() {
                 <nav>
                     <div className="nav-inner">
                         <a className="nav-logo" onClick={() => navigate("Home")} style={{ cursor: "pointer" }}>
-                            <div className="logo-cross">✝</div>
+                            <div className="logo-cross"><img src={logo} alt="ACK St Pauls Cathedral crest" /></div>
                             <div>
                                 <div className="logo-text">ACK St Pauls</div>
                                 <div className="logo-sub">Youths</div>
@@ -789,7 +790,7 @@ export default function App() {
                     <div className="footer-grid">
                         <div>
                             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-                                <div className="logo-cross">✝</div>
+                                <div className="logo-cross"><img src={logo} alt="ACK St Pauls Cathedral crest" /></div>
                                 <div>
                                     <div className="footer-brand-name">ACK St Pauls Youths</div>
                                     <div className="footer-brand-sub">Youth Ministry</div>
