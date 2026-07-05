@@ -46,6 +46,7 @@ export function useYouTubeVideos() {
           .map(item => ({
             id: item.snippet.resourceId.videoId,
             title: item.snippet.title,
+            description: item.snippet.description || "",
             publishedAt: item.snippet.publishedAt,
             thumbnail:
               item.snippet.thumbnails?.medium?.url ||

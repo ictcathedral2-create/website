@@ -435,31 +435,51 @@ nav {
 .amount-btn.selected, .amount-btn:hover { background: var(--gold); border-color: var(--gold); color: white; }
 
 /* ─── FOOTER ─── */
-.footer { background: #050A14; color: rgba(255,255,255,0.7); padding: 4rem 2rem 2rem; }
-.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; max-width: 1280px; margin: 0 auto; }
-.footer-brand-name { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: white; margin-bottom: 0.25rem; }
-.footer-brand-sub { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold); }
-.footer-desc { font-size: 0.88rem; line-height: 1.7; color: rgba(255,255,255,0.55); margin-top: 1rem; }
-.footer-verse {
-  margin-top: 1.25rem; padding: 1rem;
-  background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.2);
-  border-radius: 10px; font-size: 0.82rem; font-style: italic; color: rgba(255,255,255,0.7);
+.footer {
+  position: relative; background: #050A14; color: rgba(255,255,255,0.7);
+  padding: 5rem 2rem 2rem; overflow: hidden;
 }
-.footer-verse cite { display: block; font-style: normal; font-weight: 600; color: var(--gold); margin-top: 0.4rem; font-size: 0.75rem; }
-.footer-col-title { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--gold); margin-bottom: 1.25rem; }
-.footer-link { display: block; font-size: 0.88rem; color: rgba(255,255,255,0.55); text-decoration: none; margin-bottom: 0.6rem; cursor: pointer; transition: color 0.2s; }
-.footer-link:hover { color: var(--gold-light); }
-.footer-socials { display: flex; gap: 0.75rem; margin-top: 1rem; }
+.footer::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, transparent, var(--gold) 50%, transparent);
+}
+.footer::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(circle at 15% 0%, rgba(201,168,76,0.08) 0%, transparent 45%);
+}
+.footer-grid {
+  position: relative; display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr;
+  gap: 3rem; max-width: 1280px; margin: 0 auto;
+}
+.footer-grid > div + div { padding-left: 2.5rem; border-left: 1px solid rgba(255,255,255,0.06); }
+.footer-brand-name { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: white; margin-bottom: 0.3rem; letter-spacing: 0.01em; }
+.footer-brand-sub { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.14em; color: var(--gold); }
+.footer-desc { font-size: 0.9rem; line-height: 1.75; color: rgba(255,255,255,0.55); margin-top: 1.1rem; max-width: 340px; }
+.footer-verse {
+  margin-top: 1.5rem; padding: 1.25rem 1.4rem;
+  background: rgba(201,168,76,0.08); border-left: 3px solid var(--gold);
+  border-radius: 0 10px 10px 0; font-size: 0.85rem; font-style: italic;
+  line-height: 1.7; color: rgba(255,255,255,0.75);
+}
+.footer-verse cite { display: block; font-style: normal; font-weight: 600; color: var(--gold); margin-top: 0.6rem; font-size: 0.75rem; letter-spacing: 0.04em; }
+.footer-col-title {
+  font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em;
+  color: var(--gold); margin-bottom: 1.4rem; padding-bottom: 0.6rem;
+  border-bottom: 1px solid rgba(201,168,76,0.25); display: inline-block;
+}
+.footer-link { display: block; font-size: 0.89rem; color: rgba(255,255,255,0.55); text-decoration: none; margin-bottom: 0.75rem; cursor: pointer; transition: all 0.2s; }
+.footer-link:hover { color: var(--gold-light); transform: translateX(2px); }
+.footer-socials { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
 .social-btn {
   width: 38px; height: 38px; border-radius: 10px;
   background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
   display: flex; align-items: center; justify-content: center;
   font-size: 0.9rem; color: rgba(255,255,255,0.6); cursor: pointer; transition: all 0.2s;
 }
-.social-btn:hover { background: var(--gold); border-color: var(--gold); color: white; }
+.social-btn:hover { background: var(--gold); border-color: var(--gold); color: white; transform: translateY(-2px); }
 .footer-bottom {
-  max-width: 1280px; margin: 3rem auto 0;
-  padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.08);
+  position: relative; max-width: 1280px; margin: 3.5rem auto 0;
+  padding-top: 1.75rem; border-top: 1px solid rgba(255,255,255,0.08);
   display: flex; justify-content: space-between; align-items: center;
   font-size: 0.82rem; color: rgba(255,255,255,0.35);
   flex-wrap: wrap; gap: 1rem;
@@ -596,7 +616,9 @@ nav {
 @media (max-width: 900px) {
   .hero-content { grid-template-columns: 1fr; gap: 2.5rem; }
   .about-grid { grid-template-columns: 1fr; }
-  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .footer-grid { grid-template-columns: 1fr 1fr; row-gap: 2.5rem; }
+  .footer-grid > div + div { border-left: none; padding-left: 0; }
+  .footer-grid > div:nth-child(2) { padding-left: 2.5rem; border-left: 1px solid rgba(255,255,255,0.06); }
   .gallery-grid { grid-template-columns: 1fr 1fr; }
   .gallery-item:nth-child(1) { grid-row: span 1; }
 }
@@ -608,6 +630,7 @@ nav {
   .hero-content { padding: 7rem 1.25rem 3rem; }
   .hero-stats { gap: 1.5rem; }
   .footer-grid { grid-template-columns: 1fr; }
+  .footer-grid > div + div { border-left: none; padding-left: 0; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.06); }
   .event-card { flex-direction: column; gap: 1rem; }
   .prayer-widget { bottom: 1rem; right: 1rem; }
   .prayer-toggle { width: 48px; height: 48px; font-size: 1.1rem; }
@@ -887,6 +910,9 @@ export default function App() {
 
 function HomePage({ countdown, navigate, statsRef, stat1, stat2, stat3, stat4, dark }) {
     const newsletter = useFormSubmit("newsletterSignups", { email: "" }, ["email"]);
+    const { videos, loading: videosLoading } = useYouTubeVideos();
+    const [activeVideo, setActiveVideo] = useState(null);
+    const latestVideo = videos.length > 0 ? videos[videos.length - 1] : null;
 
     const handleNewsletterSubmit = () => {
         if (!validateEmail(newsletter.formData.email)) return;
@@ -1029,24 +1055,51 @@ function HomePage({ countdown, navigate, statsRef, stat1, stat2, stat3, stat4, d
                         <h2 className="section-title">Featured Sermon</h2>
                         <div className="gold-line" />
                     </div>
-                    <div style={{ background: "var(--navy)", borderRadius: 20, overflow: "hidden", display: "grid", gridTemplateColumns: "1fr 1fr" }}>
-                        <div style={{ background: "linear-gradient(135deg, #0E2044 0%, #1A3660 100%)", padding: "3rem", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", minHeight: 300 }}>
-                            <div style={{ width: 80, height: 80, borderRadius: "50%", background: "var(--gold)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "2.5rem", cursor: "pointer", boxShadow: "0 0 40px rgba(201,168,76,0.5)", marginBottom: "1rem" }}>▶</div>
-                            <div style={{ color: "rgba(255,255,255,0.6)", fontSize: "0.85rem" }}>Click to watch · 42 min</div>
-                        </div>
-                        <div style={{ padding: "2.5rem" }}>
-                            <div style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.12em", color: "var(--gold)", fontWeight: 700, marginBottom: "0.75rem" }}>Jun 29, 2026 · Youth Service</div>
-                            <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.8rem", fontWeight: 700, color: "white", lineHeight: 1.25, marginBottom: "1rem" }}>When God Seems Silent</div>
-                            <div style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.95rem", lineHeight: 1.75, marginBottom: "1.5rem" }}>In those dry, quiet seasons when heaven seems distant — what do we do? Rev. James unpacks Elijah's wilderness journey and reveals God's faithful whisper in the silence.</div>
-                            <div style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.5)", marginBottom: "1.5rem" }}>Rev. James Mwangi · Based on 1 Kings 19</div>
-                            <div style={{ display: "flex", gap: "0.75rem" }}>
-                                <button className="btn btn-gold btn-sm" onClick={() => navigate("Sermons")}>Watch Full Sermon</button>
-                                <button className="btn btn-outline btn-sm" onClick={() => navigate("Sermons")}>All Sermons</button>
+                    {videosLoading && (
+                        <div style={{ textAlign: "center", padding: "2rem 0", color: "var(--gray-400)" }}>Loading latest sermon…</div>
+                    )}
+                    {!videosLoading && !latestVideo && (
+                        <div style={{ textAlign: "center", padding: "2rem 0", color: "var(--gray-400)" }}>
+                            New sermon uploads will appear here soon.
+                            <div style={{ marginTop: "1rem" }}>
+                                <button className="btn btn-navy btn-sm" onClick={() => navigate("Sermons")}>Visit Sermons Page</button>
                             </div>
                         </div>
-                    </div>
+                    )}
+                    {!videosLoading && latestVideo && (
+                        <div style={{ background: "var(--navy)", borderRadius: 20, overflow: "hidden", display: "grid", gridTemplateColumns: "1fr 1fr" }}>
+                            <div
+                                style={{
+                                    backgroundImage: `linear-gradient(rgba(14,32,68,0.35), rgba(14,32,68,0.45)), url(${latestVideo.thumbnail})`,
+                                    backgroundSize: "cover", backgroundPosition: "center",
+                                    padding: "3rem", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center",
+                                    minHeight: 300, cursor: "pointer",
+                                }}
+                                onClick={() => setActiveVideo(latestVideo)}
+                            >
+                                <div style={{ width: 80, height: 80, borderRadius: "50%", background: "var(--gold)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "2.5rem", boxShadow: "0 0 40px rgba(201,168,76,0.5)", marginBottom: "1rem" }}>▶</div>
+                                <div style={{ color: "rgba(255,255,255,0.85)", fontSize: "0.85rem" }}>Click to watch</div>
+                            </div>
+                            <div style={{ padding: "2.5rem" }}>
+                                <div style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.12em", color: "var(--gold)", fontWeight: 700, marginBottom: "0.75rem" }}>
+                                    {new Date(latestVideo.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                                </div>
+                                <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.8rem", fontWeight: 700, color: "white", lineHeight: 1.25, marginBottom: "1rem" }}>{latestVideo.title}</div>
+                                {latestVideo.description && (
+                                    <div style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.95rem", lineHeight: 1.75, marginBottom: "1.5rem", display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                                        {latestVideo.description}
+                                    </div>
+                                )}
+                                <div style={{ display: "flex", gap: "0.75rem" }}>
+                                    <button className="btn btn-gold btn-sm" onClick={() => setActiveVideo(latestVideo)}>Watch Full Sermon</button>
+                                    <button className="btn btn-outline btn-sm" onClick={() => navigate("Sermons")}>All Sermons</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
+            <VideoModal video={activeVideo} onClose={() => setActiveVideo(null)} />
 
             {/* MINISTRIES PREVIEW */}
             <div className="section section-light">
@@ -1257,6 +1310,35 @@ function MinistriesPage({ navigate, dark }) {
     );
 }
 
+function VideoModal({ video, onClose }) {
+    if (!video) return null;
+    return (
+        <div className="modal-overlay" onClick={onClose}>
+            <div className="modal-card modal-card-video" onClick={e => e.stopPropagation()}>
+                <button className="modal-close-video" onClick={onClose} aria-label="Close">✕</button>
+                <div className="video-frame-wrap">
+                    <iframe
+                        src={`https://www.youtube.com/embed/${video.id}?autoplay=1`}
+                        title={video.title}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                    />
+                </div>
+                <div className="modal-video-info">
+                    <div className="modal-title">{video.title}</div>
+                    <div className="modal-meta">
+                        {new Date(video.publishedAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+                        {" · "}
+                        <a href={`https://www.youtube.com/watch?v=${video.id}`} target="_blank" rel="noreferrer" style={{ color: "var(--gold-dark)" }}>
+                            Watch on YouTube ↗
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 function SermonsPage({ navigate, dark, activeTab, setActiveTab }) {
     const { videos, loading, error } = useYouTubeVideos();
     const [activeVideo, setActiveVideo] = useState(null);
@@ -1333,31 +1415,7 @@ function SermonsPage({ navigate, dark, activeTab, setActiveTab }) {
                         </>
                     )}
 
-                    {activeVideo && (
-                        <div className="modal-overlay" onClick={() => setActiveVideo(null)}>
-                            <div className="modal-card modal-card-video" onClick={e => e.stopPropagation()}>
-                                <button className="modal-close-video" onClick={() => setActiveVideo(null)} aria-label="Close">✕</button>
-                                <div className="video-frame-wrap">
-                                    <iframe
-                                        src={`https://www.youtube.com/embed/${activeVideo.id}?autoplay=1`}
-                                        title={activeVideo.title}
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                        allowFullScreen
-                                    />
-                                </div>
-                                <div className="modal-video-info">
-                                    <div className="modal-title">{activeVideo.title}</div>
-                                    <div className="modal-meta">
-                                        {new Date(activeVideo.publishedAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
-                                        {" · "}
-                                        <a href={`https://www.youtube.com/watch?v=${activeVideo.id}`} target="_blank" rel="noreferrer" style={{ color: "var(--gold-dark)" }}>
-                                            Watch on YouTube ↗
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                    <VideoModal video={activeVideo} onClose={() => setActiveVideo(null)} />
 
                     {activeTab === "Gallery" && (
                         <div className="gallery-grid">
@@ -1727,9 +1785,14 @@ function TestimoniesPage({ navigate, dark }) {
     );
 
     const sortedTestimonies = (testimonies || []).slice().sort((a, b) => b.createdAt - a.createdAt);
+    const [storyError, setStoryError] = useState(null);
 
     const handleTestimonySubmit = () => {
-        if (testimony.formData.story.trim().length < 50) return;
+        if (testimony.formData.story.trim().length < 50) {
+            setStoryError("Please share at least 50 characters so your story can be reviewed.");
+            return;
+        }
+        setStoryError(null);
         testimony.handleSubmit({ status: "pending" });
     };
 
@@ -1792,8 +1855,8 @@ function TestimoniesPage({ navigate, dark }) {
                                     </select>
                                 </div>
                                 <div className="form-group"><label className="form-label">Title</label><input className="form-input" placeholder="Give your story a compelling title" value={testimony.formData.title} onChange={e => testimony.setField("title", e.target.value)} /></div>
-                                <div className="form-group"><label className="form-label">Your Story</label><textarea className="form-textarea" style={{ minHeight: 150 }} placeholder="Share what God has done in your life... (minimum 50 characters)" value={testimony.formData.story} onChange={e => testimony.setField("story", e.target.value)} /></div>
-                                {testimony.error && <p style={{ color: "var(--orange)", fontSize: "0.8rem", marginBottom: 8 }}>{testimony.error}</p>}
+                                <div className="form-group"><label className="form-label">Your Story</label><textarea className="form-textarea" style={{ minHeight: 150 }} placeholder="Share what God has done in your life... (minimum 50 characters)" value={testimony.formData.story} onChange={e => { testimony.setField("story", e.target.value); setStoryError(null); }} /></div>
+                                {(testimony.error || storyError) && <p style={{ color: "var(--orange)", fontSize: "0.8rem", marginBottom: 8 }}>{testimony.error || storyError}</p>}
                                 <button className="btn btn-gold" style={{ width: "100%", justifyContent: "center" }} disabled={testimony.submitting} onClick={handleTestimonySubmit}>
                                     {testimony.submitting ? "Submitting..." : "Submit Story →"}
                                 </button>
