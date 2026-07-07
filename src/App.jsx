@@ -7,7 +7,7 @@ import logo from "./assets/logo.png";
 
 const NAV_LINKS = ["Home", "Ministries", "Sermons", "Events", "Connect", "Give", "Testimonies", "About"];
 
-const styles = `
+export const styles = `
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
