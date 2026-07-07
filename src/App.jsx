@@ -1776,6 +1776,36 @@ function GivePage({ dark }) {
     );
 }
 
+function TestimonyCard({ t, colorIndex }) {
+    const [expanded, setExpanded] = useState(false);
+    const words = t.story.trim().split(/\s+/);
+    const isLong = words.length > 80;
+    const displayText = expanded || !isLong ? t.story : words.slice(0, 80).join(" ") + "…";
+
+    return (
+        <div className="card blog-card">
+            <div className="blog-thumb" style={{ background: `linear-gradient(135deg, ${["var(--navy)", "var(--gold-dark)", "#1E3A7A"][colorIndex % 3]} 0%, ${["var(--navy-mid)", "var(--gold)", "var(--navy)"][colorIndex % 3]} 100%)` }} />
+            <div className="blog-content">
+                <div className="blog-cat">{t.category}</div>
+                <div className="blog-title">{t.title}</div>
+                <div className="blog-excerpt">{displayText}</div>
+                {isLong && (
+                    <button
+                        onClick={() => setExpanded(!expanded)}
+                        style={{ background: "none", border: "none", padding: 0, marginTop: "0.5rem", cursor: "pointer", fontSize: "0.82rem", fontWeight: 600, color: "var(--gold-dark)" }}
+                    >
+                        {expanded ? "Show Less" : "Read More"} →
+                    </button>
+                )}
+                <div className="blog-meta">
+                    <span>{t.name || "Anonymous"}</span>
+                    <span>{new Date(t.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 function TestimoniesPage({ navigate, dark }) {
     const { data: testimonies, loading, error } = useFirebaseCollection("publicTestimonies");
     const testimony = useFormSubmit(
@@ -1817,18 +1847,7 @@ function TestimoniesPage({ navigate, dark }) {
                     {!loading && !error && sortedTestimonies.length > 0 && (
                         <div className="grid-3" style={{ marginBottom: "3rem" }}>
                             {sortedTestimonies.map((t, i) => (
-                                <div key={t.id} className="card blog-card">
-                                    <div className="blog-thumb" style={{ background: `linear-gradient(135deg, ${["var(--navy)", "var(--gold-dark)", "#1E3A7A"][i % 3]} 0%, ${["var(--navy-mid)", "var(--gold)", "var(--navy)"][i % 3]} 100%)` }}>🙌</div>
-                                    <div className="blog-content">
-                                        <div className="blog-cat">{t.category}</div>
-                                        <div className="blog-title">{t.title}</div>
-                                        <div className="blog-excerpt">{t.story}</div>
-                                        <div className="blog-meta">
-                                            <span>{t.name || "Anonymous"}</span>
-                                            <span>{new Date(t.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
-                                        </div>
-                                    </div>
-                                </div>
+                                <TestimonyCard key={t.id} t={t} colorIndex={i} />
                             ))}
                         </div>
                     )}
