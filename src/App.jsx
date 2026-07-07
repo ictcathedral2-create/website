@@ -402,7 +402,6 @@ nav {
 
 /* ─── BLOG ─── */
 .blog-card { overflow: hidden; }
-.blog-thumb { height: 160px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; }
 .blog-content { padding: 1.25rem; }
 .blog-cat { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; color: var(--gold-dark); }
 .blog-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--navy); margin-top: 0.4rem; line-height: 1.4; }
@@ -1776,7 +1775,7 @@ function GivePage({ dark }) {
     );
 }
 
-function TestimonyCard({ t, colorIndex }) {
+function TestimonyCard({ t }) {
     const [expanded, setExpanded] = useState(false);
     const words = t.story.trim().split(/\s+/);
     const isLong = words.length > 80;
@@ -1784,7 +1783,6 @@ function TestimonyCard({ t, colorIndex }) {
 
     return (
         <div className="card blog-card">
-            <div className="blog-thumb" style={{ background: `linear-gradient(135deg, ${["var(--navy)", "var(--gold-dark)", "#1E3A7A"][colorIndex % 3]} 0%, ${["var(--navy-mid)", "var(--gold)", "var(--navy)"][colorIndex % 3]} 100%)` }} />
             <div className="blog-content">
                 <div className="blog-cat">{t.category}</div>
                 <div className="blog-title">{t.title}</div>
@@ -1846,8 +1844,8 @@ function TestimoniesPage({ navigate, dark }) {
                     )}
                     {!loading && !error && sortedTestimonies.length > 0 && (
                         <div className="grid-3" style={{ marginBottom: "3rem" }}>
-                            {sortedTestimonies.map((t, i) => (
-                                <TestimonyCard key={t.id} t={t} colorIndex={i} />
+                            {sortedTestimonies.map(t => (
+                                <TestimonyCard key={t.id} t={t} />
                             ))}
                         </div>
                     )}
