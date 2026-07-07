@@ -1752,14 +1752,15 @@ function GivePage({ dark }) {
 
                     <div className="grid-3">
                         {[
-                            { icon: "💛", name: "Offering" },
-                            { icon: "🙏", name: "Tithe" },
-                            { icon: "✨", name: "Thanksgiving" },
+                            { icon: "💛", name: "Offering", account: "90925#Offering" },
+                            { icon: "🙏", name: "Tithe", account: "90925#Tithe" },
+                            { icon: "✨", name: "Thanksgiving", account: "90925#Thanksgiving" },
                         ].map(a => (
                             <div key={a.name} className="card" style={{ padding: "2rem", textAlign: "center" }}>
                                 <div style={{ fontSize: "2rem", marginBottom: "0.75rem" }}>{a.icon}</div>
-                                <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.2rem", fontWeight: 700, color: "var(--navy)", marginBottom: "1.25rem" }}>{a.name}</div>
-                                <button className="btn btn-gold btn-sm" style={{ width: "100%", justifyContent: "center" }} onClick={() => copyToClipboard(a.name, a.name)}>
+                                <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.2rem", fontWeight: 700, color: "var(--navy)", marginBottom: "0.5rem" }}>{a.name}</div>
+                                <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.1rem", fontWeight: 700, color: "var(--gold-dark)", marginBottom: "1.25rem", letterSpacing: "0.02em" }}>{a.account}</div>
+                                <button className="btn btn-gold btn-sm" style={{ width: "100%", justifyContent: "center" }} onClick={() => copyToClipboard(a.account, a.name)}>
                                     {copied === a.name ? "✓ Copied" : "Copy Account Number"}
                                 </button>
                             </div>
