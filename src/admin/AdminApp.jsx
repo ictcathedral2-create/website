@@ -1,4 +1,5 @@
 import { styles } from "../App";
+import { adminStyles } from "./adminStyles";
 import { useAuth } from "../hooks/useAuth";
 import AdminLogin from "./AdminLogin";
 import AdminDashboard from "./AdminDashboard";
@@ -9,6 +10,7 @@ export default function AdminApp() {
     return (
         <>
             <style>{styles}</style>
+            <style>{adminStyles}</style>
             {loading ? (
                 <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--gray-400)" }}>
                     Loading…

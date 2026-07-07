@@ -107,11 +107,22 @@ function SidebarBadge({ path, pendingStatus }) {
 
 export default function AdminDashboard({ user, onLogout }) {
     const [activeSection, setActiveSection] = useState("testimonies");
+    const [mobileOpen, setMobileOpen] = useState(false);
     const current = SECTIONS.find(s => s.key === activeSection);
 
+    const selectSection = key => {
+        setActiveSection(key);
+        setMobileOpen(false);
+    };
+
     return (
-        <div style={{ height: "100vh", display: "flex", background: "var(--cream)", overflow: "hidden" }}>
-            <aside style={{ width: 260, background: "var(--navy)", color: "white", padding: "1.75rem 1.25rem", flexShrink: 0, height: "100vh", overflowY: "auto", display: "flex", flexDirection: "column" }}>
+        <div className="admin-layout" style={{ height: "100vh", display: "flex", background: "var(--cream)", overflow: "hidden" }}>
+            <button className="admin-mobile-toggle" onClick={() => setMobileOpen(true)} aria-label="Open menu">☰</button>
+            <div className={`admin-overlay${mobileOpen ? " open" : ""}`} onClick={() => setMobileOpen(false)} />
+            <aside
+                className={`admin-sidebar${mobileOpen ? " open" : ""}`}
+                style={{ width: 260, background: "var(--navy)", color: "white", padding: "1.75rem 1.25rem", flexShrink: 0, height: "100vh", overflowY: "auto", display: "flex", flexDirection: "column" }}
+            >
                 <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: "2rem" }}>
                     <div style={{ width: 36, height: 36, borderRadius: 8, background: "linear-gradient(135deg, var(--gold), var(--gold-dark))", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>✝</div>
                     <div>
@@ -123,7 +134,7 @@ export default function AdminDashboard({ user, onLogout }) {
                     {SECTIONS.map(s => (
                         <button
                             key={s.key}
-                            onClick={() => setActiveSection(s.key)}
+                            onClick={() => selectSection(s.key)}
                             style={{
                                 display: "flex", alignItems: "center", gap: 8,
                                 textAlign: "left", padding: "0.65rem 0.85rem", borderRadius: 8,
@@ -145,7 +156,7 @@ export default function AdminDashboard({ user, onLogout }) {
                     </button>
                 </div>
             </aside>
-            <main style={{ flex: 1, padding: "2.5rem 3rem", overflowY: "auto" }}>
+            <main className="admin-main" style={{ flex: 1, padding: "2.5rem 3rem", overflowY: "auto" }}>
                 {current && (
                     <SubmissionSection
                         title={current.label}
