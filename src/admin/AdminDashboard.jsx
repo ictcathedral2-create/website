@@ -110,8 +110,8 @@ export default function AdminDashboard({ user, onLogout }) {
     const current = SECTIONS.find(s => s.key === activeSection);
 
     return (
-        <div style={{ minHeight: "100vh", display: "flex", background: "var(--cream)" }}>
-            <aside style={{ width: 260, background: "var(--navy)", color: "white", padding: "1.75rem 1.25rem", flexShrink: 0 }}>
+        <div style={{ height: "100vh", display: "flex", background: "var(--cream)", overflow: "hidden" }}>
+            <aside style={{ width: 260, background: "var(--navy)", color: "white", padding: "1.75rem 1.25rem", flexShrink: 0, height: "100vh", overflowY: "auto", display: "flex", flexDirection: "column" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: "2rem" }}>
                     <div style={{ width: 36, height: 36, borderRadius: 8, background: "linear-gradient(135deg, var(--gold), var(--gold-dark))", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>✝</div>
                     <div>
@@ -119,7 +119,7 @@ export default function AdminDashboard({ user, onLogout }) {
                         <div style={{ fontSize: "0.7rem", color: "var(--gold-light)" }}>ACK St Pauls Youths</div>
                     </div>
                 </div>
-                <nav style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
                     {SECTIONS.map(s => (
                         <button
                             key={s.key}
@@ -137,7 +137,7 @@ export default function AdminDashboard({ user, onLogout }) {
                             <SidebarBadge path={s.path} pendingStatus={s.pendingStatus} />
                         </button>
                     ))}
-                </nav>
+                </div>
                 <div style={{ marginTop: "2rem", paddingTop: "1.25rem", borderTop: "1px solid rgba(255,255,255,0.1)" }}>
                     <div style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.5)", marginBottom: "0.75rem", wordBreak: "break-all" }}>{user?.email}</div>
                     <button className="btn btn-navy btn-sm" style={{ width: "100%", justifyContent: "center", border: "1px solid rgba(255,255,255,0.2)" }} onClick={onLogout}>
