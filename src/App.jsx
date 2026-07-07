@@ -1732,7 +1732,6 @@ function GivePage({ dark }) {
             <div className="section section-cream">
                 <div className="container-sm">
                     <div className="card" style={{ padding: "2.5rem", textAlign: "center", marginBottom: "2rem" }}>
-                        <div style={{ fontSize: "2.5rem", marginBottom: "0.5rem" }}>📱</div>
                         <div style={{ fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--gold-dark)", fontWeight: 700, marginBottom: "0.75rem" }}>M-Pesa Lipa na M-Pesa</div>
                         <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1rem", color: "var(--gray-600)", marginBottom: "0.35rem" }}>Paybill Number</div>
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.75rem" }}>
@@ -1752,12 +1751,11 @@ function GivePage({ dark }) {
 
                     <div className="grid-3">
                         {[
-                            { icon: "💛", name: "Offering", account: "90925#Offering" },
-                            { icon: "🙏", name: "Tithe", account: "90925#Tithe" },
-                            { icon: "✨", name: "Thanksgiving", account: "90925#Thanksgiving" },
+                            { name: "Offering", account: "90925#Offering" },
+                            { name: "Tithe", account: "90925#Tithe" },
+                            { name: "Thanksgiving", account: "90925#Thanksgiving" },
                         ].map(a => (
                             <div key={a.name} className="card" style={{ padding: "2rem", textAlign: "center" }}>
-                                <div style={{ fontSize: "2rem", marginBottom: "0.75rem" }}>{a.icon}</div>
                                 <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.2rem", fontWeight: 700, color: "var(--navy)", marginBottom: "0.5rem" }}>{a.name}</div>
                                 <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.1rem", fontWeight: 700, color: "var(--gold-dark)", marginBottom: "1.25rem", letterSpacing: "0.02em" }}>{a.account}</div>
                                 <button className="btn btn-gold btn-sm" style={{ width: "100%", justifyContent: "center" }} onClick={() => copyToClipboard(a.account, a.name)}>
@@ -1768,7 +1766,7 @@ function GivePage({ dark }) {
                     </div>
 
                     <p style={{ fontSize: "0.85rem", textAlign: "center", color: "var(--gray-400)", marginTop: "2.5rem" }}>
-                        🔒 All gifts are given directly via Safaricom M-Pesa. God bless you for your generosity.
+                        All gifts are given directly via Safaricom M-Pesa. God bless you for your generosity.
                     </p>
                 </div>
             </div>
