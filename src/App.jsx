@@ -1777,7 +1777,7 @@ function GivePage({ dark }) {
 }
 
 function TestimoniesPage({ navigate, dark }) {
-    const { data: testimonies, loading, error } = useFirebaseCollection("submissions/testimonies", { field: "status", value: "approved" });
+    const { data: testimonies, loading, error } = useFirebaseCollection("publicTestimonies");
     const testimony = useFormSubmit(
         "testimonies",
         { name: "", category: "Testimony / Personal Story", title: "", story: "" },

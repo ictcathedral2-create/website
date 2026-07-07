@@ -7,10 +7,10 @@ export default function SubmissionSection({ title, path, columns, statusOptions 
     const sorted = (data || []).slice().sort((a, b) => b.createdAt - a.createdAt);
     const [updatingId, setUpdatingId] = useState(null);
 
-    const handleStatusChange = async (id, status) => {
-        setUpdatingId(id);
+    const handleStatusChange = async (item, status) => {
+        setUpdatingId(item.id);
         try {
-            await updateSubmissionStatus(path, id, status);
+            await updateSubmissionStatus(path, item.id, status, item);
         } finally {
             setUpdatingId(null);
         }
@@ -44,7 +44,7 @@ export default function SubmissionSection({ title, path, columns, statusOptions 
                                 <button
                                     key={s}
                                     disabled={updatingId === item.id || item.status === s}
-                                    onClick={() => handleStatusChange(item.id, s)}
+                                    onClick={() => handleStatusChange(item, s)}
                                     className={`btn btn-sm ${item.status === s ? "btn-gold" : "btn-navy"}`}
                                     style={{ opacity: item.status === s ? 1 : 0.55 }}
                                 >
