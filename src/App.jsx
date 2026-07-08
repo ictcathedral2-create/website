@@ -296,10 +296,21 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
   margin-top: 1.5rem; padding-top: 1.5rem;
   border-top: 1px solid rgba(201,168,76,0.2);
 }
-.countdown-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.5); margin-bottom: 0.75rem; }
+.countdown-label {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--gold-light); margin-bottom: 0.9rem;
+}
+.countdown-label::before {
+  content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--gold);
+  animation: urgentBlink 1.4s ease-in-out infinite;
+}
 .countdown-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 0.5rem; }
-.countdown-unit { text-align: center; background: rgba(201,168,76,0.15); border-radius: 8px; padding: 0.75rem 0.5rem; }
-.countdown-num { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: var(--gold); }
+.countdown-unit {
+  text-align: center; background: rgba(201,168,76,0.15); border-radius: 8px; padding: 0.75rem 0.5rem;
+  border: 1px solid rgba(201,168,76,0.3);
+}
+.countdown-num { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; color: var(--gold-light); }
 .countdown-unit-label { font-size: 0.6rem; text-transform: uppercase; color: rgba(255,255,255,0.5); letter-spacing: 0.08em; }
 
 /* ─── SECTIONS ─── */
@@ -460,6 +471,15 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 }
 @keyframes urgentBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
+.event-actions { display: flex; flex-direction: column; gap: 0.5rem; flex-shrink: 0; min-width: 128px; }
+.event-actions .btn { justify-content: center; }
+.btn-ghost-navy { background: transparent; color: var(--navy); border: 1.5px solid rgba(14,32,68,0.22); }
+.btn-ghost-navy:hover { background: rgba(14,32,68,0.06); border-color: var(--navy); transform: translateY(-2px); }
+.dark-mode .btn-ghost-navy { color: #E8E4DC !important; border-color: rgba(255,255,255,0.25) !important; }
+.dark-mode .btn-ghost-navy:hover { background: rgba(255,255,255,0.08) !important; }
+
+.event-form-label { text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.7rem !important; color: var(--gold-dark) !important; font-weight: 700 !important; }
+
 /* ─── STATS ─── */
 .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 2rem; text-align: center; }
 .stat-num { font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 900; color: var(--gold); line-height: 1; }
@@ -556,6 +576,19 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
   font-size: 0.9rem; color: rgba(255,255,255,0.6); cursor: pointer; transition: all 0.2s;
 }
 .social-btn:hover { background: var(--gold); border-color: var(--gold); color: white; transform: translateY(-2px); }
+
+.footer-contact-row { display: flex; align-items: center; gap: 12px; margin-bottom: 1.1rem; text-decoration: none; cursor: default; }
+a.footer-contact-row { cursor: pointer; }
+.footer-contact-icon {
+  width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0;
+  background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.22);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--gold-light); transition: all 0.2s;
+}
+.footer-contact-text { font-size: 0.89rem; color: rgba(255,255,255,0.6); line-height: 1.4; transition: color 0.2s; }
+a.footer-contact-row:hover .footer-contact-icon { background: var(--gold); border-color: var(--gold); color: white; transform: translateY(-2px); }
+a.footer-contact-row:hover .footer-contact-text { color: var(--gold-light); }
+
 .footer-bottom {
   position: relative; max-width: 1280px; margin: 3.5rem auto 0;
   padding-top: 1.75rem; border-top: 1px solid rgba(255,255,255,0.08);
@@ -820,6 +853,12 @@ function SocialIcon({ name, size = 18 }) {
             return <svg {...fill}><rect x="2" y="5" width="20" height="14" rx="4" /><path d="M10 9.3v5.4l4.8-2.7Z" fill="var(--navy)" /></svg>;
         case "whatsapp":
             return <svg {...fill}><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.5 14.3c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.6-.1-.4-.1-.9-.3-1.5-.6-2.7-1.2-4.5-3.9-4.6-4.1-.1-.2-1.1-1.5-1.1-2.8 0-1.3.7-2 1-2.2.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.4.2.5.7 1.7.8 1.9.1.2.1.3 0 .5-.1.2-.2.3-.3.5-.2.2-.3.3-.5.5-.2.2-.3.4-.1.7.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.5 1.5.2.1.4.1.5-.1.2-.2.7-.8.9-1.1.2-.3.4-.2.6-.1.2.1 1.5.7 1.7.8.2.1.4.2.4.3.1.2.1.6-.1 1.2Z" /></svg>;
+        case "pin":
+            return <svg {...stroke}><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></svg>;
+        case "phone":
+            return <svg {...stroke}><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .3 2 .7 2.9a2 2 0 0 1-.4 2.1L8 10a16 16 0 0 0 6 6l1.3-1.4a2 2 0 0 1 2.1-.4c.9.4 1.9.6 2.9.7a2 2 0 0 1 1.7 2.1Z" /></svg>;
+        case "mail":
+            return <svg {...stroke}><rect x="2" y="4" width="20" height="16" rx="3" /><path d="m3 6.5 9 6.5 9-6.5" /></svg>;
         default:
             return null;
     }
@@ -1015,10 +1054,18 @@ export default function App() {
                         </div>
                         <div>
                             <div className="footer-col-title">Contact</div>
-                            <div className="footer-link">📍 Embu Town, Embu, Kenya</div>
-                            <div className="footer-link">📞 +254 700 000 000</div>
-                            <div className="footer-link">✉️ youths@ackstpauls.org</div>
-                            <div className="footer-link">🌐 www.ackstpaulsyouths.org</div>
+                            <div className="footer-contact-row">
+                                <div className="footer-contact-icon"><SocialIcon name="pin" size={16} /></div>
+                                <div className="footer-contact-text">Embu Town, Embu, Kenya</div>
+                            </div>
+                            <a className="footer-contact-row" href="tel:+254700000000">
+                                <div className="footer-contact-icon"><SocialIcon name="phone" size={16} /></div>
+                                <div className="footer-contact-text">+254 700 000 000</div>
+                            </a>
+                            <a className="footer-contact-row" href="mailto:ictcathedral2@gmail.com">
+                                <div className="footer-contact-icon"><SocialIcon name="mail" size={16} /></div>
+                                <div className="footer-contact-text">ictcathedral2@gmail.com</div>
+                            </a>
                         </div>
                     </div>
                     <div className="footer-bottom">
@@ -1202,7 +1249,7 @@ function HomePage({ countdown, navigate, statsRef, stat1, stat2, stat3, stat4, d
                         <div className="hero-stats">
                             <div><div className="hero-stat-num">350+</div><div className="hero-stat-label">Active Youth</div></div>
                             <div><div className="hero-stat-num">7+</div><div className="hero-stat-label">Ministries</div></div>
-                            <div><div className="hero-stat-num">1+</div><div className="hero-stat-label">Years of Faith</div></div>
+                            <div><div className="hero-stat-num">10+</div><div className="hero-stat-label">Years of Faith</div></div>
                         </div>
                     </div>
                     <div className="hero-visual animate-float">
@@ -1213,7 +1260,7 @@ function HomePage({ countdown, navigate, statsRef, stat1, stat2, stat3, stat4, d
                             <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.2rem", fontWeight: 700, color: "white", marginBottom: "0.25rem" }}>
                                 "Rise Up & Shine"
                             </div>
-                            <div style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.6)" }}>Isaiah 60:1 · Rev. James Mwangi</div>
+                            <div style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.6)" }}>Isaiah 60:1</div>
                             <div className="service-times-grid">
                                 {[["Devotion", "8:00 AM"], ["Youth Service", "8:30 AM"], ["Bible Study", "11:00 AM"]].map(([n, t]) => (
                                     <div key={n} className="service-time-item">
@@ -1230,7 +1277,7 @@ function HomePage({ countdown, navigate, statsRef, stat1, stat2, stat3, stat4, d
                                     </div>
                                 ) : (
                                     <>
-                                        <div className="countdown-label">⏰ Next Coffee Date In</div>
+                                        <div className="countdown-label">Next Coffee Date In</div>
                                         <div className="countdown-grid">
                                             {[["d", "Days"], ["h", "Hrs"], ["m", "Min"], ["s", "Sec"]].map(([k, l]) => (
                                                 <div key={k} className="countdown-unit">
@@ -1733,9 +1780,9 @@ function EventsPage({ navigate, dark }) {
                                     <div className="event-meta">📅 {e.time}</div>
                                     <div className="event-desc">{e.desc}</div>
                                 </div>
-                                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", flexShrink: 0 }}>
-                                    <button className="btn btn-gold btn-sm" onClick={() => handleRegisterClick(e.title)}>Register</button>
-                                    <button className="btn btn-navy btn-sm" onClick={() => setDetailsEvent(e)}>Details</button>
+                                <div className="event-actions">
+                                    <button className="btn btn-gold btn-sm" onClick={() => handleRegisterClick(e.title)}>Register →</button>
+                                    <button className="btn btn-ghost-navy btn-sm" onClick={() => setDetailsEvent(e)}>View Details</button>
                                 </div>
                             </div>
                         ))}
@@ -1781,26 +1828,26 @@ function EventsPage({ navigate, dark }) {
                             <>
                                 <div className="grid-2" style={{ gap: "1rem" }}>
                                     <div className="form-group">
-                                        <label className="form-label">Full Name</label>
+                                        <label className="form-label event-form-label">Full Name</label>
                                         <input className="form-input" placeholder="Your full name" value={registration.formData.fullName} onChange={e => registration.setField("fullName", e.target.value)} />
                                     </div>
                                     <div className="form-group">
-                                        <label className="form-label">Phone Number</label>
+                                        <label className="form-label event-form-label">Phone Number</label>
                                         <input className="form-input" placeholder="+254 700 000 000" value={registration.formData.phone} onChange={e => registration.setField("phone", e.target.value)} />
                                     </div>
                                 </div>
                                 <div className="form-group">
-                                    <label className="form-label">Select Event</label>
+                                    <label className="form-label event-form-label">Select Event</label>
                                     <select className="form-select" value={registration.formData.eventTitle} onChange={e => registration.setField("eventTitle", e.target.value)}>
                                         {EVENTS.map((e, i) => <option key={i}>{e.title}</option>)}
                                     </select>
                                 </div>
                                 <div className="form-group">
-                                    <label className="form-label">Email Address</label>
+                                    <label className="form-label event-form-label">Email Address</label>
                                     <input className="form-input" placeholder="your@email.com" value={registration.formData.email} onChange={e => registration.setField("email", e.target.value)} />
                                 </div>
                                 <div className="form-group">
-                                    <label className="form-label">Special Requirements or Questions</label>
+                                    <label className="form-label event-form-label">Special Requirements or Questions</label>
                                     <textarea className="form-textarea" placeholder="Dietary needs, mobility requirements, questions..." value={registration.formData.specialRequirements} onChange={e => registration.setField("specialRequirements", e.target.value)} />
                                 </div>
                                 {registration.error && <p style={{ color: "var(--orange)", fontSize: "0.8rem", marginBottom: 8 }}>{registration.error}</p>}
