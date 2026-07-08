@@ -64,8 +64,11 @@ nav {
   background: rgba(255,255,255,0.97);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(201,168,76,0.2);
-  transition: all 0.3s ease;
+  box-shadow: 0 0 0 rgba(14,32,68,0);
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
 }
+nav.scrolled { box-shadow: 0 6px 24px rgba(14,32,68,0.08); border-bottom-color: rgba(201,168,76,0.3); }
+.dark-mode nav.scrolled { box-shadow: 0 6px 24px rgba(0,0,0,0.35) !important; }
 
 .nav-inner {
   max-width: 1280px; margin: 0 auto;
@@ -128,8 +131,10 @@ nav {
   display: inline-flex; align-items: center; gap: 8px;
   padding: 0.85rem 2rem; border-radius: 10px;
   font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 600;
-  cursor: pointer; border: none; transition: all 0.25s; text-decoration: none;
+  cursor: pointer; border: none; transition: all 0.2s ease; text-decoration: none;
 }
+.btn:active:not(:disabled) { transform: translateY(0) scale(0.97); }
+.btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
 .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
 .btn-gold {
   background: linear-gradient(135deg, var(--gold), var(--gold-dark));
@@ -140,18 +145,19 @@ nav {
   background: transparent; color: white;
   border: 2px solid rgba(255,255,255,0.7);
 }
-.btn-outline:hover { background: rgba(255,255,255,0.15); border-color: white; }
+.btn-outline:hover { background: rgba(255,255,255,0.15); border-color: white; transform: translateY(-2px); }
 .btn-navy {
   background: var(--navy); color: white;
   box-shadow: 0 4px 20px rgba(14,32,68,0.3);
 }
-.btn-navy:hover { background: var(--navy-mid); transform: translateY(-2px); }
+.btn-navy:hover { background: var(--navy-mid); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(14,32,68,0.4); }
 .btn-white {
   background: white; color: var(--navy);
   box-shadow: 0 4px 20px rgba(0,0,0,0.12);
 }
 .btn-white:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.2); }
 .btn-sm { padding: 0.6rem 1.4rem; font-size: 0.85rem; }
+a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 
 /* ─── HERO ─── */
 .hero {
@@ -173,6 +179,10 @@ nav {
   width: 55%; height: 90%; opacity: 0.04;
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 300'%3E%3Crect x='85' y='0' width='30' height='300' fill='white'/%3E%3Crect x='0' y='90' width='200' height='30' fill='white'/%3E%3C/svg%3E") center/contain no-repeat;
 }
+
+.hero-wave { position: absolute; left: 0; right: 0; bottom: -1px; width: 100%; height: 44px; z-index: 3; display: block; }
+.hero-wave-fill { fill: var(--cream); }
+.dark-mode .hero-wave-fill { fill: #111826; }
 
 .hero-content {
   position: relative; z-index: 2;
@@ -277,8 +287,15 @@ nav {
   border: 1px solid rgba(201,168,76,0.12);
   box-shadow: 0 2px 20px rgba(14,32,68,0.06);
   transition: all 0.3s ease; overflow: hidden;
+  position: relative;
 }
-.card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(14,32,68,0.12); }
+.card::after {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-dark));
+  transform: scaleX(0); transform-origin: left; transition: transform 0.3s ease;
+}
+.card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(14,32,68,0.12); border-color: rgba(201,168,76,0.3); }
+.card:hover::after { transform: scaleX(1); }
 
 .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
 .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; }
@@ -711,6 +728,25 @@ function useCountdown(targetDate) {
     return time;
 }
 
+function SocialIcon({ name, size = 18 }) {
+    const stroke = { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round", strokeLinejoin: "round" };
+    const fill = { width: size, height: size, viewBox: "0 0 24 24", fill: "currentColor" };
+    switch (name) {
+        case "facebook":
+            return <svg {...fill}><path d="M22 12.06C22 6.5 17.5 2 12 2S2 6.5 2 12.06c0 5 3.66 9.15 8.44 9.94v-7.03H7.9v-2.9h2.54V9.85c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.44 2.9h-2.34V22c4.78-.79 8.44-4.94 8.44-9.94Z" /></svg>;
+        case "instagram":
+            return <svg {...stroke}><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.3" cy="6.7" r="1" fill="currentColor" stroke="none" /></svg>;
+        case "twitter":
+            return <svg {...fill}><path d="M18.9 3h3.3l-7.2 8.2L23.5 21h-6.6l-5.2-6.8L5.7 21H2.4l7.7-8.8L1.5 3h6.8l4.7 6.2L18.9 3Zm-1.2 16h1.8L7.4 4.9H5.5L17.7 19Z" /></svg>;
+        case "youtube":
+            return <svg {...fill}><rect x="2" y="5" width="20" height="14" rx="4" /><path d="M10 9.3v5.4l4.8-2.7Z" fill="var(--navy)" /></svg>;
+        case "whatsapp":
+            return <svg {...fill}><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.5 14.3c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.6-.1-.4-.1-.9-.3-1.5-.6-2.7-1.2-4.5-3.9-4.6-4.1-.1-.2-1.1-1.5-1.1-2.8 0-1.3.7-2 1-2.2.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.4.2.5.7 1.7.8 1.9.1.2.1.3 0 .5-.1.2-.2.3-.3.5-.2.2-.3.3-.5.5-.2.2-.3.4-.1.7.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.5 1.5.2.1.4.1.5-.1.2-.2.7-.8.9-1.1.2-.3.4-.2.6-.1.2.1 1.5.7 1.7.8.2.1.4.2.4.3.1.2.1.6-.1 1.2Z" /></svg>;
+        default:
+            return null;
+    }
+}
+
 function useAnimatedCount(end, trigger) {
     const [val, setVal] = useState(0);
     useEffect(() => {
@@ -735,6 +771,7 @@ export default function App() {
     const [joinUsOpen, setJoinUsOpen] = useState(false);
     const [statsVisible, setStatsVisible] = useState(false);
     const [activeTab, setActiveTab] = useState("Video");
+    const [scrolled, setScrolled] = useState(false);
     const statsRef = useRef(null);
     const countdown = useCountdown(NEXT_COFFEE_DATE);
 
@@ -751,6 +788,13 @@ export default function App() {
         return () => obs.disconnect();
     }, []);
 
+    useEffect(() => {
+        const onScroll = () => setScrolled(window.scrollY > 12);
+        onScroll();
+        window.addEventListener("scroll", onScroll, { passive: true });
+        return () => window.removeEventListener("scroll", onScroll);
+    }, []);
+
     const navigate = (page) => { setActivePage(page); setMobileMenuOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); };
 
     return (
@@ -758,7 +802,7 @@ export default function App() {
             <style>{styles}</style>
             <div className={dark ? "dark-mode" : ""} style={{ minHeight: "100vh" }}>
                 {/* ─── NAV ─── */}
-                <nav>
+                <nav className={scrolled ? "scrolled" : ""}>
                     <div className="nav-inner">
                         <a className="nav-logo" onClick={() => navigate("Home")} style={{ cursor: "pointer" }}>
                             <div className="logo-cross"><img src={logo} alt="ACK St Pauls Cathedral crest" /></div>
@@ -829,7 +873,7 @@ export default function App() {
                                 <cite>— 1 Timothy 4:12</cite>
                             </div>
                             <div className="footer-socials">
-                                {["📘", "📸", "🐦", "▶️", "📱"].map((s, i) => <div key={i} className="social-btn">{s}</div>)}
+                                {["facebook", "instagram", "twitter", "youtube", "whatsapp"].map(s => <div key={s} className="social-btn"><SocialIcon name={s} /></div>)}
                             </div>
                         </div>
                         <div>
@@ -1002,6 +1046,9 @@ function HomePage({ countdown, navigate, statsRef, stat1, stat2, stat3, stat4, d
             <div className="hero">
                 <div className="hero-pattern" />
                 <div className="hero-cross-bg" />
+                <svg className="hero-wave" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true">
+                    <path className="hero-wave-fill" d="M0,32 C240,60 480,0 720,20 C960,40 1200,58 1440,24 L1440,60 L0,60 Z" />
+                </svg>
                 <div className="hero-content container">
                     <div>
                         <div className="hero-badge">✝ ACK St Paul's Cathedral · Embu · Est. 1954</div>
@@ -1789,8 +1836,8 @@ function ConnectPage({ navigate, dark }) {
                             <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.4rem", fontWeight: 700, color: "var(--navy)", margin: "1.5rem 0 1rem" }}>Follow Us</h3>
                             <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
                                 {[
-                                    ["📘", "Facebook", "@ACKStPaulsYouths", null],
-                                    ["▶️", "YouTube", "@ackcathedralyouthembu", "https://youtube.com/@ackcathedralyouthembu?si=muV2v5gj-71yYI7i"],
+                                    ["facebook", "Facebook", "@ACKStPaulsYouths", null],
+                                    ["youtube", "YouTube", "@ackcathedralyouthembu", "https://youtube.com/@ackcathedralyouthembu?si=muV2v5gj-71yYI7i"],
                                 ].map(([icon, name, handle, link], i) => {
                                     const CardTag = link ? "a" : "div";
                                     return (
@@ -1800,7 +1847,7 @@ function ConnectPage({ navigate, dark }) {
                                             className="card"
                                             style={{ padding: "0.85rem 1.25rem", display: "flex", alignItems: "center", gap: "0.75rem", flex: "1 1 auto", cursor: "pointer", textDecoration: "none" }}
                                         >
-                                            <span style={{ fontSize: "1.3rem" }}>{icon}</span>
+                                            <span style={{ width: 40, height: 40, borderRadius: 10, background: "var(--cream)", color: "var(--gold-dark)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><SocialIcon name={icon} size={19} /></span>
                                             <div><div style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--navy)" }}>{name}</div><div style={{ fontSize: "0.78rem", color: "var(--gray-400)" }}>{handle}</div></div>
                                         </CardTag>
                                     );
