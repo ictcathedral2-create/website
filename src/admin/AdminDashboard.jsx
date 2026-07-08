@@ -4,6 +4,19 @@ import SubmissionSection from "./SubmissionSection";
 
 const SECTIONS = [
     {
+        key: "joinUsRegistrations",
+        label: "Join Us Registrations",
+        path: "joinUsRegistrations",
+        statusOptions: ["new", "contacted", "archived"],
+        columns: [
+            { key: "firstName", label: "Name", render: (v, item) => `${item.firstName || ""} ${item.lastName || ""}`.trim() },
+            { key: "phone", label: "Phone" },
+            { key: "area", label: "Area" },
+            { key: "gender", label: "Gender" },
+        ],
+        pendingStatus: "new",
+    },
+    {
         key: "testimonies",
         label: "Testimonies",
         path: "testimonies",

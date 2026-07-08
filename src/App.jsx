@@ -728,6 +728,7 @@ export default function App() {
     const [dark, setDark] = useState(false);
     const [prayerOpen, setPrayerOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [joinUsOpen, setJoinUsOpen] = useState(false);
     const [statsVisible, setStatsVisible] = useState(false);
     const [activeTab, setActiveTab] = useState("Video");
     const statsRef = useRef(null);
@@ -775,7 +776,7 @@ export default function App() {
                                 >
                                     <div className="toggle-thumb" />
                                 </button>
-                                <button className="nav-cta" onClick={() => navigate("Connect")}>Join Us</button>
+                                <button className="nav-cta" onClick={() => setJoinUsOpen(true)}>Join Us</button>
                             </div>
                         </div>
                         <div className="mobile-menu-btn">
@@ -794,11 +795,11 @@ export default function App() {
                     {NAV_LINKS.map(p => (
                         <button key={p} className={`nav-link${activePage === p ? " active" : ""}`} onClick={() => navigate(p)}>{p}</button>
                     ))}
-                    <button className="btn btn-gold" style={{ marginTop: "1rem" }} onClick={() => navigate("Connect")}>Join Us</button>
+                    <button className="btn btn-gold" style={{ marginTop: "1rem" }} onClick={() => { setMobileMenuOpen(false); setJoinUsOpen(true); }}>Join Us</button>
                 </div>
 
                 {/* ─── PAGES ─── */}
-                {activePage === "Home" && <HomePage countdown={countdown} navigate={navigate} statsRef={statsRef} stat1={stat1} stat2={stat2} stat3={stat3} stat4={stat4} dark={dark} />}
+                {activePage === "Home" && <HomePage countdown={countdown} navigate={navigate} statsRef={statsRef} stat1={stat1} stat2={stat2} stat3={stat3} stat4={stat4} dark={dark} onJoinUs={() => setJoinUsOpen(true)} />}
                 {activePage === "About" && <AboutPage navigate={navigate} dark={dark} />}
                 {activePage === "Ministries" && <MinistriesPage navigate={navigate} dark={dark} />}
                 {activePage === "Sermons" && <SermonsPage navigate={navigate} dark={dark} activeTab={activeTab} setActiveTab={setActiveTab} />}
@@ -902,12 +903,85 @@ export default function App() {
                     </div>
                     <button className="prayer-toggle" onClick={() => setPrayerOpen(!prayerOpen)}>🙏</button>
                 </div>
+
+                <JoinUsModal open={joinUsOpen} onClose={() => setJoinUsOpen(false)} />
             </div>
         </>
     );
 }
 
-function HomePage({ countdown, navigate, statsRef, stat1, stat2, stat3, stat4, dark }) {
+function JoinUsModal({ open, onClose }) {
+    const registration = useFormSubmit(
+        "joinUsRegistrations",
+        { firstName: "", lastName: "", phone: "", area: "", gender: "Male" },
+        ["firstName", "lastName", "phone", "area"]
+    );
+
+    if (!open) return null;
+
+    const handleClose = () => {
+        registration.reset();
+        onClose();
+    };
+
+    return (
+        <div className="modal-overlay" onClick={handleClose}>
+            <div className="modal-card" onClick={e => e.stopPropagation()}>
+                <div className="modal-header">
+                    <button className="modal-close" onClick={handleClose} aria-label="Close">✕</button>
+                    <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.4rem", fontWeight: 700 }}>Join Us</div>
+                    <div style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.7)", marginTop: 4 }}>Tell us a bit about yourself and we'll get you connected.</div>
+                </div>
+                <div className="modal-body">
+                    {registration.submitted ? (
+                        <p style={{ textAlign: "center", color: "var(--navy)", fontWeight: 600, padding: "1rem 0" }}>
+                            ✓ Welcome to the family! We're excited to connect with you soon.
+                        </p>
+                    ) : (
+                        <>
+                            <div className="grid-2" style={{ gap: "1rem" }}>
+                                <div className="form-group">
+                                    <label className="form-label">First Name</label>
+                                    <input className="form-input" placeholder="First name" value={registration.formData.firstName} onChange={e => registration.setField("firstName", e.target.value)} />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Last Name</label>
+                                    <input className="form-input" placeholder="Last name" value={registration.formData.lastName} onChange={e => registration.setField("lastName", e.target.value)} />
+                                </div>
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">Phone Number</label>
+                                <input className="form-input" placeholder="+254 700 000 000" value={registration.formData.phone} onChange={e => registration.setField("phone", e.target.value)} />
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">Area (Where You Come From)</label>
+                                <input className="form-input" placeholder="e.g. Kyeni, Embu" value={registration.formData.area} onChange={e => registration.setField("area", e.target.value)} />
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">Gender</label>
+                                <select className="form-select" value={registration.formData.gender} onChange={e => registration.setField("gender", e.target.value)}>
+                                    <option>Male</option>
+                                    <option>Female</option>
+                                </select>
+                            </div>
+                            {registration.error && <p style={{ color: "var(--orange)", fontSize: "0.8rem", marginBottom: 8 }}>{registration.error}</p>}
+                            <button
+                                className="btn btn-gold"
+                                style={{ width: "100%", justifyContent: "center" }}
+                                disabled={registration.submitting}
+                                onClick={() => registration.handleSubmit()}
+                            >
+                                {registration.submitting ? "Submitting..." : "Complete Registration →"}
+                            </button>
+                        </>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function HomePage({ countdown, navigate, statsRef, stat1, stat2, stat3, stat4, dark, onJoinUs }) {
     const newsletter = useFormSubmit("newsletterSignups", { email: "" }, ["email"]);
     const { videos, loading: videosLoading } = useYouTubeVideos();
     const [activeVideo, setActiveVideo] = useState(null);
@@ -934,7 +1008,7 @@ function HomePage({ countdown, navigate, statsRef, stat1, stat2, stat3, stat4, d
                             A generation rising in faith, purpose, and power. Join ACK St Pauls Youths — Embu's most vibrant youth community.
                         </p>
                         <div className="hero-btns">
-                            <button className="btn btn-gold" onClick={() => navigate("Connect")}>Join Us Today</button>
+                            <button className="btn btn-gold" onClick={onJoinUs}>Join Us Today</button>
                             <button className="btn btn-outline" onClick={() => navigate("Sermons")}>▶ Watch Online</button>
                             <button className="btn btn-outline" onClick={() => navigate("Connect")}>Get Connected</button>
                         </div>
