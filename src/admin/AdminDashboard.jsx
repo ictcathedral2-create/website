@@ -112,6 +112,26 @@ const SECTIONS = [
         groupByField: "eventTitle",
     },
     {
+        key: "ministryRegistrations",
+        label: "Ministry Registrations",
+        path: "ministryRegistrations",
+        statusOptions: ["new", "contacted", "archived"],
+        columns: [
+            { key: "firstName", label: "Name", render: (v, item) => `${item.firstName || ""} ${item.lastName || ""}`.trim() },
+            { key: "phone", label: "Phone" },
+            { key: "ministryTitle", label: "Ministry" },
+        ],
+        fields: [
+            { key: "firstName", label: "First Name", type: "text" },
+            { key: "lastName", label: "Last Name", type: "text" },
+            { key: "phone", label: "Phone", type: "text" },
+            { key: "ministryTitle", label: "Ministry", type: "text" },
+        ],
+        pendingStatus: "new",
+        groupByField: "ministryTitle",
+        groupOptions: ["ICT Ministry", "Praise & Worship Ministry", "Care Ministry", "Ushering Ministry", "Intercessory Ministry", "Creative Ministry", "Pastoral Ministry"],
+    },
+    {
         key: "smallGroupSignups",
         label: "Small Group Signups",
         path: "smallGroupSignups",

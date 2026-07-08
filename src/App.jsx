@@ -1047,10 +1047,6 @@ export default function App() {
                                 <div className="footer-contact-icon"><SocialIcon name="pin" size={16} /></div>
                                 <div className="footer-contact-text">Embu Town, Embu, Kenya</div>
                             </div>
-                            <a className="footer-contact-row" href="tel:+254700000000">
-                                <div className="footer-contact-icon"><SocialIcon name="phone" size={16} /></div>
-                                <div className="footer-contact-text">+254 700 000 000</div>
-                            </a>
                             <a className="footer-contact-row" href="mailto:ictcathedral2@gmail.com">
                                 <div className="footer-contact-icon"><SocialIcon name="mail" size={16} /></div>
                                 <div className="footer-contact-text">ictcathedral2@gmail.com</div>
@@ -1183,6 +1179,66 @@ function JoinUsModal({ open, onClose }) {
                                     <option>Male</option>
                                     <option>Female</option>
                                 </select>
+                            </div>
+                            {registration.error && <p style={{ color: "var(--orange)", fontSize: "0.8rem", marginBottom: 8 }}>{registration.error}</p>}
+                            <button
+                                className="btn btn-gold"
+                                style={{ width: "100%", justifyContent: "center" }}
+                                disabled={registration.submitting}
+                                onClick={() => registration.handleSubmit()}
+                            >
+                                {registration.submitting ? "Submitting..." : "Complete Registration →"}
+                            </button>
+                        </>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function MinistryJoinModal({ ministryTitle, onClose }) {
+    const registration = useFormSubmit(
+        "ministryRegistrations",
+        { firstName: "", lastName: "", phone: "", ministryTitle: ministryTitle || "" },
+        ["firstName", "lastName", "phone"]
+    );
+
+    if (!ministryTitle) return null;
+
+    const handleClose = () => {
+        registration.reset();
+        onClose();
+    };
+
+    return (
+        <div className="modal-overlay" onClick={handleClose}>
+            <div className="modal-card" onClick={e => e.stopPropagation()}>
+                <div className="modal-header">
+                    <button className="modal-close" onClick={handleClose} aria-label="Close">✕</button>
+                    <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.4rem", fontWeight: 700 }}>Join {ministryTitle}</div>
+                    <div style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.7)", marginTop: 4 }}>Tell us a bit about yourself and we'll get you plugged in.</div>
+                </div>
+                <div className="modal-body">
+                    {registration.submitted ? (
+                        <p style={{ textAlign: "center", color: "var(--navy)", fontWeight: 600, padding: "1rem 0" }}>
+                            ✓ You're on the list! A ministry leader will reach out to you soon.
+                        </p>
+                    ) : (
+                        <>
+                            <div className="grid-2" style={{ gap: "1rem" }}>
+                                <div className="form-group">
+                                    <label className="form-label">First Name</label>
+                                    <input className="form-input" placeholder="First name" value={registration.formData.firstName} onChange={e => registration.setField("firstName", e.target.value)} />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Last Name</label>
+                                    <input className="form-input" placeholder="Last name" value={registration.formData.lastName} onChange={e => registration.setField("lastName", e.target.value)} />
+                                </div>
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">Phone Number</label>
+                                <input className="form-input" placeholder="+254 700 000 000" value={registration.formData.phone} onChange={e => registration.setField("phone", e.target.value)} />
                             </div>
                             {registration.error && <p style={{ color: "var(--orange)", fontSize: "0.8rem", marginBottom: 8 }}>{registration.error}</p>}
                             <button
@@ -1569,6 +1625,8 @@ function AboutPage({ navigate, dark }) {
 }
 
 function MinistriesPage({ navigate, dark }) {
+    const [joiningMinistry, setJoiningMinistry] = useState(null);
+
     return (
         <>
             <div style={{ background: "linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 50%, var(--gold-dark) 100%)", padding: "8rem 2rem 4rem", textAlign: "center" }}>
@@ -1583,7 +1641,7 @@ function MinistriesPage({ navigate, dark }) {
                             <div key={i} id={slugify(m.title)} className="card ministry-card-full">
                                 <div className="ministry-title" style={{ fontSize: "1.2rem", textAlign: "center" }}>{m.title}</div>
                                 <div className="ministry-desc" style={{ marginTop: "0.6rem", textAlign: "center" }}>{m.desc}</div>
-                                <button className="btn btn-gold btn-sm" style={{ marginTop: "1.5rem", width: "100%", justifyContent: "center" }} onClick={() => navigate("Connect")}>
+                                <button className="btn btn-gold btn-sm" style={{ marginTop: "1.5rem", width: "100%", justifyContent: "center" }} onClick={() => setJoiningMinistry(m.title)}>
                                     Join This Ministry →
                                 </button>
                             </div>
@@ -1596,6 +1654,8 @@ function MinistriesPage({ navigate, dark }) {
                 <p className="section-desc white" style={{ marginBottom: "1.5rem" }}>Every ministry needs passionate volunteers. Join us and use your gifts for God's glory.</p>
                 <button className="btn btn-gold" onClick={() => navigate("Connect")}>Get Connected Today →</button>
             </div>
+
+            {joiningMinistry && <MinistryJoinModal ministryTitle={joiningMinistry} onClose={() => setJoiningMinistry(null)} />}
         </>
     );
 }
