@@ -46,7 +46,103 @@ function RecordForm({ fields, initial, onCancel, onSave, saving }) {
     );
 }
 
-export default function SubmissionSection({ title, path, columns, fields, statusOptions }) {
+function RecordCard({ item, columns, fields, statusOptions, editing, busy, updatingId, onEdit, onCancelEdit, onSave, onStatusChange, onDelete }) {
+    return (
+        <div className="card" style={{ padding: "1.5rem" }}>
+            {editing ? (
+                <RecordForm
+                    fields={fields}
+                    initial={fields.reduce((acc, f) => ({ ...acc, [f.key]: item[f.key] ?? "" }), {})}
+                    saving={busy}
+                    onCancel={onCancelEdit}
+                    onSave={onSave}
+                />
+            ) : (
+                <div style={{ display: "grid", gap: "0.5rem", marginBottom: "1rem" }}>
+                    {columns.map(col => (
+                        <div key={col.key} style={{ fontSize: "0.9rem" }}>
+                            <span style={{ fontWeight: 700, color: "var(--navy)" }}>{col.label}: </span>
+                            <span style={{ color: "var(--gray-600)" }}>{col.render ? col.render(item[col.key], item) : (item[col.key] || "—")}</span>
+                        </div>
+                    ))}
+                    <div style={{ fontSize: "0.78rem", color: "var(--gray-400)" }}>
+                        Submitted {new Date(item.createdAt).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" })}
+                    </div>
+                </div>
+            )}
+            {!editing && (
+                <>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap", borderTop: "1px solid var(--gray-200)", paddingTop: "0.85rem" }}>
+                        <span style={{ fontSize: "0.78rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--gray-400)" }}>Status:</span>
+                        {statusOptions.map(s => (
+                            <button
+                                key={s}
+                                disabled={updatingId === item.id || item.status === s}
+                                onClick={() => onStatusChange(item, s)}
+                                className={`btn btn-sm ${item.status === s ? "btn-gold" : "btn-navy"}`}
+                                style={{ opacity: item.status === s ? 1 : 0.55 }}
+                            >
+                                {s}
+                            </button>
+                        ))}
+                    </div>
+                    <div style={{ display: "flex", gap: "0.6rem", marginTop: "0.75rem" }}>
+                        <button className="btn btn-navy btn-sm" onClick={() => onEdit(item.id)}>Edit</button>
+                        <button
+                            className="btn btn-sm"
+                            style={{ background: "rgba(224,115,48,0.12)", color: "var(--orange)" }}
+                            disabled={busy}
+                            onClick={() => onDelete(item)}
+                        >
+                            Delete
+                        </button>
+                    </div>
+                </>
+            )}
+        </div>
+    );
+}
+
+function RecordList({ heading, items, columns, fields, statusOptions, editingId, busy, updatingId, onEdit, onCancelEdit, onSave, onStatusChange, onDelete, onDownload }) {
+    return (
+        <div style={{ marginBottom: "2.5rem" }}>
+            {heading && (
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.6rem", marginBottom: "1rem" }}>
+                    <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.15rem", fontWeight: 700, color: "var(--navy)", margin: 0 }}>
+                        {heading} <span style={{ color: "var(--gray-400)", fontWeight: 500, fontSize: "0.9rem" }}>({items.length})</span>
+                    </h3>
+                    {onDownload && (
+                        <button className="btn btn-navy btn-sm" onClick={onDownload} disabled={items.length === 0}>
+                            Download CSV
+                        </button>
+                    )}
+                </div>
+            )}
+            {items.length === 0 && <p style={{ color: "var(--gray-400)", fontSize: "0.9rem" }}>No submissions yet.</p>}
+            <div style={{ display: "grid", gap: "1rem" }}>
+                {items.map(item => (
+                    <RecordCard
+                        key={item.id}
+                        item={item}
+                        columns={columns}
+                        fields={fields}
+                        statusOptions={statusOptions}
+                        editing={editingId === item.id}
+                        busy={busy}
+                        updatingId={updatingId}
+                        onEdit={onEdit}
+                        onCancelEdit={onCancelEdit}
+                        onSave={formData => onSave(item, formData)}
+                        onStatusChange={onStatusChange}
+                        onDelete={onDelete}
+                    />
+                ))}
+            </div>
+        </div>
+    );
+}
+
+export default function SubmissionSection({ title, path, columns, fields, statusOptions, groupByField, groupOptions }) {
     const { data, loading, error } = useFirebaseCollection(`submissions/${path}`);
     const sorted = (data || []).slice().sort((a, b) => b.createdAt - a.createdAt);
     const [updatingId, setUpdatingId] = useState(null);
@@ -95,14 +191,33 @@ export default function SubmissionSection({ title, path, columns, fields, status
         }
     };
 
-    const handleDownload = () => {
-        const exportColumns = [
-            ...columns,
-            { key: "status", label: "Status" },
-            { key: "createdAt", label: "Submitted", render: v => (v ? new Date(v).toLocaleString("en-US") : "") },
-        ];
-        downloadCsv(`${path}-${new Date().toISOString().slice(0, 10)}`, exportColumns, sorted);
+    const exportColumns = [
+        ...columns,
+        { key: "status", label: "Status" },
+        { key: "createdAt", label: "Submitted", render: v => (v ? new Date(v).toLocaleString("en-US") : "") },
+    ];
+
+    const downloadGroup = (label, items) => {
+        downloadCsv(`${path}-${label.replace(/[^a-z0-9]+/gi, "-").toLowerCase()}-${new Date().toISOString().slice(0, 10)}`, exportColumns, items);
     };
+
+    const listProps = {
+        columns, fields, statusOptions, editingId, busy, updatingId,
+        onEdit: id => { setEditingId(id); setCreating(false); },
+        onCancelEdit: () => setEditingId(null),
+        onSave: handleUpdate,
+        onStatusChange: handleStatusChange,
+        onDelete: handleDelete,
+    };
+
+    let groups = null;
+    if (groupByField) {
+        const values = groupOptions || [...new Set(sorted.map(item => item[groupByField]).filter(Boolean))];
+        groups = values.map(value => ({
+            label: value,
+            items: sorted.filter(item => item[groupByField] === value),
+        }));
+    }
 
     return (
         <div>
@@ -111,9 +226,11 @@ export default function SubmissionSection({ title, path, columns, fields, status
                     {title} <span style={{ color: "var(--gray-400)", fontWeight: 500, fontSize: "1rem" }}>({sorted.length})</span>
                 </h2>
                 <div style={{ display: "flex", gap: "0.6rem" }}>
-                    <button className="btn btn-navy btn-sm" onClick={handleDownload} disabled={sorted.length === 0}>
-                        Download CSV
-                    </button>
+                    {!groupByField && (
+                        <button className="btn btn-navy btn-sm" onClick={() => downloadGroup("all", sorted)} disabled={sorted.length === 0}>
+                            Download CSV
+                        </button>
+                    )}
                     <button className="btn btn-gold btn-sm" onClick={() => { setCreating(!creating); setEditingId(null); }}>
                         {creating ? "Cancel" : "+ Add New"}
                     </button>
@@ -132,63 +249,22 @@ export default function SubmissionSection({ title, path, columns, fields, status
 
             {loading && <p style={{ color: "var(--gray-400)" }}>Loading…</p>}
             {!loading && error && <p style={{ color: "var(--orange)" }}>Couldn't load this data. Check Firebase read permissions.</p>}
-            {!loading && !error && sorted.length === 0 && !creating && <p style={{ color: "var(--gray-400)" }}>No submissions yet.</p>}
-            <div style={{ display: "grid", gap: "1rem" }}>
-                {sorted.map(item => (
-                    <div key={item.id} className="card" style={{ padding: "1.5rem" }}>
-                        {editingId === item.id ? (
-                            <RecordForm
-                                fields={fields}
-                                initial={fields.reduce((acc, f) => ({ ...acc, [f.key]: item[f.key] ?? "" }), {})}
-                                saving={busy}
-                                onCancel={() => setEditingId(null)}
-                                onSave={formData => handleUpdate(item, formData)}
-                            />
-                        ) : (
-                            <div style={{ display: "grid", gap: "0.5rem", marginBottom: "1rem" }}>
-                                {columns.map(col => (
-                                    <div key={col.key} style={{ fontSize: "0.9rem" }}>
-                                        <span style={{ fontWeight: 700, color: "var(--navy)" }}>{col.label}: </span>
-                                        <span style={{ color: "var(--gray-600)" }}>{col.render ? col.render(item[col.key], item) : (item[col.key] || "—")}</span>
-                                    </div>
-                                ))}
-                                <div style={{ fontSize: "0.78rem", color: "var(--gray-400)" }}>
-                                    Submitted {new Date(item.createdAt).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" })}
-                                </div>
-                            </div>
-                        )}
-                        {editingId !== item.id && (
-                            <>
-                                <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap", borderTop: "1px solid var(--gray-200)", paddingTop: "0.85rem" }}>
-                                    <span style={{ fontSize: "0.78rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--gray-400)" }}>Status:</span>
-                                    {statusOptions.map(s => (
-                                        <button
-                                            key={s}
-                                            disabled={updatingId === item.id || item.status === s}
-                                            onClick={() => handleStatusChange(item, s)}
-                                            className={`btn btn-sm ${item.status === s ? "btn-gold" : "btn-navy"}`}
-                                            style={{ opacity: item.status === s ? 1 : 0.55 }}
-                                        >
-                                            {s}
-                                        </button>
-                                    ))}
-                                </div>
-                                <div style={{ display: "flex", gap: "0.6rem", marginTop: "0.75rem" }}>
-                                    <button className="btn btn-navy btn-sm" onClick={() => { setEditingId(item.id); setCreating(false); }}>Edit</button>
-                                    <button
-                                        className="btn btn-sm"
-                                        style={{ background: "rgba(224,115,48,0.12)", color: "var(--orange)" }}
-                                        disabled={busy}
-                                        onClick={() => handleDelete(item)}
-                                    >
-                                        Delete
-                                    </button>
-                                </div>
-                            </>
-                        )}
-                    </div>
-                ))}
-            </div>
+
+            {!loading && !error && groups && (
+                groups.map(group => (
+                    <RecordList
+                        key={group.label}
+                        heading={group.label}
+                        items={group.items}
+                        onDownload={() => downloadGroup(group.label, group.items)}
+                        {...listProps}
+                    />
+                ))
+            )}
+
+            {!loading && !error && !groups && (
+                <RecordList heading={null} items={sorted} {...listProps} />
+            )}
         </div>
     );
 }

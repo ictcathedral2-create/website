@@ -101,6 +101,7 @@ const SECTIONS = [
             { key: "specialRequirements", label: "Notes", type: "textarea" },
         ],
         pendingStatus: "registered",
+        groupByField: "eventTitle",
     },
     {
         key: "smallGroupSignups",
@@ -109,13 +110,17 @@ const SECTIONS = [
         statusOptions: ["new", "assigned"],
         columns: [
             { key: "name", label: "Name" },
+            { key: "phone", label: "Phone" },
             { key: "preferredGroup", label: "Preferred Group" },
         ],
         fields: [
             { key: "name", label: "Name", type: "text" },
+            { key: "phone", label: "Phone", type: "text" },
             { key: "preferredGroup", label: "Preferred Group", type: "select", options: ["Bible Study (Sunday · 11:00 AM)", "Missions", "Men's Fellowship (Friday · 5:00 PM)"] },
         ],
         pendingStatus: "new",
+        groupByField: "preferredGroup",
+        groupOptions: ["Bible Study (Sunday · 11:00 AM)", "Missions", "Men's Fellowship (Friday · 5:00 PM)"],
     },
     {
         key: "newsletterSignups",
@@ -226,6 +231,8 @@ export default function AdminDashboard({ user, onLogout }) {
                         columns={current.columns}
                         fields={current.fields}
                         statusOptions={current.statusOptions}
+                        groupByField={current.groupByField}
+                        groupOptions={current.groupOptions}
                     />
                 )}
             </main>

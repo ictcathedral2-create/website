@@ -620,6 +620,7 @@ nav {
   .footer-grid > div:nth-child(2) { padding-left: 2.5rem; border-left: 1px solid rgba(255,255,255,0.06); }
   .gallery-grid { grid-template-columns: 1fr 1fr; }
   .gallery-item:nth-child(1) { grid-row: span 1; }
+  .featured-sermon-grid { grid-template-columns: 1fr !important; }
 }
 @media (max-width: 640px) {
   .nav-links { display: none; }
@@ -634,6 +635,9 @@ nav {
   .prayer-widget { bottom: 1rem; right: 1rem; }
   .prayer-toggle { width: 48px; height: 48px; font-size: 1.1rem; }
   .prayer-panel { width: 280px; }
+  .featured-sermon-grid .featured-sermon-thumb { min-height: 200px !important; padding: 1.75rem !important; }
+  .featured-sermon-grid .featured-sermon-info { padding: 1.75rem !important; }
+  .featured-sermon-grid .featured-sermon-title { font-size: 1.4rem !important; }
 }
 `;
 
@@ -736,10 +740,10 @@ export default function App() {
 
     const prayerWidget = useFormSubmit("prayerRequests", { name: "", request: "" }, ["request"]);
 
-    const stat1 = useAnimatedCount(850, statsVisible);
-    const stat2 = useAnimatedCount(12, statsVisible);
-    const stat3 = useAnimatedCount(47, statsVisible);
-    const stat4 = useAnimatedCount(3200, statsVisible);
+    const stat1 = useAnimatedCount(350, statsVisible);
+    const stat2 = useAnimatedCount(7, statsVisible);
+    const stat3 = useAnimatedCount(10, statsVisible);
+    const stat4 = useAnimatedCount(800, statsVisible);
 
     useEffect(() => {
         const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setStatsVisible(true); }, { threshold: 0.4 });
@@ -1013,9 +1017,9 @@ function HomePage({ countdown, navigate, statsRef, stat1, stat2, stat3, stat4, d
                             <button className="btn btn-outline" onClick={() => navigate("Connect")}>Get Connected</button>
                         </div>
                         <div className="hero-stats">
-                            <div><div className="hero-stat-num">850+</div><div className="hero-stat-label">Active Youth</div></div>
-                            <div><div className="hero-stat-num">12+</div><div className="hero-stat-label">Ministries</div></div>
-                            <div><div className="hero-stat-num">70+</div><div className="hero-stat-label">Years of Faith</div></div>
+                            <div><div className="hero-stat-num">350+</div><div className="hero-stat-label">Active Youth</div></div>
+                            <div><div className="hero-stat-num">7+</div><div className="hero-stat-label">Ministries</div></div>
+                            <div><div className="hero-stat-num">1+</div><div className="hero-stat-label">Years of Faith</div></div>
                         </div>
                     </div>
                     <div className="hero-visual animate-float">
@@ -1140,8 +1144,9 @@ function HomePage({ countdown, navigate, statsRef, stat1, stat2, stat3, stat4, d
                         </div>
                     )}
                     {!videosLoading && latestVideo && (
-                        <div style={{ background: "var(--navy)", borderRadius: 20, overflow: "hidden", display: "grid", gridTemplateColumns: "1fr 1fr" }}>
+                        <div className="featured-sermon-grid" style={{ background: "var(--navy)", borderRadius: 20, overflow: "hidden", display: "grid", gridTemplateColumns: "1fr 1fr" }}>
                             <div
+                                className="featured-sermon-thumb"
                                 style={{
                                     backgroundImage: `linear-gradient(rgba(14,32,68,0.35), rgba(14,32,68,0.45)), url(${latestVideo.thumbnail})`,
                                     backgroundSize: "cover", backgroundPosition: "center",
@@ -1153,11 +1158,11 @@ function HomePage({ countdown, navigate, statsRef, stat1, stat2, stat3, stat4, d
                                 <div style={{ width: 80, height: 80, borderRadius: "50%", background: "var(--gold)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "2.5rem", boxShadow: "0 0 40px rgba(201,168,76,0.5)", marginBottom: "1rem" }}>▶</div>
                                 <div style={{ color: "rgba(255,255,255,0.85)", fontSize: "0.85rem" }}>Click to watch</div>
                             </div>
-                            <div style={{ padding: "2.5rem" }}>
+                            <div className="featured-sermon-info" style={{ padding: "2.5rem" }}>
                                 <div style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.12em", color: "var(--gold)", fontWeight: 700, marginBottom: "0.75rem" }}>
                                     {new Date(latestVideo.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                                 </div>
-                                <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.8rem", fontWeight: 700, color: "white", lineHeight: 1.25, marginBottom: "1rem" }}>{latestVideo.title}</div>
+                                <div className="featured-sermon-title" style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.8rem", fontWeight: 700, color: "white", lineHeight: 1.25, marginBottom: "1rem" }}>{latestVideo.title}</div>
                                 {latestVideo.description && (
                                     <div style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.95rem", lineHeight: 1.75, marginBottom: "1.5rem", display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
                                         {latestVideo.description}
@@ -1645,8 +1650,8 @@ function ConnectPage({ navigate, dark }) {
     const [prayerAnonymous, setPrayerAnonymous] = useState(false);
     const smallGroup = useFormSubmit(
         "smallGroupSignups",
-        { name: "", preferredGroup: "Bible Study (Sunday · 11:00 AM)" },
-        ["name"]
+        { name: "", phone: "", preferredGroup: "Bible Study (Sunday · 11:00 AM)" },
+        ["name", "phone"]
     );
 
     const handleContactSubmit = () => {
@@ -1764,6 +1769,7 @@ function ConnectPage({ navigate, dark }) {
                                 ) : (
                                     <>
                                         <div className="form-group"><label className="form-label">Your Name</label><input className="form-input" placeholder="Full name" value={smallGroup.formData.name} onChange={e => smallGroup.setField("name", e.target.value)} /></div>
+                                        <div className="form-group"><label className="form-label">Phone Number</label><input className="form-input" placeholder="+254 700 000 000" value={smallGroup.formData.phone} onChange={e => smallGroup.setField("phone", e.target.value)} /></div>
                                         <div className="form-group">
                                             <label className="form-label">Preferred Group</label>
                                             <select className="form-select" value={smallGroup.formData.preferredGroup} onChange={e => smallGroup.setField("preferredGroup", e.target.value)}>
