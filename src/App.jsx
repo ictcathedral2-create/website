@@ -1570,7 +1570,7 @@ function ConnectPage({ navigate, dark }) {
     const [prayerAnonymous, setPrayerAnonymous] = useState(false);
     const smallGroup = useFormSubmit(
         "smallGroupSignups",
-        { name: "", preferredGroup: "Teens Bible Study (Mon · 5PM)" },
+        { name: "", preferredGroup: "Bible Study (Sunday · 11:00 AM)" },
         ["name"]
     );
 
@@ -1583,7 +1583,7 @@ function ConnectPage({ navigate, dark }) {
         <>
             <div style={{ background: "linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 50%, var(--gold-dark) 100%)", padding: "8rem 2rem 4rem", textAlign: "center" }}>
                 <div className="overline" style={{ color: "var(--gold-light)" }}>We'd Love to Hear From You</div>
-                <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "3rem", fontWeight: 900, color: "white", marginBottom: "1rem" }}>Connect With Us</h1>
+                <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "3rem", fontWeight: 700, color: "white", marginBottom: "1rem", letterSpacing: "0.01em", wordSpacing: "0.1em" }}>Connect With Us</h1>
                 <p style={{ color: "rgba(255,255,255,0.75)", maxWidth: 520, margin: "0 auto" }}>Whether you're new, returning, or just curious — reach out. We have a place for you here.</p>
             </div>
             <div className="section section-cream">
@@ -1649,16 +1649,31 @@ function ConnectPage({ navigate, dark }) {
                         </div>
                         <div>
                             <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.5rem", fontWeight: 700, color: "var(--navy)", marginBottom: "1.5rem" }}>Find Us</h3>
-                            <div className="map-container" style={{ marginBottom: "1.5rem" }}>
+                            <a
+                                href="https://www.google.com/maps/place/St+Pauls+Ack+Cathedral-Embu/@-0.5279977,37.4488796,17z/data=!3m1!4b1!4m6!3m5!1s0x18262de925844709:0x8c05dc706a1f1a5a!8m2!3d-0.5279977!4d37.4514545!16s%2Fg%2F1q5cccb3n?entry=ttu&g_ep=EgoyMDI2MDYyOS4wIKXMDSoASAFQAw%3D%3D"
+                                target="_blank"
+                                rel="noreferrer"
+                                className="map-container"
+                                style={{ marginBottom: "1.5rem", textDecoration: "none", cursor: "pointer" }}
+                            >
                                 <div className="map-pin-mock">
                                     <div style={{ fontSize: "2.5rem" }}>📍</div>
-                                    <div className="map-label">ACK St Pauls Youths</div>
+                                    <div className="map-label">ACK St Pauls Cathedral, Embu</div>
                                 </div>
                                 <div style={{ position: "absolute", inset: 0, background: "repeating-linear-gradient(0deg, rgba(14,32,68,0.04) 0px, rgba(14,32,68,0.04) 1px, transparent 1px, transparent 40px), repeating-linear-gradient(90deg, rgba(14,32,68,0.04) 0px, rgba(14,32,68,0.04) 1px, transparent 1px, transparent 40px)", borderRadius: 16 }} />
-                            </div>
+                            </a>
+                            <a
+                                href="https://www.google.com/maps/place/St+Pauls+Ack+Cathedral-Embu/@-0.5279977,37.4488796,17z/data=!3m1!4b1!4m6!3m5!1s0x18262de925844709:0x8c05dc706a1f1a5a!8m2!3d-0.5279977!4d37.4514545!16s%2Fg%2F1q5cccb3n?entry=ttu&g_ep=EgoyMDI2MDYyOS4wIKXMDSoASAFQAw%3D%3D"
+                                target="_blank"
+                                rel="noreferrer"
+                                className="btn btn-navy btn-sm"
+                                style={{ width: "100%", justifyContent: "center", marginBottom: "1.5rem" }}
+                            >
+                                Get Directions →
+                            </a>
                             <div className="card" style={{ padding: "1.5rem", marginBottom: "1.5rem" }}>
                                 <div style={{ display: "grid", gap: "1rem" }}>
-                                    {[["📍", "Address", "Embu Town, Embu, Kenya"], ["📞", "Phone", "+254 700 000 000"], ["✉️", "Email", "youths@ackstpauls.org"], ["🕐", "Office Hours", "Mon–Fri · 8:00 AM – 5:00 PM"]].map(([icon, label, val], i) => (
+                                    {[["📍", "Address", "Embu Town, Embu, Kenya"], ["✉️", "Email", "ictcathedral2@gmail.com"]].map(([icon, label, val], i) => (
                                         <div key={i} style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
                                             <div style={{ width: 36, height: 36, background: "var(--cream)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.1rem", flexShrink: 0 }}>{icon}</div>
                                             <div><div style={{ fontSize: "0.78rem", color: "var(--gray-400)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>{label}</div><div style={{ fontSize: "0.92rem", color: "var(--navy)", fontWeight: 500, marginTop: 2 }}>{val}</div></div>
@@ -1677,11 +1692,9 @@ function ConnectPage({ navigate, dark }) {
                                         <div className="form-group">
                                             <label className="form-label">Preferred Group</label>
                                             <select className="form-select" value={smallGroup.formData.preferredGroup} onChange={e => smallGroup.setField("preferredGroup", e.target.value)}>
-                                                <option>Teens Bible Study (Mon · 5PM)</option>
-                                                <option>Young Adults Fellowship (Tue · 7PM)</option>
-                                                <option>Worship & Prayer (Thu · 6PM)</option>
-                                                <option>Women's Circle (Sat · 10AM)</option>
-                                                <option>Men's Accountability (Sat · 8AM)</option>
+                                                <option>Bible Study (Sunday · 11:00 AM)</option>
+                                                <option>Missions</option>
+                                                <option>Men's Fellowship (Friday · 5:00 PM)</option>
                                             </select>
                                         </div>
                                         {smallGroup.error && <p style={{ color: "var(--orange)", fontSize: "0.8rem", marginBottom: 8 }}>{smallGroup.error}</p>}
@@ -1694,12 +1707,23 @@ function ConnectPage({ navigate, dark }) {
 
                             <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.4rem", fontWeight: 700, color: "var(--navy)", margin: "1.5rem 0 1rem" }}>Follow Us</h3>
                             <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
-                                {[["📘", "Facebook", "@ACKStPaulsYouths"], ["📸", "Instagram", "@ackstpaulsyouths"], ["▶️", "YouTube", "ACK St Pauls Youths"], ["🐦", "Twitter / X", "@ACKStPaulsYouths"]].map(([icon, name, handle], i) => (
-                                    <div key={i} className="card" style={{ padding: "0.85rem 1.25rem", display: "flex", alignItems: "center", gap: "0.75rem", flex: "1 1 auto", cursor: "pointer" }}>
-                                        <span style={{ fontSize: "1.3rem" }}>{icon}</span>
-                                        <div><div style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--navy)" }}>{name}</div><div style={{ fontSize: "0.78rem", color: "var(--gray-400)" }}>{handle}</div></div>
-                                    </div>
-                                ))}
+                                {[
+                                    ["📘", "Facebook", "@ACKStPaulsYouths", null],
+                                    ["▶️", "YouTube", "@ackcathedralyouthembu", "https://youtube.com/@ackcathedralyouthembu?si=muV2v5gj-71yYI7i"],
+                                ].map(([icon, name, handle, link], i) => {
+                                    const CardTag = link ? "a" : "div";
+                                    return (
+                                        <CardTag
+                                            key={i}
+                                            {...(link ? { href: link, target: "_blank", rel: "noreferrer" } : {})}
+                                            className="card"
+                                            style={{ padding: "0.85rem 1.25rem", display: "flex", alignItems: "center", gap: "0.75rem", flex: "1 1 auto", cursor: "pointer", textDecoration: "none" }}
+                                        >
+                                            <span style={{ fontSize: "1.3rem" }}>{icon}</span>
+                                            <div><div style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--navy)" }}>{name}</div><div style={{ fontSize: "0.78rem", color: "var(--gray-400)" }}>{handle}</div></div>
+                                        </CardTag>
+                                    );
+                                })}
                             </div>
                         </div>
                     </div>
