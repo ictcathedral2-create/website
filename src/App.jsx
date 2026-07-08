@@ -1339,7 +1339,8 @@ function VideoModal({ video, onClose }) {
 }
 
 function SermonsPage({ navigate, dark, activeTab, setActiveTab }) {
-    const { videos, loading, error } = useYouTubeVideos();
+    const { videos: videosOldestFirst, loading, error } = useYouTubeVideos();
+    const videos = [...videosOldestFirst].reverse();
     const [activeVideo, setActiveVideo] = useState(null);
 
     return (
