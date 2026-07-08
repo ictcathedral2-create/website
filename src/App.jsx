@@ -442,9 +442,23 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 }
 .event-day { font-size: 1.8rem; font-weight: 700; line-height: 1; color: var(--gold); }
 .event-month { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.8; }
-.event-title { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--navy); }
+.event-title { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--navy); display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .event-meta { font-size: 0.82rem; color: var(--gray-400); margin-top: 4px; }
 .event-desc { font-size: 0.88rem; color: var(--gray-600); margin-top: 0.4rem; line-height: 1.55; }
+
+.event-date-block.urgent { background: var(--orange); animation: urgentGlow 1.4s ease-in-out infinite; }
+.event-date-block.urgent .event-day { color: white; }
+@keyframes urgentGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(224,115,48,0.6); }
+  50% { box-shadow: 0 0 0 9px rgba(224,115,48,0); }
+}
+.event-urgent-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--orange); color: white; font-size: 0.65rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.06em; padding: 3px 10px; border-radius: 20px;
+  animation: urgentBlink 1.2s ease-in-out infinite; white-space: nowrap;
+}
+@keyframes urgentBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
 /* ─── STATS ─── */
 .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 2rem; text-align: center; }
@@ -708,10 +722,11 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 `;
 
 const TEAM = [
-    { initials: "JM", name: "Rev. James Mwangi", role: "Youth Chaplain", bio: "Passionate servant leader guiding ACK St Pauls youth with faith and grace for over 12 years." },
-    { initials: "GW", name: "Grace Wanjiku", role: "Youth Coordinator", bio: "Energetic coordinator building bridges between teens, young adults, and the wider community." },
-    { initials: "DK", name: "David Kamau", role: "Worship Leader", bio: "Anointed musician leading the youth in powerful, Spirit-filled worship every Sunday." },
-    { initials: "RN", name: "Rachel Njeri", role: "Outreach Director", bio: "Compassionate leader championing community impact and social transformation for God's glory." },
+    { initials: "RR", name: "Rev. Ruth", role: "Youth Patron", bio: "Providing spiritual oversight and pastoral covering for the youth ministry, walking alongside every member's journey of faith." },
+    { initials: "RM", name: "Roykeen Mwenda", role: "Youth Chairman", bio: "Leading the youth ministry with vision and integrity, coordinating programmes and rallying the team around a shared mission." },
+    { initials: "EM", name: "Emmanuel Makokha", role: "Youth Vice Chair", bio: "Supporting the Chairman in leadership, stepping in to guide ministry activities and look after member welfare." },
+    { initials: "AB", name: "Abby", role: "Secretary", bio: "Keeping the ministry organized — records, communication, and coordination across every youth programme." },
+    { initials: "JN", name: "Joy Njiru", role: "Treasurer", bio: "Faithfully stewarding the ministry's resources with transparency and accountability." },
 ];
 
 const MINISTRIES = [
@@ -741,6 +756,17 @@ function getNextNthWeekday(weekIndex, dayOfWeek, hour = 0, minute = 0) {
 // Coffee Date: 2nd Saturday of every month, 3:00 PM
 const NEXT_COFFEE_DATE = getNextNthWeekday(2, 6, 15, 0);
 
+// Resolves a "day + short month" pair to the nearest upcoming date, rolling to next year once passed.
+function resolveEventDate(day, monthAbbr) {
+    const now = new Date();
+    const monthIndex = new Date(`${monthAbbr} 1, 2000`).getMonth();
+    let candidate = new Date(now.getFullYear(), monthIndex, Number(day), 23, 59, 59);
+    if (candidate < now) candidate = new Date(now.getFullYear() + 1, monthIndex, Number(day), 23, 59, 59);
+    return candidate;
+}
+
+const URGENT_THRESHOLD_DAYS = 7;
+
 const EVENTS = [
     {
         day: String(NEXT_COFFEE_DATE.getDate()).padStart(2, "0"),
@@ -753,7 +779,10 @@ const EVENTS = [
     { day: "16", month: "Aug", title: "ICT Literacy Training", time: "Sun · 2:00 PM – 5:00 PM", desc: "Hands-on computer and digital skills training equipping youth with practical ICT knowledge for school, work, and ministry." },
     { day: "23", month: "Aug", title: "Prayer Retreat", time: "Sun · 9:00 AM – 4:00 PM", desc: "A day set apart for fasting, prayer, and seeking God's direction together as a youth community. Meals and materials provided." },
     { day: "30", month: "Aug", title: "Sports Day", time: "Sun · 9:00 AM – 3:00 PM", desc: "Friendly games, football, and fun activities bringing the youth together in fellowship, teamwork, and fitness." },
-];
+].map(e => {
+    const daysUntil = Math.ceil((resolveEventDate(e.day, e.month) - new Date()) / 86400000);
+    return { ...e, urgent: daysUntil >= 0 && daysUntil <= URGENT_THRESHOLD_DAYS };
+});
 
 
 function useCountdown(targetDate) {
@@ -1259,12 +1288,12 @@ function HomePage({ countdown, navigate, statsRef, stat1, stat2, stat3, stat4, d
                     <div className="grid-2">
                         {EVENTS.map((e, i) => (
                             <div key={i} id={slugify(e.title)} className="card event-card">
-                                <div className="event-date-block">
+                                <div className={`event-date-block${e.urgent ? " urgent" : ""}`}>
                                     <div className="event-day">{e.day}</div>
                                     <div className="event-month">{e.month}</div>
                                 </div>
                                 <div>
-                                    <div className="event-title">{e.title}</div>
+                                    <div className="event-title">{e.title}{e.urgent && <span className="event-urgent-badge">Starting Soon</span>}</div>
                                     <div className="event-meta">📅 {e.time}</div>
                                     <div className="event-desc">{e.desc}</div>
                                     <button className="btn btn-gold btn-sm" style={{ marginTop: "0.75rem" }} onClick={() => navigate("Events")}>Register Now</button>
@@ -1397,19 +1426,18 @@ function AboutPage({ navigate, dark }) {
                     <div className="about-grid">
                         <div>
                             <div className="overline">Our History</div>
-                            <h2 className="section-title" style={{ textAlign: "left", marginBottom: "1.25rem" }}>Rooted in Faith Since 1954</h2>
+                            <h2 className="section-title" style={{ textAlign: "left", marginBottom: "1.25rem" }}>Rooted in Faith Since 2015</h2>
                             <p style={{ color: "var(--gray-600)", lineHeight: 1.8, marginBottom: "1rem" }}>
-                                ACK St Paul's Cathedral (Anglican Church of Kenya) has been a spiritual landmark in Embu for over seven decades. The Youth Ministry was established in the 1970s as a response to the growing need for intentional discipleship among the young people of the church family.
+                                ACK St Paul's Cathedral (Anglican Church of Kenya) has been a spiritual landmark in Embu for decades. The Youth Ministry was established in 2015 as a response to the growing need for intentional discipleship among the young people of the church family.
                             </p>
                             <p style={{ color: "var(--gray-600)", lineHeight: 1.8, marginBottom: "1rem" }}>
-                                From humble beginnings with a handful of passionate teenagers, the ministry has grown into one of the largest and most impactful youth communities in Embu, now boasting over 850 active members across multiple programmes.
+                                From humble beginnings with a handful of passionate teenagers, the ministry has grown into one of the largest and most impactful youth communities in Embu, now boasting over 350 active members across multiple programmes.
                             </p>
                             <p style={{ color: "var(--gray-600)", lineHeight: 1.8 }}>
                                 Today, ACK St Pauls Youths stands as a testament to God's faithfulness — a vibrant, multicultural community united by a singular passion: to know Christ and make Him known.
                             </p>
                         </div>
                         <div className="about-image-mock">
-                            <div className="about-image-cross">✝</div>
                             <div className="about-quote">
                                 "For I know the plans I have for you, declares the Lord — plans to prosper you and not to harm you, plans to give you hope and a future."
                                 <div style={{ fontSize: "0.8rem", marginTop: "0.75rem", color: "var(--gold)", fontStyle: "normal", fontWeight: 600 }}>— Jeremiah 29:11</div>
@@ -1424,14 +1452,12 @@ function AboutPage({ navigate, dark }) {
                 <div className="container">
                     <div className="grid-2">
                         <div className="card" style={{ padding: "2.5rem", background: "var(--navy)" }}>
-                            <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>👁️</div>
                             <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.4rem", fontWeight: 700, color: "white", marginBottom: "1rem" }}>Our Vision</div>
                             <p style={{ color: "rgba(255,255,255,0.75)", lineHeight: 1.75 }}>
                                 To be a generation of Christlike leaders who transform families, communities, and nations through the power of the Gospel.
                             </p>
                         </div>
                         <div className="card" style={{ padding: "2.5rem", background: "linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%)" }}>
-                            <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>🎯</div>
                             <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.4rem", fontWeight: 700, color: "white", marginBottom: "1rem" }}>Our Mission</div>
                             <p style={{ color: "rgba(255,255,255,0.9)", lineHeight: 1.75 }}>
                                 To equip, empower, and engage youth in meaningful discipleship, authentic worship, and transformative service to God and humanity.
@@ -1487,15 +1513,14 @@ function AboutPage({ navigate, dark }) {
                     <div className="gold-line" />
                     <div className="grid-2" style={{ marginTop: "2.5rem", textAlign: "left" }}>
                         {[
-                            ["📖", "Scripture", "We believe the Bible is the inspired, infallible Word of God — our ultimate authority for faith and life."],
-                            ["✝️", "The Trinity", "We believe in one God — Father, Son, and Holy Spirit — eternally existing in three persons."],
-                            ["🌟", "Salvation", "We believe salvation is by grace alone, through faith alone, in Christ alone — received as a free gift."],
-                            ["🕊️", "The Holy Spirit", "We believe in the active work of the Holy Spirit, who indwells, guides, and empowers every believer."],
-                            ["⛪", "The Church", "We believe in the universal Church — the body of Christ — called to worship, fellowship, and mission."],
-                            ["🌅", "Second Coming", "We believe in the bodily return of Jesus Christ to judge the living and the dead and to establish His kingdom."],
-                        ].map(([icon, title, text], i) => (
+                            ["Scripture", "We believe the Bible is the inspired, infallible Word of God — our ultimate authority for faith and life."],
+                            ["The Trinity", "We believe in one God — Father, Son, and Holy Spirit — eternally existing in three persons."],
+                            ["Salvation", "We believe salvation is by grace alone, through faith alone, in Christ alone — received as a free gift."],
+                            ["The Holy Spirit", "We believe in the active work of the Holy Spirit, who indwells, guides, and empowers every believer."],
+                            ["The Church", "We believe in the universal Church — the body of Christ — called to worship, fellowship, and mission."],
+                            ["Second Coming", "We believe in the bodily return of Jesus Christ to judge the living and the dead and to establish His kingdom."],
+                        ].map(([title, text], i) => (
                             <div key={i} className="card" style={{ padding: "1.75rem", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(201,168,76,0.2)" }}>
-                                <div style={{ fontSize: "1.5rem", marginBottom: "0.75rem" }}>{icon}</div>
                                 <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.05rem", fontWeight: 700, color: "var(--gold)", marginBottom: "0.5rem" }}>{title}</div>
                                 <div style={{ fontSize: "0.88rem", color: "rgba(255,255,255,0.7)", lineHeight: 1.7 }}>{text}</div>
                             </div>
@@ -1699,12 +1724,12 @@ function EventsPage({ navigate, dark }) {
                     <div style={{ display: "grid", gap: "1.25rem" }}>
                         {EVENTS.map((e, i) => (
                             <div key={i} id={slugify(e.title)} className="card event-card">
-                                <div className="event-date-block">
+                                <div className={`event-date-block${e.urgent ? " urgent" : ""}`}>
                                     <div className="event-day">{e.day}</div>
                                     <div className="event-month">{e.month}</div>
                                 </div>
                                 <div style={{ flex: 1 }}>
-                                    <div className="event-title" style={{ fontSize: "1.15rem" }}>{e.title}</div>
+                                    <div className="event-title" style={{ fontSize: "1.15rem" }}>{e.title}{e.urgent && <span className="event-urgent-badge">Starting Soon</span>}</div>
                                     <div className="event-meta">📅 {e.time}</div>
                                     <div className="event-desc">{e.desc}</div>
                                 </div>
