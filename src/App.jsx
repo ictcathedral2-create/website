@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useFormSubmit } from "./hooks/useFormSubmit";
 import { useFirebaseCollection } from "./hooks/useFirebaseCollection";
 import { useYouTubeVideos } from "./hooks/useYouTubeVideos";
@@ -445,14 +445,19 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 .sermon-pastor { font-size: 0.82rem; color: var(--gray-400); margin-top: 0.4rem; }
 
 /* ─── EVENTS ─── */
-.event-card { display: flex; gap: 1.5rem; padding: 1.5rem; align-items: flex-start; }
+.event-card { display: flex; gap: 1.5rem; padding: 1.5rem; align-items: center; }
 .event-date-block {
-  min-width: 68px; height: 72px; background: var(--navy);
+  width: 64px; min-width: 64px; padding: 0.65rem 0.4rem; background: var(--navy);
+  border: 1px solid rgba(201,168,76,0.28);
   border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center;
   font-family: 'Playfair Display', serif; color: white; flex-shrink: 0;
 }
-.event-day { font-size: 1.8rem; font-weight: 700; line-height: 1; color: var(--gold); }
-.event-month { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.8; }
+.event-day { font-size: 1.5rem; font-weight: 700; line-height: 1; color: var(--gold); }
+.event-month {
+  font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.14em; opacity: 0.85;
+  margin-top: 5px; padding-top: 5px; width: 100%; text-align: center;
+  border-top: 1px solid rgba(255,255,255,0.18);
+}
 .event-title { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--navy); display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .event-meta { font-size: 0.82rem; color: var(--gray-400); margin-top: 4px; }
 .event-desc { font-size: 0.88rem; color: var(--gray-600); margin-top: 0.4rem; line-height: 1.55; }
@@ -772,23 +777,6 @@ const MINISTRIES = [
     { icon: "📖", color: "rgba(14,32,68,0.1)", title: "Pastoral Ministry", desc: "Providing spiritual oversight, discipleship, teaching, and pastoral guidance to nurture the whole church family in Christ." },
 ];
 
-// Computes the next occurrence of a given "nth weekday of the month" (e.g. 2nd Saturday),
-// rolling over to next month automatically once this month's occurrence has passed.
-function getNextNthWeekday(weekIndex, dayOfWeek, hour = 0, minute = 0) {
-    const now = new Date();
-    const build = (year, month) => {
-        const firstWeekday = new Date(year, month, 1).getDay();
-        const day = 1 + ((dayOfWeek - firstWeekday + 7) % 7) + (weekIndex - 1) * 7;
-        return new Date(year, month, day, hour, minute, 0, 0);
-    };
-    let candidate = build(now.getFullYear(), now.getMonth());
-    if (candidate < now) candidate = build(now.getFullYear(), now.getMonth() + 1);
-    return candidate;
-}
-
-// Coffee Date: 2nd Saturday of every month, 3:00 PM
-const NEXT_COFFEE_DATE = getNextNthWeekday(2, 6, 15, 0);
-
 // Resolves a "day + short month" pair to the nearest upcoming date, rolling to next year once passed.
 function resolveEventDate(day, monthAbbr) {
     const now = new Date();
@@ -800,22 +788,21 @@ function resolveEventDate(day, monthAbbr) {
 
 const URGENT_THRESHOLD_DAYS = 7;
 
-const EVENTS = [
-    {
-        day: String(NEXT_COFFEE_DATE.getDate()).padStart(2, "0"),
-        month: NEXT_COFFEE_DATE.toLocaleString("en-US", { month: "short" }),
-        title: "Coffee Date",
-        time: "2nd Saturday of every month · 3:00 PM",
-        desc: "A relaxed monthly hangout over coffee and snacks — good conversation, good company, and a chance to connect beyond Sunday. Open to all youth and newcomers.",
-    },
-    { day: "02", month: "Aug", title: "Worship Experience", time: "Sun · 4:00 PM – 6:30 PM", desc: "An immersive evening of praise, worship, and prophetic ministry for the whole youth community. Come ready to encounter God's presence." },
-    { day: "16", month: "Aug", title: "ICT Literacy Training", time: "Sun · 2:00 PM – 5:00 PM", desc: "Hands-on computer and digital skills training equipping youth with practical ICT knowledge for school, work, and ministry." },
-    { day: "23", month: "Aug", title: "Prayer Retreat", time: "Sun · 9:00 AM – 4:00 PM", desc: "A day set apart for fasting, prayer, and seeking God's direction together as a youth community. Meals and materials provided." },
-    { day: "30", month: "Aug", title: "Sports Day", time: "Sun · 9:00 AM – 3:00 PM", desc: "Friendly games, football, and fun activities bringing the youth together in fellowship, teamwork, and fitness." },
-].map(e => {
-    const daysUntil = Math.ceil((resolveEventDate(e.day, e.month) - new Date()) / 86400000);
-    return { ...e, urgent: daysUntil >= 0 && daysUntil <= URGENT_THRESHOLD_DAYS };
-});
+// Loads admin-managed events from Firebase, sorted soonest-first with an "urgent" flag
+// (within URGENT_THRESHOLD_DAYS) computed fresh on every render.
+function useEvents() {
+    const { data } = useFirebaseCollection("events");
+    return useMemo(() => {
+        const list = data || [];
+        return list
+            .map(e => {
+                const date = resolveEventDate(e.day, e.month);
+                const daysUntil = Math.ceil((date - new Date()) / 86400000);
+                return { ...e, date, urgent: daysUntil >= 0 && daysUntil <= URGENT_THRESHOLD_DAYS };
+            })
+            .sort((a, b) => a.date - b.date);
+    }, [data]);
+}
 
 
 function useCountdown(targetDate) {
@@ -891,7 +878,9 @@ export default function App() {
     const [activeTab, setActiveTab] = useState("Video");
     const [scrolled, setScrolled] = useState(false);
     const statsRef = useRef(null);
-    const countdown = useCountdown(NEXT_COFFEE_DATE);
+    const events = useEvents();
+    const nextEvent = events[0] || null;
+    const countdown = useCountdown(nextEvent?.date || null);
 
     const prayerWidget = useFormSubmit("prayerRequests", { name: "", phone: "", request: "" }, ["request"]);
 
@@ -922,7 +911,7 @@ export default function App() {
     };
     const NAV_DROPDOWNS = {
         Ministries: MINISTRIES.map(m => ({ label: m.title, id: slugify(m.title) })),
-        Events: EVENTS.map(e => ({ label: e.title, id: slugify(e.title) })),
+        Events: events.map(e => ({ label: e.title, id: slugify(e.title) })),
     };
 
     return (
@@ -1013,11 +1002,11 @@ export default function App() {
                 </div>
 
                 {/* ─── PAGES ─── */}
-                {activePage === "Home" && <HomePage countdown={countdown} navigate={navigate} statsRef={statsRef} stat1={stat1} stat2={stat2} stat3={stat3} stat4={stat4} dark={dark} onJoinUs={() => setJoinUsOpen(true)} />}
+                {activePage === "Home" && <HomePage countdown={countdown} nextEvent={nextEvent} events={events} navigate={navigate} statsRef={statsRef} stat1={stat1} stat2={stat2} stat3={stat3} stat4={stat4} dark={dark} onJoinUs={() => setJoinUsOpen(true)} />}
                 {activePage === "About" && <AboutPage navigate={navigate} dark={dark} />}
                 {activePage === "Ministries" && <MinistriesPage navigate={navigate} dark={dark} />}
                 {activePage === "Sermons" && <SermonsPage navigate={navigate} dark={dark} activeTab={activeTab} setActiveTab={setActiveTab} />}
-                {activePage === "Events" && <EventsPage navigate={navigate} dark={dark} />}
+                {activePage === "Events" && <EventsPage events={events} navigate={navigate} dark={dark} />}
                 {activePage === "Connect" && <ConnectPage navigate={navigate} dark={dark} />}
                 {activePage === "Give" && <GivePage dark={dark} />}
                 {activePage === "Testimonies" && <TestimoniesPage navigate={navigate} dark={dark} />}
@@ -1212,7 +1201,7 @@ function JoinUsModal({ open, onClose }) {
     );
 }
 
-function HomePage({ countdown, navigate, statsRef, stat1, stat2, stat3, stat4, dark, onJoinUs }) {
+function HomePage({ countdown, nextEvent, events, navigate, statsRef, stat1, stat2, stat3, stat4, dark, onJoinUs }) {
     const newsletter = useFormSubmit("newsletterSignups", { email: "" }, ["email"]);
     const { videos, loading: videosLoading } = useYouTubeVideos();
     const [activeVideo, setActiveVideo] = useState(null);
@@ -1277,7 +1266,7 @@ function HomePage({ countdown, navigate, statsRef, stat1, stat2, stat3, stat4, d
                                     </div>
                                 ) : (
                                     <>
-                                        <div className="countdown-label">Next Coffee Date In</div>
+                                        <div className="countdown-label">Next Up: {nextEvent?.title} In</div>
                                         <div className="countdown-grid">
                                             {[["d", "Days"], ["h", "Hrs"], ["m", "Min"], ["s", "Sec"]].map(([k, l]) => (
                                                 <div key={k} className="countdown-unit">
@@ -1332,8 +1321,9 @@ function HomePage({ countdown, navigate, statsRef, stat1, stat2, stat3, stat4, d
                         <h2 className="section-title">Upcoming Events</h2>
                         <div className="gold-line" />
                     </div>
+                    {events.length === 0 && <p style={{ textAlign: "center", color: "var(--gray-400)" }}>No upcoming events yet — check back soon!</p>}
                     <div className="grid-2">
-                        {EVENTS.map((e, i) => (
+                        {events.slice(0, 4).map((e, i) => (
                             <div key={i} id={slugify(e.title)} className="card event-card">
                                 <div className={`event-date-block${e.urgent ? " urgent" : ""}`}>
                                     <div className="event-day">{e.day}</div>
@@ -1421,7 +1411,6 @@ function HomePage({ countdown, navigate, statsRef, stat1, stat2, stat3, stat4, d
                     <div className="grid-3">
                         {MINISTRIES.map((m, i) => (
                             <div key={i} className="card ministry-card">
-                                <div className="ministry-icon" style={{ background: m.color }}><span style={{ fontSize: "1.6rem" }}>{m.icon}</span></div>
                                 <div className="ministry-title">{m.title}</div>
                                 <div className="ministry-desc">{m.desc}</div>
                                 <div className="ministry-link" onClick={() => navigate("Ministries")}>Learn More →</div>
@@ -1736,13 +1725,18 @@ function SermonsPage({ navigate, dark, activeTab, setActiveTab }) {
     );
 }
 
-function EventsPage({ navigate, dark }) {
+function EventsPage({ events, navigate, dark }) {
     const [detailsEvent, setDetailsEvent] = useState(null);
     const registration = useFormSubmit(
         "eventRegistrations",
-        { fullName: "", phone: "", email: "", eventTitle: EVENTS[0].title, specialRequirements: "" },
+        { fullName: "", phone: "", email: "", eventTitle: "", specialRequirements: "" },
         ["fullName", "phone", "email"]
     );
+
+    useEffect(() => {
+        if (!registration.formData.eventTitle && events.length) registration.setField("eventTitle", events[0].title);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [events]);
 
     const handleRegisterClick = (eventTitle) => {
         registration.setField("eventTitle", eventTitle);
@@ -1768,8 +1762,9 @@ function EventsPage({ navigate, dark }) {
                         <h2 className="section-title">Upcoming Events</h2>
                         <div className="gold-line" />
                     </div>
+                    {events.length === 0 && <p style={{ textAlign: "center", color: "var(--gray-400)" }}>No upcoming events yet — check back soon!</p>}
                     <div style={{ display: "grid", gap: "1.25rem" }}>
-                        {EVENTS.map((e, i) => (
+                        {events.map((e, i) => (
                             <div key={i} id={slugify(e.title)} className="card event-card">
                                 <div className={`event-date-block${e.urgent ? " urgent" : ""}`}>
                                     <div className="event-day">{e.day}</div>
@@ -1839,7 +1834,7 @@ function EventsPage({ navigate, dark }) {
                                 <div className="form-group">
                                     <label className="form-label event-form-label">Select Event</label>
                                     <select className="form-select" value={registration.formData.eventTitle} onChange={e => registration.setField("eventTitle", e.target.value)}>
-                                        {EVENTS.map((e, i) => <option key={i}>{e.title}</option>)}
+                                        {events.map((e, i) => <option key={i}>{e.title}</option>)}
                                     </select>
                                 </div>
                                 <div className="form-group">

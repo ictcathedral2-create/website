@@ -36,6 +36,21 @@ export async function deleteSubmission(collection, id) {
   }
 }
 
+// Public-facing events (day/month/title/time/desc), managed only by admins but readable by anyone.
+export async function createEvent(data) {
+  const newRef = push(ref(db, "events"));
+  await set(newRef, data);
+  return newRef.key;
+}
+
+export async function updateEvent(id, data) {
+  await set(ref(db, `events/${id}`), data);
+}
+
+export async function deleteEvent(id) {
+  await remove(ref(db, `events/${id}`));
+}
+
 async function syncPublicTestimony(id, status, record) {
   if (status === "approved" && record) {
     const rest = { ...record };

@@ -1,8 +1,14 @@
 import { useState } from "react";
 import { useFirebaseCollection } from "../hooks/useFirebaseCollection";
 import SubmissionSection from "./SubmissionSection";
+import EventsManager from "./EventsManager";
 
 const SECTIONS = [
+    {
+        key: "manageEvents",
+        label: "Manage Events",
+        type: "events",
+    },
     {
         key: "joinUsRegistrations",
         label: "Join Us Registrations",
@@ -214,7 +220,7 @@ export default function AdminDashboard({ user, onLogout }) {
                             }}
                         >
                             {s.label}
-                            <SidebarBadge path={s.path} pendingStatus={s.pendingStatus} />
+                            {s.pendingStatus && <SidebarBadge path={s.path} pendingStatus={s.pendingStatus} />}
                         </button>
                     ))}
                 </div>
@@ -226,7 +232,9 @@ export default function AdminDashboard({ user, onLogout }) {
                 </div>
             </aside>
             <main className="admin-main" style={{ flex: 1, padding: "2.5rem 3rem", overflowY: "auto" }}>
-                {current && (
+                {current?.type === "events" ? (
+                    <EventsManager />
+                ) : current && (
                     <SubmissionSection
                         title={current.label}
                         path={current.path}
