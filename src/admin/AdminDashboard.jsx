@@ -14,6 +14,13 @@ const SECTIONS = [
             { key: "area", label: "Area" },
             { key: "gender", label: "Gender" },
         ],
+        fields: [
+            { key: "firstName", label: "First Name", type: "text" },
+            { key: "lastName", label: "Last Name", type: "text" },
+            { key: "phone", label: "Phone", type: "text" },
+            { key: "area", label: "Area", type: "text" },
+            { key: "gender", label: "Gender", type: "select", options: ["Male", "Female"] },
+        ],
         pendingStatus: "new",
     },
     {
@@ -27,6 +34,12 @@ const SECTIONS = [
             { key: "category", label: "Category" },
             { key: "story", label: "Story" },
         ],
+        fields: [
+            { key: "name", label: "Name", type: "text" },
+            { key: "title", label: "Title", type: "text" },
+            { key: "category", label: "Category", type: "select", options: ["Testimony / Personal Story", "Devotional Article", "Scripture Reflection", "Youth Experience"] },
+            { key: "story", label: "Story", type: "textarea" },
+        ],
         pendingStatus: "pending",
     },
     {
@@ -38,6 +51,11 @@ const SECTIONS = [
             { key: "name", label: "Name", render: (v, item) => (item.anonymous ? "Anonymous" : v || "—") },
             { key: "request", label: "Request" },
             { key: "source", label: "Source" },
+        ],
+        fields: [
+            { key: "name", label: "Name", type: "text" },
+            { key: "request", label: "Request", type: "textarea" },
+            { key: "source", label: "Source", type: "text" },
         ],
         pendingStatus: "new",
     },
@@ -53,6 +71,14 @@ const SECTIONS = [
             { key: "helpType", label: "Help Type" },
             { key: "message", label: "Message" },
         ],
+        fields: [
+            { key: "firstName", label: "First Name", type: "text" },
+            { key: "lastName", label: "Last Name", type: "text" },
+            { key: "email", label: "Email", type: "text" },
+            { key: "phone", label: "Phone", type: "text" },
+            { key: "helpType", label: "Help Type", type: "select", options: ["I'm new and want to know more", "I'd like to join a ministry", "I need pastoral support", "Partnership or collaboration", "Other"] },
+            { key: "message", label: "Message", type: "textarea" },
+        ],
         pendingStatus: "new",
     },
     {
@@ -67,6 +93,13 @@ const SECTIONS = [
             { key: "email", label: "Email" },
             { key: "specialRequirements", label: "Notes" },
         ],
+        fields: [
+            { key: "fullName", label: "Full Name", type: "text" },
+            { key: "eventTitle", label: "Event", type: "text" },
+            { key: "phone", label: "Phone", type: "text" },
+            { key: "email", label: "Email", type: "text" },
+            { key: "specialRequirements", label: "Notes", type: "textarea" },
+        ],
         pendingStatus: "registered",
     },
     {
@@ -78,6 +111,10 @@ const SECTIONS = [
             { key: "name", label: "Name" },
             { key: "preferredGroup", label: "Preferred Group" },
         ],
+        fields: [
+            { key: "name", label: "Name", type: "text" },
+            { key: "preferredGroup", label: "Preferred Group", type: "select", options: ["Bible Study (Sunday · 11:00 AM)", "Missions", "Men's Fellowship (Friday · 5:00 PM)"] },
+        ],
         pendingStatus: "new",
     },
     {
@@ -88,6 +125,10 @@ const SECTIONS = [
         columns: [
             { key: "email", label: "Email" },
             { key: "source", label: "Source" },
+        ],
+        fields: [
+            { key: "email", label: "Email", type: "text" },
+            { key: "source", label: "Source", type: "text" },
         ],
         pendingStatus: "new",
     },
@@ -102,6 +143,14 @@ const SECTIONS = [
             { key: "category", label: "Category" },
             { key: "amount", label: "Amount", render: v => `KSh ${Number(v || 0).toLocaleString()}` },
             { key: "frequency", label: "Frequency" },
+        ],
+        fields: [
+            { key: "firstName", label: "First Name", type: "text" },
+            { key: "lastName", label: "Last Name", type: "text" },
+            { key: "email", label: "Email", type: "text" },
+            { key: "category", label: "Category", type: "select", options: ["Tithes & Offerings", "Youth Ministry Fund", "Mission & Outreach", "Building Fund", "Scholarship Fund"] },
+            { key: "amount", label: "Amount (KSh)", type: "number" },
+            { key: "frequency", label: "Frequency", type: "select", options: ["One-Time Gift", "Weekly", "Monthly"] },
         ],
         pendingStatus: "new",
     },
@@ -175,6 +224,7 @@ export default function AdminDashboard({ user, onLogout }) {
                         title={current.label}
                         path={current.path}
                         columns={current.columns}
+                        fields={current.fields}
                         statusOptions={current.statusOptions}
                     />
                 )}
