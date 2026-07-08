@@ -7,6 +7,8 @@ import logo from "./assets/logo.png";
 
 const NAV_LINKS = ["Home", "Ministries", "Sermons", "Events", "Connect", "Give", "Testimonies", "About"];
 
+const slugify = str => str.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
 export const styles = `
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600&display=swap');
 
@@ -99,10 +101,57 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(14,32,68,0.08); border-bottom-color: 
 .nav-link:hover { background: rgba(201,168,76,0.1); color: var(--gold-dark); }
 .nav-link.active { color: var(--gold-dark); }
 
+.nav-item { position: relative; display: inline-flex; }
+.nav-caret { display: inline-block; font-size: 0.6rem; margin-left: 3px; transform: translateY(1px); opacity: 0.6; }
+.nav-dropdown {
+  position: absolute; top: 100%; left: 0; padding-top: 10px;
+  opacity: 0; visibility: hidden; transform: translateY(4px);
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+  z-index: 1001;
+}
+.nav-item:hover .nav-dropdown, .nav-item:focus-within .nav-dropdown {
+  opacity: 1; visibility: visible; transform: translateY(0);
+}
+.nav-dropdown-inner {
+  background: white; border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(14,32,68,0.16);
+  border: 1px solid rgba(201,168,76,0.15);
+  min-width: 230px; padding: 0.5rem; display: flex; flex-direction: column; gap: 2px;
+}
+.nav-dropdown-item {
+  display: block; width: 100%; text-align: left; padding: 0.6rem 0.85rem; border-radius: 8px;
+  font-size: 0.82rem; font-weight: 500; color: var(--navy); background: none; border: none; cursor: pointer;
+  transition: all 0.15s;
+}
+.nav-dropdown-item:hover { background: rgba(201,168,76,0.1); color: var(--gold-dark); }
+.dark-mode .nav-dropdown-inner { background: #131D35 !important; border-color: rgba(201,168,76,0.15) !important; }
+.dark-mode .nav-dropdown-item { color: #E8E4DC !important; }
+.dark-mode .nav-dropdown-item:hover { background: rgba(201,168,76,0.12) !important; color: var(--gold-light) !important; }
+
+.mobile-submenu { width: 100%; }
+.mobile-submenu-toggle { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+.mobile-submenu-toggle .nav-caret { font-size: 0.8rem; transition: transform 0.25s; }
+.mobile-submenu-toggle .nav-caret.open { transform: rotate(-180deg); }
+.mobile-submenu-panel {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.3s ease;
+  display: flex; flex-direction: column;
+}
+.mobile-submenu-panel.open { max-height: 480px; }
+.mobile-submenu-item {
+  display: block; width: 100%; text-align: left;
+  padding: 0.75rem 0 0.75rem 1.25rem; font-size: 0.95rem; font-weight: 500;
+  color: var(--gray-600); background: none; border: none; cursor: pointer;
+  border-bottom: 1px solid var(--gray-200);
+}
+.mobile-submenu-item:hover { color: var(--gold-dark); }
+.dark-mode .mobile-submenu-item { color: #A0A8B8 !important; border-bottom-color: rgba(201,168,76,0.15) !important; }
+.dark-mode .mobile-submenu-item:hover { color: var(--gold-light) !important; }
+
 .nav-cta {
   background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-  color: white; padding: 0.5rem 1.25rem; border-radius: 8px;
-  font-size: 0.85rem; font-weight: 600; border: none; cursor: pointer;
+  color: white; padding: 0.42rem 1.05rem; border-radius: 8px;
+  font-size: 0.8rem; font-weight: 600; border: none; cursor: pointer;
   transition: all 0.2s; box-shadow: 0 2px 12px rgba(201,168,76,0.35);
 }
 .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(201,168,76,0.5); }
@@ -128,9 +177,9 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(14,32,68,0.08); border-bottom-color: 
 .dark-mode .mobile-drawer .nav-link { border-bottom-color: rgba(201,168,76,0.15) !important; }
 
 .btn {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 0.85rem 2rem; border-radius: 10px;
-  font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 600;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 0.65rem 1.5rem; border-radius: 9px;
+  font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 600;
   cursor: pointer; border: none; transition: all 0.2s ease; text-decoration: none;
 }
 .btn:active:not(:disabled) { transform: translateY(0) scale(0.97); }
@@ -156,7 +205,7 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(14,32,68,0.08); border-bottom-color: 
   box-shadow: 0 4px 20px rgba(0,0,0,0.12);
 }
 .btn-white:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.2); }
-.btn-sm { padding: 0.6rem 1.4rem; font-size: 0.85rem; }
+.btn-sm { padding: 0.45rem 1.1rem; font-size: 0.78rem; }
 a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 
 /* ─── HERO ─── */
@@ -427,7 +476,7 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 
 /* ─── FORMS ─── */
 .form-group { margin-bottom: 1.25rem; }
-.form-label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--navy); margin-bottom: 0.5rem; }
+.form-label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--navy); margin-bottom: 0.4rem; }
 .form-input, .form-select, .form-textarea {
   width: 100%; padding: 0.85rem 1rem; border-radius: 10px;
   border: 1.5px solid var(--gray-200); font-family: 'DM Sans', sans-serif;
@@ -768,6 +817,7 @@ export default function App() {
     const [dark, setDark] = useState(false);
     const [prayerOpen, setPrayerOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [mobileSubmenuOpen, setMobileSubmenuOpen] = useState(null);
     const [joinUsOpen, setJoinUsOpen] = useState(false);
     const [statsVisible, setStatsVisible] = useState(false);
     const [activeTab, setActiveTab] = useState("Video");
@@ -795,7 +845,17 @@ export default function App() {
         return () => window.removeEventListener("scroll", onScroll);
     }, []);
 
-    const navigate = (page) => { setActivePage(page); setMobileMenuOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); };
+    const navigate = (page) => { setActivePage(page); setMobileMenuOpen(false); setMobileSubmenuOpen(null); window.scrollTo({ top: 0, behavior: "smooth" }); };
+    const navigateToAnchor = (page, id) => {
+        setActivePage(page);
+        setMobileMenuOpen(false);
+        setMobileSubmenuOpen(null);
+        setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
+    };
+    const NAV_DROPDOWNS = {
+        Ministries: MINISTRIES.map(m => ({ label: m.title, id: slugify(m.title) })),
+        Events: EVENTS.map(e => ({ label: e.title, id: slugify(e.title) })),
+    };
 
     return (
         <>
@@ -812,9 +872,26 @@ export default function App() {
                             </div>
                         </a>
                         <div className="nav-links">
-                            {NAV_LINKS.map(p => (
-                                <button key={p} className={`nav-link${activePage === p ? " active" : ""}`} onClick={() => navigate(p)}>{p}</button>
-                            ))}
+                            {NAV_LINKS.map(p => {
+                                const dropdown = NAV_DROPDOWNS[p];
+                                if (dropdown) {
+                                    return (
+                                        <div key={p} className="nav-item">
+                                            <button className={`nav-link${activePage === p ? " active" : ""}`} onClick={() => navigate(p)}>
+                                                {p}<span className="nav-caret">▾</span>
+                                            </button>
+                                            <div className="nav-dropdown">
+                                                <div className="nav-dropdown-inner">
+                                                    {dropdown.map(item => (
+                                                        <button key={item.id} className="nav-dropdown-item" onClick={() => navigateToAnchor(p, item.id)}>{item.label}</button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                }
+                                return <button key={p} className={`nav-link${activePage === p ? " active" : ""}`} onClick={() => navigate(p)}>{p}</button>;
+                            })}
                             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginLeft: "0.5rem" }}>
                                 <button
                                     className={`theme-toggle${dark ? " dark" : ""}`}
@@ -840,9 +917,30 @@ export default function App() {
 
                 {/* ─── MOBILE DRAWER ─── */}
                 <div className={`mobile-drawer${mobileMenuOpen ? " open" : ""}`}>
-                    {NAV_LINKS.map(p => (
-                        <button key={p} className={`nav-link${activePage === p ? " active" : ""}`} onClick={() => navigate(p)}>{p}</button>
-                    ))}
+                    {NAV_LINKS.map(p => {
+                        const dropdown = NAV_DROPDOWNS[p];
+                        if (dropdown) {
+                            const expanded = mobileSubmenuOpen === p;
+                            return (
+                                <div key={p} className="mobile-submenu">
+                                    <button
+                                        className={`nav-link mobile-submenu-toggle${activePage === p ? " active" : ""}`}
+                                        onClick={() => setMobileSubmenuOpen(expanded ? null : p)}
+                                    >
+                                        {p}
+                                        <span className={`nav-caret${expanded ? " open" : ""}`}>▾</span>
+                                    </button>
+                                    <div className={`mobile-submenu-panel${expanded ? " open" : ""}`}>
+                                        <button className="mobile-submenu-item" onClick={() => navigate(p)}>View All {p}</button>
+                                        {dropdown.map(item => (
+                                            <button key={item.id} className="mobile-submenu-item" onClick={() => navigateToAnchor(p, item.id)}>{item.label}</button>
+                                        ))}
+                                    </div>
+                                </div>
+                            );
+                        }
+                        return <button key={p} className={`nav-link${activePage === p ? " active" : ""}`} onClick={() => navigate(p)}>{p}</button>;
+                    })}
                     <button className="btn btn-gold" style={{ marginTop: "1rem" }} onClick={() => { setMobileMenuOpen(false); setJoinUsOpen(true); }}>Join Us</button>
                 </div>
 
@@ -1151,7 +1249,7 @@ function HomePage({ countdown, navigate, statsRef, stat1, stat2, stat3, stat4, d
                     </div>
                     <div className="grid-2">
                         {EVENTS.map((e, i) => (
-                            <div key={i} className="card event-card">
+                            <div key={i} id={slugify(e.title)} className="card event-card">
                                 <div className="event-date-block">
                                     <div className="event-day">{e.day}</div>
                                     <div className="event-month">{e.month}</div>
@@ -1412,7 +1510,7 @@ function MinistriesPage({ navigate, dark }) {
                 <div className="container">
                     <div className="grid-3">
                         {MINISTRIES.map((m, i) => (
-                            <div key={i} className="card ministry-card-full">
+                            <div key={i} id={slugify(m.title)} className="card ministry-card-full">
                                 <div className="ministry-icon" style={{ background: m.color, width: 68, height: 68, margin: "0 auto 1.25rem" }}>
                                     <span style={{ fontSize: "1.9rem" }}>{m.icon}</span>
                                 </div>
@@ -1594,7 +1692,7 @@ function EventsPage({ navigate, dark }) {
                     </div>
                     <div style={{ display: "grid", gap: "1.25rem" }}>
                         {EVENTS.map((e, i) => (
-                            <div key={i} className="card event-card">
+                            <div key={i} id={slugify(e.title)} className="card event-card">
                                 <div className="event-date-block">
                                     <div className="event-day">{e.day}</div>
                                     <div className="event-month">{e.month}</div>
