@@ -760,11 +760,19 @@ a.footer-contact-row:hover .footer-contact-text { color: var(--gold-light); }
 `;
 
 const TEAM = [
-    { initials: "RR", name: "Rev. Ruth", role: "Youth Patron", bio: "Providing spiritual oversight and pastoral covering for the youth ministry, walking alongside every member's journey of faith." },
-    { initials: "RM", name: "Roykeen Mwenda", role: "Youth Chairman", bio: "Leading the youth ministry with vision and integrity, coordinating programmes and rallying the team around a shared mission." },
-    { initials: "EM", name: "Emmanuel Makokha", role: "Youth Vice Chair", bio: "Supporting the Chairman in leadership, stepping in to guide ministry activities and look after member welfare." },
-    { initials: "AB", name: "Abby", role: "Secretary", bio: "Keeping the ministry organized — records, communication, and coordination across every youth programme." },
-    { initials: "JN", name: "Joy Njiru", role: "Treasurer", bio: "Faithfully stewarding the ministry's resources with transparency and accountability." },
+    { initials: "RW", name: "Rev. Ruth Wambui", role: "Youths Patron", bio: "Providing spiritual oversight and pastoral covering for the youth ministry, walking alongside every member's journey of faith." },
+    { initials: "RM", name: "Roykeen Mwenda", role: "Youths Chairman", bio: "Leading the youth ministry with vision and integrity, coordinating programmes and rallying the team around a shared mission." },
+    { initials: "EM", name: "Emmanuel Makokha", role: "Youths Vice Chairman", bio: "Supporting the Chairman in leadership, stepping in to guide ministry activities and look after member welfare." },
+    { initials: "AF", name: "Abby Faith", role: "Secretary", bio: "Keeping the ministry organized — records, communication, and coordination across every youth programme." },
+    { initials: "JF", name: "Joy Favour", role: "Treasurer", bio: "Faithfully stewarding the ministry's resources with transparency and accountability." },
+    { initials: "SG", name: "Stephen Gitau", role: "ICT Contact Person", bio: "First point of contact for the ICT Ministry, coordinating media, sound, and livestream needs." },
+    { initials: "SM", name: "Sharon Mirie", role: "Care Ministry Contact Person", bio: "First point of contact for the Care Ministry, connecting members to support and practical care." },
+    { initials: "BK", name: "Bridget Karani", role: "Ushering Ministry Contact Person", bio: "First point of contact for the Ushering Ministry, coordinating welcome and order during services." },
+    { initials: "AW", name: "Alex Winner", role: "Pastoral Ministry Contact Person", bio: "First point of contact for the Pastoral Ministry, connecting members to spiritual guidance and discipleship." },
+    { initials: "AM", name: "Agostino Muchangi", role: "Care Ministry Contact Person", bio: "First point of contact for the Care Ministry, connecting members to support and practical care." },
+    { initials: "DI", name: "Debby Irene", role: "Intercessory Ministry Contact Person", bio: "First point of contact for the Intercessory Ministry, coordinating prayer support for the church family." },
+    { initials: "BK", name: "Brian Kimani", role: "Care Ministry Contact Person", bio: "First point of contact for the Care Ministry, connecting members to support and practical care." },
+    { initials: "RM", name: "Rozzie Muthoni", role: "Praise and Worship Contact Person", bio: "First point of contact for the Praise & Worship Ministry, coordinating rehearsals and worship needs." },
 ];
 
 const MINISTRIES = [
