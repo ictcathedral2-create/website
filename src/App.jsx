@@ -825,7 +825,7 @@ export default function App() {
     const statsRef = useRef(null);
     const countdown = useCountdown(NEXT_COFFEE_DATE);
 
-    const prayerWidget = useFormSubmit("prayerRequests", { name: "", request: "" }, ["request"]);
+    const prayerWidget = useFormSubmit("prayerRequests", { name: "", phone: "", request: "" }, ["request"]);
 
     const stat1 = useAnimatedCount(350, statsVisible);
     const stat2 = useAnimatedCount(7, statsVisible);
@@ -1019,6 +1019,15 @@ export default function App() {
                                             placeholder="Enter your name"
                                             value={prayerWidget.formData.name}
                                             onChange={e => prayerWidget.setField("name", e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Phone Number</label>
+                                        <input
+                                            className="form-input"
+                                            placeholder="+254 700 000 000"
+                                            value={prayerWidget.formData.phone}
+                                            onChange={e => prayerWidget.setField("phone", e.target.value)}
                                         />
                                     </div>
                                     <div className="form-group">
@@ -1511,9 +1520,6 @@ function MinistriesPage({ navigate, dark }) {
                     <div className="grid-3">
                         {MINISTRIES.map((m, i) => (
                             <div key={i} id={slugify(m.title)} className="card ministry-card-full">
-                                <div className="ministry-icon" style={{ background: m.color, width: 68, height: 68, margin: "0 auto 1.25rem" }}>
-                                    <span style={{ fontSize: "1.9rem" }}>{m.icon}</span>
-                                </div>
                                 <div className="ministry-title" style={{ fontSize: "1.2rem", textAlign: "center" }}>{m.title}</div>
                                 <div className="ministry-desc" style={{ marginTop: "0.6rem", textAlign: "center" }}>{m.desc}</div>
                                 <button className="btn btn-gold btn-sm" style={{ marginTop: "1.5rem", width: "100%", justifyContent: "center" }} onClick={() => navigate("Connect")}>

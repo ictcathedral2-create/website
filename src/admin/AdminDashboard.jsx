@@ -49,11 +49,13 @@ const SECTIONS = [
         statusOptions: ["new", "prayed", "archived"],
         columns: [
             { key: "name", label: "Name", render: (v, item) => (item.anonymous ? "Anonymous" : v || "—") },
+            { key: "phone", label: "Phone" },
             { key: "request", label: "Request" },
             { key: "source", label: "Source" },
         ],
         fields: [
             { key: "name", label: "Name", type: "text" },
+            { key: "phone", label: "Phone", type: "text" },
             { key: "request", label: "Request", type: "textarea" },
             { key: "source", label: "Source", type: "text" },
         ],
