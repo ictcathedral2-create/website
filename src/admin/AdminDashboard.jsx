@@ -227,8 +227,8 @@ export default function AdminDashboard({ user, onLogout }) {
                 <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: "2rem" }}>
                     <div style={{ width: 36, height: 36, borderRadius: 8, background: "linear-gradient(135deg, var(--gold), var(--gold-dark))", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>✝</div>
                     <div>
-                        <div style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "0.95rem" }}>Admin</div>
-                        <div style={{ fontSize: "0.7rem", color: "var(--gold-light)" }}>ACK St Pauls Youths</div>
+                        <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "1.25rem", lineHeight: 0.9 }}>Admin</div>
+                        <div style={{ fontSize: "0.64rem", fontWeight: 700, letterSpacing: "0.06em", color: "var(--gold-light)", marginTop: 4 }}>ACK St Pauls Youths</div>
                     </div>
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
@@ -239,7 +239,7 @@ export default function AdminDashboard({ user, onLogout }) {
                             style={{
                                 display: "flex", alignItems: "center", gap: 8,
                                 textAlign: "left", padding: "0.65rem 0.85rem", borderRadius: 8,
-                                border: "none", cursor: "pointer", fontSize: "0.88rem",
+                                border: "none", cursor: "pointer", fontSize: "0.8rem", letterSpacing: "0.01em",
                                 background: activeSection === s.key ? "rgba(201,168,76,0.15)" : "transparent",
                                 color: activeSection === s.key ? "var(--gold-light)" : "rgba(255,255,255,0.75)",
                                 fontWeight: activeSection === s.key ? 600 : 500,

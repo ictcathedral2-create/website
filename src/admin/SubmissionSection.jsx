@@ -108,7 +108,7 @@ function RecordList({ heading, items, columns, fields, statusOptions, editingId,
         <div style={{ marginBottom: "2.5rem" }}>
             {heading && (
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.6rem", marginBottom: "1rem" }}>
-                    <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.15rem", fontWeight: 700, color: "var(--navy)", margin: 0 }}>
+                    <h3 style={{ fontFamily: "var(--font-display)", fontSize: "1.45rem", fontWeight: 700, lineHeight: 1, color: "var(--navy)", margin: 0 }}>
                         {heading} <span style={{ color: "var(--gray-400)", fontWeight: 500, fontSize: "0.9rem" }}>({items.length})</span>
                     </h3>
                     {onDownload && (
@@ -222,7 +222,7 @@ export default function SubmissionSection({ title, path, columns, fields, status
     return (
         <div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.75rem", marginBottom: "1.5rem" }}>
-                <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.6rem", fontWeight: 700, color: "var(--navy)", margin: 0 }}>
+                <h2 style={{ fontFamily: "var(--font-display)", fontSize: "2.15rem", fontWeight: 700, lineHeight: 1, color: "var(--navy)", margin: 0 }}>
                     {title} <span style={{ color: "var(--gray-400)", fontWeight: 500, fontSize: "1rem" }}>({sorted.length})</span>
                 </h2>
                 <div style={{ display: "flex", gap: "0.6rem" }}>

@@ -10,11 +10,13 @@ const NAV_LINKS = ["Home", "Ministries", "Sermons", "Events", "Connect", "Give",
 const slugify = str => str.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
 export const styles = `
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Manrope', Arial, sans-serif;
   --gold: #C9A84C;
   --gold-light: #F0D98A;
   --gold-dark: #9A7830;
@@ -30,8 +32,10 @@ export const styles = `
   --gray-800: #3A3530;
 }
 
-body { font-family: 'DM Sans', sans-serif; background: var(--white); color: var(--gray-800); overflow-x: hidden; }
-.font-display { font-family: 'Playfair Display', serif; }
+html { font-size: 16px; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { font-family: var(--font-body); font-size: 1rem; font-weight: 400; line-height: 1.6; letter-spacing: 0.005em; background: var(--white); color: var(--gray-800); overflow-x: hidden; }
+button, input, select, textarea { font: inherit; }
+.font-display { font-family: var(--font-display); }
 
 .dark-mode { background: #0A0F1E !important; color: #E8E4DC !important; }
 .dark-mode nav { background: rgba(10,15,30,0.97) !important; border-bottom: 1px solid rgba(201,168,76,0.2) !important; }
@@ -85,20 +89,20 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(14,32,68,0.08); border-bottom-color: 
   border-radius: 8px;
   display: flex; align-items: center; justify-content: center;
   font-size: 20px; color: white; font-weight: 900;
-  font-family: 'Playfair Display', serif;
+  font-family: var(--font-display);
   overflow: hidden; flex-shrink: 0;
   transition: transform 0.25s ease;
 }
 .nav-logo:hover .logo-cross { transform: scale(1.06) rotate(-2deg); }
 .logo-cross img { width: 100%; height: 100%; object-fit: contain; }
-.logo-text { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--navy); line-height: 1.2; }
-.logo-sub { font-family: 'DM Sans', sans-serif; font-size: 0.65rem; font-weight: 500; color: var(--gold); letter-spacing: 0.08em; text-transform: uppercase; }
+.logo-text { font-family: var(--font-display); font-size: 1.14rem; font-weight: 700; color: var(--navy); line-height: 0.95; letter-spacing: 0.01em; }
+.logo-sub { font-family: var(--font-body); font-size: 0.64rem; font-weight: 700; color: var(--gold); letter-spacing: 0.1em; text-transform: uppercase; }
 
 .nav-links { display: flex; gap: 0.25rem; align-items: center; }
 .nav-link {
   position: relative;
   padding: 0.5rem 0.8rem; border-radius: 7px;
-  font-size: 0.85rem; font-weight: 500; color: var(--navy);
+  font-size: 0.8rem; font-weight: 600; letter-spacing: 0.01em; color: var(--navy);
   text-decoration: none; transition: color 0.2s ease;
   cursor: pointer; background: none; border: none;
   display: inline-flex; align-items: center;
@@ -135,7 +139,7 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(14,32,68,0.08); border-bottom-color: 
 }
 .nav-dropdown-item {
   display: block; width: 100%; text-align: left; padding: 0.6rem 0.85rem; border-radius: 8px;
-  font-size: 0.82rem; font-weight: 500; color: var(--navy); background: none; border: none; cursor: pointer;
+  font-size: 0.8rem; font-weight: 600; letter-spacing: 0.01em; color: var(--navy); background: none; border: none; cursor: pointer;
   transition: all 0.15s;
 }
 .nav-dropdown-item:hover { background: rgba(201,168,76,0.1); color: var(--gold-dark); }
@@ -155,7 +159,7 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(14,32,68,0.08); border-bottom-color: 
 .mobile-submenu-panel.open { max-height: 480px; }
 .mobile-submenu-item {
   display: block; width: 100%; text-align: left;
-  padding: 0.75rem 0 0.75rem 1.25rem; font-size: 0.95rem; font-weight: 500;
+  padding: 0.75rem 0 0.75rem 1.25rem; font-size: 0.92rem; font-weight: 600;
   color: var(--gray-600); background: none; border: none; cursor: pointer;
   border-bottom: 1px solid var(--gray-200);
 }
@@ -166,7 +170,7 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(14,32,68,0.08); border-bottom-color: 
 .nav-cta {
   background: linear-gradient(135deg, var(--gold), var(--gold-dark));
   color: white; padding: 0.42rem 1.05rem; border-radius: 8px;
-  font-size: 0.8rem; font-weight: 600; border: none; cursor: pointer;
+  font-size: 0.78rem; font-weight: 700; letter-spacing: 0.03em; border: none; cursor: pointer;
   transition: all 0.2s; box-shadow: 0 2px 12px rgba(201,168,76,0.35);
 }
 .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(201,168,76,0.5); }
@@ -185,7 +189,7 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(14,32,68,0.08); border-bottom-color: 
 }
 .mobile-drawer.open { display: flex; }
 .mobile-drawer .nav-link {
-  padding: 1rem 0; font-size: 1.1rem; font-weight: 600; border-bottom: 1px solid var(--gray-200);
+  padding: 1rem 0; font-size: 1rem; font-weight: 700; border-bottom: 1px solid var(--gray-200);
   width: 100%; text-align: left;
 }
 .dark-mode .mobile-drawer { background: rgba(10,15,30,0.98) !important; }
@@ -194,7 +198,7 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(14,32,68,0.08); border-bottom-color: 
 .btn {
   display: inline-flex; align-items: center; gap: 6px;
   padding: 0.65rem 1.5rem; border-radius: 9px;
-  font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 600;
+  font-family: var(--font-body); font-size: 0.82rem; font-weight: 700; letter-spacing: 0.02em;
   cursor: pointer; border: none; transition: all 0.2s ease; text-decoration: none;
 }
 .btn:active:not(:disabled) { transform: translateY(0) scale(0.97); }
@@ -220,7 +224,7 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(14,32,68,0.08); border-bottom-color: 
   box-shadow: 0 4px 20px rgba(0,0,0,0.12);
 }
 .btn-white:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.2); }
-.btn-sm { padding: 0.45rem 1.1rem; font-size: 0.78rem; }
+.btn-sm { padding: 0.45rem 1.1rem; font-size: 0.74rem; }
 a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 
 /* ─── HERO ─── */
@@ -265,16 +269,16 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 }
 
 .hero-title {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(2.1rem, 4vw, 3.4rem);
-  font-weight: 900; line-height: 1.1; color: white;
+  font-family: var(--font-display);
+  font-size: clamp(2.7rem, 5vw, 4.8rem);
+  font-weight: 700; line-height: 0.96; letter-spacing: -0.015em; color: white;
   margin-bottom: 1.5rem;
   animation: fadeSlideUp 0.7s 0.1s ease both;
 }
 
 .hero-title span { color: var(--gold); }
 .hero-desc {
-  font-size: 1.1rem; line-height: 1.75; color: rgba(255,255,255,0.78);
+  font-size: clamp(1rem, 1.4vw, 1.12rem); line-height: 1.8; color: rgba(255,255,255,0.8);
   margin-bottom: 2.5rem; max-width: 520px;
   animation: fadeSlideUp 0.7s 0.2s ease both;
 }
@@ -285,8 +289,8 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
   display: flex; gap: 2.5rem; margin-top: 3rem;
   animation: fadeSlideUp 0.7s 0.4s ease both;
 }
-.hero-stat-num { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: var(--gold); }
-.hero-stat-label { font-size: 0.8rem; color: rgba(255,255,255,0.6); margin-top: 2px; }
+.hero-stat-num { font-family: var(--font-display); font-size: 2.4rem; font-weight: 700; line-height: 0.95; color: var(--gold); }
+.hero-stat-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.04em; color: rgba(255,255,255,0.65); margin-top: 4px; }
 
 .hero-visual {
   position: relative; animation: fadeSlideLeft 0.8s 0.2s ease both;
@@ -304,8 +308,8 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
   padding: 0.85rem 1rem; background: rgba(255,255,255,0.07);
   border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);
 }
-.service-time-name { font-size: 0.85rem; color: rgba(255,255,255,0.75); }
-.service-time-val { font-size: 0.9rem; font-weight: 600; color: var(--gold-light); }
+.service-time-name { font-size: 0.78rem; font-weight: 600; color: rgba(255,255,255,0.75); }
+.service-time-val { font-size: 0.84rem; font-weight: 700; color: var(--gold-light); }
 
 /* ─── POSTER CAROUSEL ─── */
 .poster-frame { perspective: 1200px; }
@@ -376,7 +380,7 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
   text-align: center; background: rgba(201,168,76,0.15); border-radius: 8px; padding: 0.75rem 0.5rem;
   border: 1px solid rgba(201,168,76,0.3);
 }
-.countdown-num { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; color: var(--gold-light); }
+.countdown-num { font-family: var(--font-display); font-size: 1.9rem; font-weight: 700; line-height: 0.9; color: var(--gold-light); }
 .countdown-unit-label { font-size: 0.6rem; text-transform: uppercase; color: rgba(255,255,255,0.5); letter-spacing: 0.08em; }
 
 /* ─── SECTIONS ─── */
@@ -397,13 +401,13 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
   color: var(--gold-dark); margin-bottom: 0.75rem;
 }
 .section-title {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(1.8rem, 3vw, 2.8rem);
-  font-weight: 700; color: var(--navy); line-height: 1.25;
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 3.5vw, 3.65rem);
+  font-weight: 700; color: var(--navy); line-height: 0.98; letter-spacing: -0.01em;
   margin-bottom: 1rem;
 }
 .section-title.white { color: white; }
-.section-desc { font-size: 1.05rem; color: var(--gray-600); line-height: 1.75; max-width: 600px; margin: 0 auto; }
+.section-desc { font-size: clamp(0.98rem, 1.2vw, 1.08rem); color: var(--gray-600); line-height: 1.8; max-width: 640px; margin: 0 auto; }
 .section-desc.white { color: rgba(255,255,255,0.75); }
 .gold-line { width: 60px; height: 3px; background: linear-gradient(90deg, var(--gold), var(--gold-dark)); border-radius: 2px; margin: 1rem auto 0; }
 
@@ -441,8 +445,8 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 }
 .about-quote {
   position: relative; z-index: 1;
-  font-family: 'Playfair Display', serif; font-size: 1.1rem; font-style: italic;
-  color: rgba(255,255,255,0.9); line-height: 1.7;
+  font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; font-style: italic;
+  color: rgba(255,255,255,0.9); line-height: 1.35;
   border-left: 3px solid var(--gold); padding-left: 1.25rem;
 }
 
@@ -460,14 +464,14 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
   width: 100px; height: 100px; border-radius: 50%;
   background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
   display: flex; align-items: center; justify-content: center;
-  font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700;
+  font-family: var(--font-display); font-size: 2.45rem; font-weight: 700;
   color: var(--gold); margin: 0 auto 1.25rem;
   border: 3px solid var(--gold-light);
   box-shadow: 0 4px 20px rgba(201,168,76,0.25);
 }
-.team-name { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; color: var(--navy); }
+.team-name { font-family: var(--font-display); font-size: 1.45rem; font-weight: 700; line-height: 1; color: var(--navy); }
 .team-role { font-size: 0.82rem; color: var(--gold-dark); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; }
-.team-bio { font-size: 0.88rem; color: var(--gray-600); line-height: 1.6; margin-top: 0.75rem; }
+.team-bio { font-size: 0.9rem; color: var(--gray-600); line-height: 1.7; margin-top: 0.75rem; }
 
 /* ─── MINISTRY CARDS ─── */
 .ministry-card { padding: 2rem; }
@@ -476,8 +480,8 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
   display: flex; align-items: center; justify-content: center;
   font-size: 1.6rem; margin-bottom: 1.25rem;
 }
-.ministry-title { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; color: var(--navy); margin-bottom: 0.6rem; }
-.ministry-desc { font-size: 0.88rem; color: var(--gray-600); line-height: 1.65; }
+.ministry-title { font-family: var(--font-display); font-size: 1.45rem; font-weight: 700; line-height: 1; color: var(--navy); margin-bottom: 0.7rem; }
+.ministry-desc { font-size: 0.9rem; color: var(--gray-600); line-height: 1.7; }
 .ministry-link { font-size: 0.82rem; font-weight: 600; color: var(--gold-dark); margin-top: 1rem; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; text-decoration: none; }
 .ministry-card-full {
   padding: 2.5rem 2rem; display: flex; flex-direction: column; align-items: center;
@@ -507,7 +511,7 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 .play-btn:hover { transform: scale(1.1); }
 .sermon-content { padding: 1.25rem; }
 .sermon-tag { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold-dark); font-weight: 700; }
-.sermon-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--navy); margin-top: 0.4rem; line-height: 1.4; }
+.sermon-title { font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; color: var(--navy); margin-top: 0.5rem; line-height: 1.05; }
 .sermon-pastor { font-size: 0.82rem; color: var(--gray-400); margin-top: 0.4rem; }
 
 /* ─── EVENTS ─── */
@@ -516,7 +520,7 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
   width: 64px; min-width: 64px; padding: 0.65rem 0.4rem; background: var(--navy);
   border: 1px solid rgba(201,168,76,0.28);
   border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  font-family: 'Playfair Display', serif; color: white; flex-shrink: 0;
+  font-family: var(--font-display); color: white; flex-shrink: 0;
 }
 .event-day { font-size: 1.5rem; font-weight: 700; line-height: 1; color: var(--gold); }
 .event-month {
@@ -524,9 +528,9 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
   margin-top: 5px; padding-top: 5px; width: 100%; text-align: center;
   border-top: 1px solid rgba(255,255,255,0.18);
 }
-.event-title { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--navy); display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.event-title { font-family: var(--font-display); font-size: 1.35rem; font-weight: 700; line-height: 1.05; color: var(--navy); display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .event-meta { font-size: 0.82rem; color: var(--gray-400); margin-top: 4px; }
-.event-desc { font-size: 0.88rem; color: var(--gray-600); margin-top: 0.4rem; line-height: 1.55; }
+.event-desc { font-size: 0.9rem; color: var(--gray-600); margin-top: 0.4rem; line-height: 1.65; }
 
 .event-date-block.urgent { background: var(--orange); animation: urgentGlow 1.4s ease-in-out infinite; }
 .event-date-block.urgent .event-day { color: white; }
@@ -553,7 +557,7 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 
 /* ─── STATS ─── */
 .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 2rem; text-align: center; }
-.stat-num { font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 900; color: var(--gold); line-height: 1; }
+.stat-num { font-family: var(--font-display); font-size: 3.65rem; font-weight: 700; color: var(--gold); line-height: 0.9; }
 .stat-label { font-size: 0.88rem; color: rgba(255,255,255,0.7); margin-top: 0.5rem; }
 .stat-divider { width: 30px; height: 2px; background: var(--gold); margin: 0.75rem auto; border-radius: 2px; }
 
@@ -575,17 +579,17 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 .blog-card { overflow: hidden; }
 .blog-content { padding: 1.25rem; }
 .blog-cat { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; color: var(--gold-dark); }
-.blog-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--navy); margin-top: 0.4rem; line-height: 1.4; }
-.blog-excerpt { font-size: 0.84rem; color: var(--gray-600); margin-top: 0.4rem; line-height: 1.55; }
+.blog-title { font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; color: var(--navy); margin-top: 0.5rem; line-height: 1.05; }
+.blog-excerpt { font-size: 0.88rem; color: var(--gray-600); margin-top: 0.5rem; line-height: 1.65; }
 .blog-meta { font-size: 0.78rem; color: var(--gray-400); margin-top: 0.75rem; display: flex; justify-content: space-between; }
 
 /* ─── FORMS ─── */
 .form-group { margin-bottom: 1.25rem; }
-.form-label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--navy); margin-bottom: 0.4rem; }
+.form-label { display: block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--navy); margin-bottom: 0.45rem; }
 .form-input, .form-select, .form-textarea {
   width: 100%; padding: 0.85rem 1rem; border-radius: 10px;
-  border: 1.5px solid var(--gray-200); font-family: 'DM Sans', sans-serif;
-  font-size: 0.9rem; color: var(--gray-800); outline: none;
+  border: 1.5px solid var(--gray-200); font-family: var(--font-body);
+  font-size: 0.92rem; font-weight: 500; color: var(--gray-800); outline: none;
   transition: border-color 0.2s; background: white;
 }
 .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,168,76,0.12); }
@@ -622,9 +626,9 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
   gap: 3rem; max-width: 1280px; margin: 0 auto;
 }
 .footer-grid > div + div { padding-left: 2.5rem; border-left: 1px solid rgba(255,255,255,0.06); }
-.footer-brand-name { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: white; margin-bottom: 0.3rem; letter-spacing: 0.01em; }
+.footer-brand-name { font-family: var(--font-display); font-size: 1.75rem; font-weight: 700; line-height: 0.95; color: white; margin-bottom: 0.45rem; letter-spacing: 0.01em; }
 .footer-brand-sub { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.14em; color: var(--gold); }
-.footer-desc { font-size: 0.9rem; line-height: 1.75; color: rgba(255,255,255,0.55); margin-top: 1.1rem; max-width: 340px; }
+.footer-desc { font-size: 0.88rem; line-height: 1.8; color: rgba(255,255,255,0.6); margin-top: 1.1rem; max-width: 340px; }
 .footer-verse {
   margin-top: 1.5rem; padding: 1.25rem 1.4rem;
   background: rgba(201,168,76,0.08); border-left: 3px solid var(--gold);
@@ -691,7 +695,7 @@ a.footer-contact-row:hover .footer-contact-text { color: var(--gold-light); }
 }
 .prayer-panel.open { transform: scale(1); opacity: 1; pointer-events: all; }
 .prayer-header { background: linear-gradient(135deg, var(--navy), var(--navy-mid)); padding: 1.25rem; color: white; }
-.prayer-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; }
+.prayer-title { font-family: var(--font-display); font-size: 1.35rem; font-weight: 700; line-height: 1; }
 .prayer-subtitle { font-size: 0.78rem; opacity: 0.7; margin-top: 2px; }
 .prayer-body { padding: 1.25rem; }
 
@@ -727,7 +731,7 @@ a.footer-contact-row:hover .footer-contact-text { color: var(--gold-light); }
   padding: 3.5rem 2rem; text-align: center;
 }
 .newsletter-form { display: flex; gap: 0.75rem; max-width: 480px; margin: 1.5rem auto 0; flex-wrap: wrap; justify-content: center; }
-.newsletter-input { flex: 1; min-width: 220px; padding: 0.85rem 1.25rem; border-radius: 10px; border: 1px solid rgba(201,168,76,0.3); background: rgba(255,255,255,0.1); color: white; font-family: 'DM Sans', sans-serif; outline: none; }
+.newsletter-input { flex: 1; min-width: 220px; padding: 0.85rem 1.25rem; border-radius: 10px; border: 1px solid rgba(201,168,76,0.3); background: rgba(255,255,255,0.1); color: white; font-family: var(--font-body); font-size: 0.9rem; outline: none; }
 .newsletter-input::placeholder { color: rgba(255,255,255,0.5); }
 .newsletter-input:focus { border-color: var(--gold); }
 
@@ -775,7 +779,7 @@ a.footer-contact-row:hover .footer-contact-text { color: var(--gold-light); }
 .video-frame-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
 .modal-video-info { padding: 1.5rem 1.75rem; background: white; }
 .dark-mode .modal-video-info { background: #131D35 !important; }
-.modal-video-info .modal-title { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; color: var(--navy); }
+.modal-video-info .modal-title { font-family: var(--font-display); font-size: 1.4rem; font-weight: 700; line-height: 1.05; color: var(--navy); }
 .dark-mode .modal-video-info .modal-title { color: #E8E4DC !important; }
 .modal-video-info .modal-meta { font-size: 0.82rem; color: var(--gray-400); margin-top: 4px; }
 .modal-close-video {
@@ -814,10 +818,10 @@ a.footer-contact-row:hover .footer-contact-text { color: var(--gold-light); }
   .hero-content { padding: 5.5rem 1.25rem 2rem; gap: 0; }
   .hero-text-col { display: contents; }
   .hero-badge { order: 1; font-size: 0.62rem; padding: 0.35rem 0.75rem; margin-bottom: 1rem; }
-  .hero-title { order: 2; font-size: 1.55rem; margin-bottom: 0.75rem; }
+  .hero-title { order: 2; font-size: 2.45rem; margin-bottom: 0.75rem; }
   .hero-title-break-1 { display: none; }
   .poster-empty { height: 250px; }
-  .hero-desc { order: 3; font-size: 0.85rem; line-height: 1.55; margin-bottom: 1.25rem; }
+  .hero-desc { order: 3; font-size: 0.92rem; line-height: 1.65; margin-bottom: 1.25rem; }
   .hero-visual { order: 4; margin-bottom: 1.5rem; }
   .service-card { padding: 1.1rem; }
   .countdown-section { margin-top: 0.85rem; padding-top: 0.85rem; }
@@ -1254,7 +1258,7 @@ function JoinUsModal({ open, onClose }) {
             <div className="modal-card" onClick={e => e.stopPropagation()}>
                 <div className="modal-header">
                     <button className="modal-close" onClick={handleClose} aria-label="Close">✕</button>
-                    <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.4rem", fontWeight: 700 }}>Join Us</div>
+                    <div style={{ fontFamily: "var(--font-display)", fontSize: "1.7rem", fontWeight: 700, lineHeight: 1 }}>Join Us</div>
                     <div style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.7)", marginTop: 4 }}>Tell us a bit about yourself and we'll get you connected.</div>
                 </div>
                 <div className="modal-body">
@@ -1325,7 +1329,7 @@ function MinistryJoinModal({ ministryTitle, onClose }) {
             <div className="modal-card" onClick={e => e.stopPropagation()}>
                 <div className="modal-header">
                     <button className="modal-close" onClick={handleClose} aria-label="Close">✕</button>
-                    <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.4rem", fontWeight: 700 }}>Join {ministryTitle}</div>
+                    <div style={{ fontFamily: "var(--font-display)", fontSize: "1.7rem", fontWeight: 700, lineHeight: 1 }}>Join {ministryTitle}</div>
                     <div style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.7)", marginTop: 4 }}>Tell us a bit about yourself and we'll get you plugged in.</div>
                 </div>
                 <div className="modal-body">
@@ -1624,7 +1628,7 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
                                 <div style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.12em", color: "var(--gold)", fontWeight: 700, marginBottom: "0.75rem" }}>
                                     {new Date(latestVideo.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                                 </div>
-                                <div className="featured-sermon-title" style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.8rem", fontWeight: 700, color: "white", lineHeight: 1.25, marginBottom: "1rem" }}>{latestVideo.title}</div>
+                                <div className="featured-sermon-title" style={{ fontFamily: "var(--font-display)", fontSize: "2.15rem", fontWeight: 700, color: "white", lineHeight: 1, marginBottom: "1rem" }}>{latestVideo.title}</div>
                                 {latestVideo.description && (
                                     <div style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.95rem", lineHeight: 1.75, marginBottom: "1.5rem", display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
                                         {latestVideo.description}
@@ -1730,13 +1734,13 @@ function AboutPage({ navigate, dark }) {
                 <div className="container">
                     <div className="grid-2">
                         <div className="card" style={{ padding: "2.5rem", background: "var(--navy)" }}>
-                            <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.4rem", fontWeight: 700, color: "white", marginBottom: "1rem" }}>Our Vision</div>
+                            <div style={{ fontFamily: "var(--font-display)", fontSize: "1.8rem", fontWeight: 700, color: "white", lineHeight: 1, marginBottom: "1rem" }}>Our Vision</div>
                             <p style={{ color: "rgba(255,255,255,0.75)", lineHeight: 1.75 }}>
                                 To be a generation of Christlike leaders who transform families, communities, and nations through the power of the Gospel.
                             </p>
                         </div>
                         <div className="card" style={{ padding: "2.5rem", background: "linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%)" }}>
-                            <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.4rem", fontWeight: 700, color: "white", marginBottom: "1rem" }}>Our Mission</div>
+                            <div style={{ fontFamily: "var(--font-display)", fontSize: "1.8rem", fontWeight: 700, color: "white", lineHeight: 1, marginBottom: "1rem" }}>Our Mission</div>
                             <p style={{ color: "rgba(255,255,255,0.9)", lineHeight: 1.75 }}>
                                 To equip, empower, and engage youth in meaningful discipleship, authentic worship, and transformative service to God and humanity.
                             </p>
@@ -1799,7 +1803,7 @@ function AboutPage({ navigate, dark }) {
                             ["Second Coming", "We believe in the bodily return of Jesus Christ to judge the living and the dead and to establish His kingdom."],
                         ].map(([title, text], i) => (
                             <div key={i} className="card" style={{ padding: "1.75rem", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(201,168,76,0.2)" }}>
-                                <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.05rem", fontWeight: 700, color: "var(--gold)", marginBottom: "0.5rem" }}>{title}</div>
+                                <div style={{ fontFamily: "var(--font-display)", fontSize: "1.35rem", fontWeight: 700, color: "var(--gold)", lineHeight: 1, marginBottom: "0.5rem" }}>{title}</div>
                                 <div style={{ fontSize: "0.88rem", color: "rgba(255,255,255,0.7)", lineHeight: 1.7 }}>{text}</div>
                             </div>
                         ))}
@@ -1817,7 +1821,7 @@ function MinistriesPage({ navigate, dark }) {
         <>
             <div style={{ background: "linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 50%, var(--gold-dark) 100%)", padding: "8rem 2rem 4rem", textAlign: "center" }}>
                 <div className="overline" style={{ color: "var(--gold-light)" }}>Get Involved</div>
-                <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "3rem", fontWeight: 900, color: "white", marginBottom: "1rem" }}>Our Ministries</h1>
+                <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2.75rem, 5vw, 4.5rem)", fontWeight: 700, lineHeight: 0.95, color: "white", marginBottom: "1rem" }}>Our Ministries</h1>
                 <p style={{ fontSize: "1.1rem", color: "rgba(255,255,255,0.85)", maxWidth: 550, margin: "0 auto" }}>Seven dynamic arms of ministry where every member finds their place, purpose, and calling to serve.</p>
             </div>
             <div className="section section-cream">
@@ -1884,7 +1888,7 @@ function SermonsPage({ navigate, dark, activeTab, setActiveTab }) {
         <>
             <div style={{ background: "linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 50%, var(--gold-dark) 100%)", padding: "8rem 2rem 4rem", textAlign: "center" }}>
                 <div className="overline" style={{ color: "var(--gold-light)" }}>The Word</div>
-                <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "3rem", fontWeight: 900, color: "white", marginBottom: "1rem" }}>Sermons & Media</h1>
+                <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2.75rem, 5vw, 4.5rem)", fontWeight: 700, lineHeight: 0.95, color: "white", marginBottom: "1rem" }}>Sermons & Media</h1>
                 <p style={{ color: "rgba(255,255,255,0.75)", maxWidth: 520, margin: "0 auto" }}>Be transformed by the renewing of your mind — Romans 12:2. Watch our full video library, straight from our YouTube channel.</p>
             </div>
             <div className="section section-cream">
@@ -1998,7 +2002,7 @@ function EventsPage({ events, navigate, dark }) {
         <>
             <div style={{ background: "linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 50%, var(--gold-dark) 100%)", padding: "8rem 2rem 4rem", textAlign: "center" }}>
                 <div className="overline" style={{ color: "var(--gold-light)" }}>What's Happening</div>
-                <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "3rem", fontWeight: 900, color: "white", marginBottom: "1rem" }}>Events & Activities</h1>
+                <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2.75rem, 5vw, 4.5rem)", fontWeight: 700, lineHeight: 0.95, color: "white", marginBottom: "1rem" }}>Events & Activities</h1>
                 <p style={{ color: "rgba(255,255,255,0.85)", maxWidth: 540, margin: "0 auto" }}>Coffee dates, worship experiences, trainings, retreats, and more — join us for life-changing experiences.</p>
             </div>
             <div className="section section-cream">
@@ -2035,10 +2039,10 @@ function EventsPage({ events, navigate, dark }) {
                                 <div className="modal-header">
                                     <button className="modal-close" onClick={() => setDetailsEvent(null)} aria-label="Close">✕</button>
                                     <div className="modal-date-badge">
-                                        <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.4rem", fontWeight: 700, color: "var(--gold-light)", lineHeight: 1 }}>{detailsEvent.day}</div>
+                                        <div style={{ fontFamily: "var(--font-display)", fontSize: "1.75rem", fontWeight: 700, color: "var(--gold-light)", lineHeight: 0.9 }}>{detailsEvent.day}</div>
                                         <div style={{ fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.08em", opacity: 0.8 }}>{detailsEvent.month}</div>
                                     </div>
-                                    <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.4rem", fontWeight: 700 }}>{detailsEvent.title}</div>
+                                    <div style={{ fontFamily: "var(--font-display)", fontSize: "1.7rem", fontWeight: 700, lineHeight: 1 }}>{detailsEvent.title}</div>
                                     <div style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.7)", marginTop: 4 }}>📅 {detailsEvent.time}</div>
                                 </div>
                                 <div className="modal-body">
@@ -2127,14 +2131,14 @@ function ConnectPage({ navigate, dark }) {
         <>
             <div style={{ background: "linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 50%, var(--gold-dark) 100%)", padding: "8rem 2rem 4rem", textAlign: "center" }}>
                 <div className="overline" style={{ color: "var(--gold-light)" }}>We'd Love to Hear From You</div>
-                <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "3rem", fontWeight: 700, color: "white", marginBottom: "1rem", letterSpacing: "0.01em", wordSpacing: "0.1em" }}>Connect With Us</h1>
+                <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2.75rem, 5vw, 4.5rem)", fontWeight: 700, lineHeight: 0.95, color: "white", marginBottom: "1rem", letterSpacing: "0.01em", wordSpacing: "0.1em" }}>Connect With Us</h1>
                 <p style={{ color: "rgba(255,255,255,0.75)", maxWidth: 520, margin: "0 auto" }}>Whether you're new, returning, or just curious — reach out. We have a place for you here.</p>
             </div>
             <div className="section section-cream">
                 <div className="container">
                     <div className="grid-2">
                         <div>
-                            <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.5rem", fontWeight: 700, color: "var(--navy)", marginBottom: "1.5rem" }}>Send Us a Message</h3>
+                            <h3 style={{ fontFamily: "var(--font-display)", fontSize: "1.85rem", fontWeight: 700, lineHeight: 1, color: "var(--navy)", marginBottom: "1.5rem" }}>Send Us a Message</h3>
                             <div className="card" style={{ padding: "2rem" }}>
                                 {contact.submitted ? (
                                     <p style={{ textAlign: "center", color: "var(--navy)", fontWeight: 600, padding: "1rem 0" }}>✓ Message sent! We'll get back to you soon.</p>
@@ -2165,7 +2169,7 @@ function ConnectPage({ navigate, dark }) {
                                 )}
                             </div>
 
-                            <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.5rem", fontWeight: 700, color: "var(--navy)", margin: "2rem 0 1.25rem" }}>Prayer Request</h3>
+                            <h3 style={{ fontFamily: "var(--font-display)", fontSize: "1.85rem", fontWeight: 700, lineHeight: 1, color: "var(--navy)", margin: "2rem 0 1.25rem" }}>Prayer Request</h3>
                             <div className="card" style={{ padding: "2rem" }}>
                                 {connectPrayer.submitted ? (
                                     <p style={{ textAlign: "center", color: "var(--navy)", fontWeight: 600, padding: "1rem 0" }}>🙏 Your prayer request has been submitted.</p>
@@ -2192,7 +2196,7 @@ function ConnectPage({ navigate, dark }) {
                             </div>
                         </div>
                         <div>
-                            <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.5rem", fontWeight: 700, color: "var(--navy)", marginBottom: "1.5rem" }}>Find Us</h3>
+                            <h3 style={{ fontFamily: "var(--font-display)", fontSize: "1.85rem", fontWeight: 700, lineHeight: 1, color: "var(--navy)", marginBottom: "1.5rem" }}>Find Us</h3>
                             <a
                                 href="https://www.google.com/maps/place/St+Pauls+Ack+Cathedral-Embu/@-0.5279977,37.4488796,17z/data=!3m1!4b1!4m6!3m5!1s0x18262de925844709:0x8c05dc706a1f1a5a!8m2!3d-0.5279977!4d37.4514545!16s%2Fg%2F1q5cccb3n?entry=ttu&g_ep=EgoyMDI2MDYyOS4wIKXMDSoASAFQAw%3D%3D"
                                 target="_blank"
@@ -2226,7 +2230,7 @@ function ConnectPage({ navigate, dark }) {
                                 </div>
                             </div>
 
-                            <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.4rem", fontWeight: 700, color: "var(--navy)", marginBottom: "1.25rem" }}>Join a Small Group</h3>
+                            <h3 style={{ fontFamily: "var(--font-display)", fontSize: "1.7rem", fontWeight: 700, lineHeight: 1, color: "var(--navy)", marginBottom: "1.25rem" }}>Join a Small Group</h3>
                             <div className="card" style={{ padding: "1.75rem" }}>
                                 {smallGroup.submitted ? (
                                     <p style={{ textAlign: "center", color: "var(--navy)", fontWeight: 600, padding: "1rem 0" }}>✓ You're signed up! See you at small group.</p>
@@ -2250,7 +2254,7 @@ function ConnectPage({ navigate, dark }) {
                                 )}
                             </div>
 
-                            <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.4rem", fontWeight: 700, color: "var(--navy)", margin: "1.5rem 0 1rem" }}>Follow Us</h3>
+                            <h3 style={{ fontFamily: "var(--font-display)", fontSize: "1.7rem", fontWeight: 700, lineHeight: 1, color: "var(--navy)", margin: "1.5rem 0 1rem" }}>Follow Us</h3>
                             <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
                                 {[
                                     ["facebook", "Facebook", "@ACKStPaulsYouths", null],
@@ -2292,7 +2296,7 @@ function GivePage({ dark }) {
         <>
             <div className="giving-hero">
                 <div className="overline" style={{ color: "var(--gold)" }}>Give & Support</div>
-                <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "3rem", fontWeight: 900, color: "white", marginBottom: "1rem" }}>Online Giving</h1>
+                <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2.75rem, 5vw, 4.5rem)", fontWeight: 700, lineHeight: 0.95, color: "white", marginBottom: "1rem" }}>Online Giving</h1>
                 <p style={{ color: "rgba(255,255,255,0.8)", maxWidth: 540, margin: "0 auto" }}>
                     "Each of you should give what you have decided in your heart to give, not reluctantly or under compulsion, for God loves a cheerful giver." — 2 Cor 9:7
                 </p>
@@ -2302,9 +2306,9 @@ function GivePage({ dark }) {
                 <div className="container-sm">
                     <div className="card" style={{ padding: "2.5rem", textAlign: "center", marginBottom: "2rem" }}>
                         <div style={{ fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--gold-dark)", fontWeight: 700, marginBottom: "0.75rem" }}>M-Pesa Lipa na M-Pesa</div>
-                        <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1rem", color: "var(--gray-600)", marginBottom: "0.35rem" }}>Paybill Number</div>
+                        <div style={{ fontFamily: "var(--font-display)", fontSize: "1.3rem", fontWeight: 600, lineHeight: 1, color: "var(--gray-600)", marginBottom: "0.45rem" }}>Paybill Number</div>
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.75rem" }}>
-                            <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "2.5rem", fontWeight: 900, color: "var(--navy)", letterSpacing: "0.05em" }}>400222</div>
+                            <div style={{ fontFamily: "var(--font-display)", fontSize: "3.2rem", fontWeight: 700, lineHeight: 0.9, color: "var(--navy)", letterSpacing: "0.05em" }}>400222</div>
                             <button className="btn btn-navy btn-sm" onClick={() => copyToClipboard("400222", "Paybill")}>
                                 {copied === "Paybill" ? "✓ Copied" : "Copy"}
                             </button>
@@ -2325,8 +2329,8 @@ function GivePage({ dark }) {
                             { name: "Thanksgiving", account: "90925#Thanksgiving" },
                         ].map(a => (
                             <div key={a.name} className="card" style={{ padding: "2rem", textAlign: "center" }}>
-                                <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.2rem", fontWeight: 700, color: "var(--navy)", marginBottom: "0.5rem" }}>{a.name}</div>
-                                <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.1rem", fontWeight: 700, color: "var(--gold-dark)", marginBottom: "1.25rem", letterSpacing: "0.02em" }}>{a.account}</div>
+                                <div style={{ fontFamily: "var(--font-display)", fontSize: "1.5rem", fontWeight: 700, lineHeight: 1, color: "var(--navy)", marginBottom: "0.5rem" }}>{a.name}</div>
+                                <div style={{ fontFamily: "var(--font-display)", fontSize: "1.35rem", fontWeight: 700, lineHeight: 1, color: "var(--gold-dark)", marginBottom: "1.25rem", letterSpacing: "0.02em" }}>{a.account}</div>
                                 <button className="btn btn-gold btn-sm" style={{ width: "100%", justifyContent: "center" }} onClick={() => copyToClipboard(a.account, a.name)}>
                                     {copied === a.name ? "✓ Copied" : "Copy Account Number"}
                                 </button>
@@ -2396,7 +2400,7 @@ function TestimoniesPage({ navigate, dark }) {
         <>
             <div style={{ background: "linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 50%, var(--gold-dark) 100%)", padding: "8rem 2rem 4rem", textAlign: "center" }}>
                 <div className="overline" style={{ color: "var(--gold-light)" }}>Word & Wisdom</div>
-                <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "3rem", fontWeight: 900, color: "white", marginBottom: "1rem" }}>Testimonies</h1>
+                <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2.75rem, 5vw, 4.5rem)", fontWeight: 700, lineHeight: 0.95, color: "white", marginBottom: "1rem" }}>Testimonies</h1>
                 <p style={{ color: "rgba(255,255,255,0.8)", maxWidth: 520, margin: "0 auto" }}>Real stories of what God is doing in the lives of our members — shared to encourage and inspire.</p>
             </div>
             <div className="section section-cream">

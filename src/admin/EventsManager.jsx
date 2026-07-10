@@ -91,7 +91,7 @@ export default function EventsManager() {
     return (
         <div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.75rem", marginBottom: "1.5rem" }}>
-                <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.6rem", fontWeight: 700, color: "var(--navy)", margin: 0 }}>
+                <h2 style={{ fontFamily: "var(--font-display)", fontSize: "2.15rem", fontWeight: 700, lineHeight: 1, color: "var(--navy)", margin: 0 }}>
                     Manage Events <span style={{ color: "var(--gray-400)", fontWeight: 500, fontSize: "1rem" }}>({sorted.length})</span>
                 </h2>
                 <button className="btn btn-gold btn-sm" onClick={() => { setCreating(!creating); setEditingId(null); }}>
@@ -123,11 +123,11 @@ export default function EventsManager() {
                             <>
                                 <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
                                     <div style={{ width: 60, minWidth: 60, height: 60, background: "var(--navy)", borderRadius: 10, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "white", flexShrink: 0 }}>
-                                        <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.25rem", fontWeight: 700, color: "var(--gold)", lineHeight: 1 }}>{item.day}</div>
+                                        <div style={{ fontFamily: "var(--font-display)", fontSize: "1.65rem", fontWeight: 700, color: "var(--gold)", lineHeight: 0.9 }}>{item.day}</div>
                                         <div style={{ fontSize: "0.6rem", textTransform: "uppercase", letterSpacing: "0.08em", opacity: 0.8 }}>{item.month}</div>
                                     </div>
                                     <div style={{ flex: 1 }}>
-                                        <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.05rem", fontWeight: 700, color: "var(--navy)" }}>{item.title}</div>
+                                        <div style={{ fontFamily: "var(--font-display)", fontSize: "1.35rem", fontWeight: 700, lineHeight: 1, color: "var(--navy)" }}>{item.title}</div>
                                         <div style={{ fontSize: "0.82rem", color: "var(--gray-400)", marginTop: 2 }}>{item.time}</div>
                                         <div style={{ fontSize: "0.88rem", color: "var(--gray-600)", marginTop: 6, lineHeight: 1.55 }}>{item.desc}</div>
                                     </div>

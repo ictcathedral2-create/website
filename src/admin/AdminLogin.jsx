@@ -36,8 +36,8 @@ export default function AdminLogin({ onLogin }) {
             <div style={{ background: "white", borderRadius: 20, padding: "3rem 2.5rem", maxWidth: 400, width: "100%", boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
                 <div style={{ textAlign: "center", marginBottom: "2rem" }}>
                     <div style={{ width: 56, height: 56, borderRadius: 14, background: "linear-gradient(135deg, var(--gold), var(--gold-dark))", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, color: "white", margin: "0 auto 1rem" }}>✝</div>
-                    <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.4rem", fontWeight: 700, color: "var(--navy)" }}>Admin Dashboard</div>
-                    <div style={{ fontSize: "0.85rem", color: "var(--gray-400)", marginTop: 4 }}>ACK St Pauls Youths</div>
+                    <div style={{ fontFamily: "var(--font-display)", fontSize: "1.9rem", fontWeight: 700, lineHeight: 1, color: "var(--navy)" }}>Admin Dashboard</div>
+                    <div style={{ fontSize: "0.78rem", fontWeight: 600, letterSpacing: "0.04em", color: "var(--gray-400)", marginTop: 8 }}>ACK St Pauls Youths</div>
                 </div>
                 <div className="form-group">
                     <label className="form-label">Email</label>
