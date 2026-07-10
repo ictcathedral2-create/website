@@ -308,9 +308,9 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 .service-time-val { font-size: 0.9rem; font-weight: 600; color: var(--gold-light); }
 
 /* ─── POSTER CAROUSEL ─── */
-.poster-frame { perspective: 1200px; display: flex; justify-content: center; }
+.poster-frame { perspective: 1200px; }
 .poster-flip {
-  width: auto; max-width: 100%; max-height: 340px;
+  width: 100%; height: 320px;
   border-radius: 14px; overflow: hidden; position: relative;
   line-height: 0; transition: transform 0.3s ease;
 }
@@ -339,6 +339,13 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   text-align: center; padding: 1.5rem;
 }
+.poster-loading {
+  border: none;
+  background: linear-gradient(100deg, rgba(255,255,255,0.04) 30%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.04) 70%);
+  background-size: 200% 100%;
+  animation: posterShimmer 1.4s ease-in-out infinite;
+}
+@keyframes posterShimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
 .happening-now-badge {
   display: inline-flex; align-items: center; gap: 8px;
@@ -813,7 +820,7 @@ a.footer-contact-row:hover .footer-contact-text { color: var(--gold-light); }
   .hero-desc { order: 3; font-size: 0.85rem; line-height: 1.55; margin-bottom: 1.25rem; }
   .hero-visual { order: 4; margin-bottom: 1.5rem; }
   .service-card { padding: 1.1rem; }
-  .poster-flip { max-height: 210px; }
+  .poster-flip { height: 190px; }
   .countdown-section { margin-top: 0.85rem; padding-top: 0.85rem; }
   .countdown-label { font-size: 0.7rem; margin-bottom: 0.6rem; }
   .countdown-unit { padding: 0.5rem 0.4rem; }
@@ -1364,11 +1371,10 @@ function MinistryJoinModal({ ministryTitle, onClose }) {
 // Flips to the next item every 5 seconds; swaps the image mid-flip so the
 // transition reads as a page turn rather than a jarring cut.
 function PosterCarousel() {
-    const { data } = useFirebaseCollection("gallery");
+    const { data, loading } = useFirebaseCollection("gallery");
     const items = useMemo(() => (data || []).slice().sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)), [data]);
     const [index, setIndex] = useState(0);
     const [flipping, setFlipping] = useState(false);
-    const [ratio, setRatio] = useState(0.75);
     const timerRef = useRef(null);
 
     const advance = () => {
@@ -1396,6 +1402,10 @@ function PosterCarousel() {
         restartTimer();
     };
 
+    if (loading) {
+        return <div className="poster-empty poster-loading" />;
+    }
+
     if (!items.length) {
         return (
             <div className="poster-empty">
@@ -1408,13 +1418,8 @@ function PosterCarousel() {
     const current = items[index % items.length];
     return (
         <div className="poster-frame">
-            <div className={`poster-flip${flipping ? " flipping" : ""}`} style={{ aspectRatio: ratio }}>
-                <img
-                    className="poster-image"
-                    src={current.imageData}
-                    alt={current.caption || "Event poster"}
-                    onLoad={e => setRatio(e.target.naturalWidth / e.target.naturalHeight)}
-                />
+            <div className={`poster-flip${flipping ? " flipping" : ""}`}>
+                <img className="poster-image" src={current.imageData} alt={current.caption || "Event poster"} />
                 {current.caption && <div className="poster-caption">{current.caption}</div>}
                 {items.length > 1 && (
                     <button className="poster-next-btn" onClick={handleNextClick} aria-label="Next poster">›</button>
