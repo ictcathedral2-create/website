@@ -343,6 +343,13 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   text-align: center; padding: 1.5rem;
 }
+
+/* Keep posters inside a stable desktop frame so portrait uploads cannot stretch the hero. */
+@media (min-width: 641px) {
+  .poster-frame { height: clamp(300px, 31vw, 420px); }
+  .poster-flip, .poster-empty { height: 100%; }
+  .poster-image { width: 100%; height: 100%; object-fit: contain; object-position: center; background: rgba(0,0,0,0.16); }
+}
 .poster-loading {
   border: none;
   background: linear-gradient(100deg, rgba(255,255,255,0.04) 30%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.04) 70%);
