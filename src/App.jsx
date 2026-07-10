@@ -310,23 +310,33 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 /* ─── POSTER CAROUSEL ─── */
 .poster-frame { perspective: 1200px; }
 .poster-flip {
-  width: 100%; aspect-ratio: 3 / 4; max-height: 260px;
+  width: 100%; height: 360px;
   border-radius: 14px; overflow: hidden; position: relative;
-  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(0,0,0,0.22); border: 1px solid rgba(255,255,255,0.1);
   transition: transform 0.3s ease;
+  display: flex; align-items: center; justify-content: center;
 }
 .poster-flip.flipping { transform: scaleX(0); }
-.poster-image { width: 100%; height: 100%; object-fit: cover; display: block; }
+.poster-image { width: 100%; height: 100%; object-fit: contain; display: block; }
 .poster-caption {
   position: absolute; bottom: 0; left: 0; right: 0;
   background: linear-gradient(transparent, rgba(0,0,0,0.8));
   color: white; font-size: 0.75rem; font-weight: 500; padding: 20px 12px 10px;
 }
+.poster-next-btn {
+  position: absolute; top: 50%; right: 10px; transform: translateY(-50%);
+  width: 34px; height: 34px; border-radius: 50%;
+  background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.3);
+  color: white; font-size: 1.5rem; line-height: 1; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; padding: 0 0 2px;
+  transition: all 0.2s; backdrop-filter: blur(4px);
+}
+.poster-next-btn:hover { background: var(--gold); border-color: var(--gold); transform: translateY(-50%) scale(1.08); }
 .poster-dots { display: flex; gap: 6px; justify-content: center; margin-top: 0.85rem; }
 .poster-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.25); transition: all 0.25s; }
 .poster-dot.active { background: var(--gold); width: 16px; border-radius: 3px; }
 .poster-empty {
-  width: 100%; aspect-ratio: 3 / 4; max-height: 260px; border-radius: 14px;
+  width: 100%; height: 360px; border-radius: 14px;
   background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   text-align: center; padding: 1.5rem;
@@ -1346,18 +1356,32 @@ function PosterCarousel() {
     const items = useMemo(() => (data || []).slice().sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)), [data]);
     const [index, setIndex] = useState(0);
     const [flipping, setFlipping] = useState(false);
+    const timerRef = useRef(null);
+
+    const advance = () => {
+        setFlipping(true);
+        setTimeout(() => {
+            setIndex(i => (i + 1) % items.length);
+            setFlipping(false);
+        }, 300);
+    };
+
+    const restartTimer = () => {
+        clearInterval(timerRef.current);
+        if (items.length < 2) return;
+        timerRef.current = setInterval(advance, 5000);
+    };
 
     useEffect(() => {
-        if (items.length < 2) return;
-        const id = setInterval(() => {
-            setFlipping(true);
-            setTimeout(() => {
-                setIndex(i => (i + 1) % items.length);
-                setFlipping(false);
-            }, 300);
-        }, 5000);
-        return () => clearInterval(id);
+        restartTimer();
+        return () => clearInterval(timerRef.current);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [items.length]);
+
+    const handleNextClick = () => {
+        advance();
+        restartTimer();
+    };
 
     if (!items.length) {
         return (
@@ -1374,6 +1398,9 @@ function PosterCarousel() {
             <div className={`poster-flip${flipping ? " flipping" : ""}`}>
                 <img className="poster-image" src={current.imageData} alt={current.caption || "Event poster"} />
                 {current.caption && <div className="poster-caption">{current.caption}</div>}
+                {items.length > 1 && (
+                    <button className="poster-next-btn" onClick={handleNextClick} aria-label="Next poster">›</button>
+                )}
             </div>
             {items.length > 1 && (
                 <div className="poster-dots">
