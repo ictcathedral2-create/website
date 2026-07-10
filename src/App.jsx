@@ -316,9 +316,9 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 .poster-flip {
   width: 100%; height: auto;
   border-radius: 14px; overflow: hidden; position: relative;
-  line-height: 0; transition: transform 0.3s ease;
+  line-height: 0; opacity: 1; transition: opacity 0.9s ease;
 }
-.poster-flip.flipping { transform: scaleX(0); }
+.poster-flip.flipping { opacity: 0; }
 .poster-image { width: 100%; height: auto; display: block; }
 .poster-open-btn { position: absolute; inset: 0; z-index: 1; border: none; background: transparent; cursor: zoom-in; }
 .poster-open-btn:focus-visible { outline: 3px solid var(--gold-light); outline-offset: -3px; }
@@ -1402,8 +1402,8 @@ function MinistryJoinModal({ ministryTitle, onClose }) {
 }
 
 // Auto-rotating carousel of admin-uploaded event posters / after-event photos.
-// Flips to the next item every 5 seconds; swaps the image mid-flip so the
-// transition reads as a page turn rather than a jarring cut.
+// Crossfades to the next item every 5 seconds, swapping the image once it's
+// fully faded out so the transition reads as a slow, smooth dissolve.
 function PosterCarousel() {
     const { data, loading } = useFirebaseCollection("gallery");
     const items = useMemo(() => (data || []).slice().sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)), [data]);
@@ -1417,7 +1417,7 @@ function PosterCarousel() {
         setTimeout(() => {
             setIndex(i => (i + 1) % items.length);
             setFlipping(false);
-        }, 300);
+        }, 900);
     };
 
     const restartTimer = () => {
