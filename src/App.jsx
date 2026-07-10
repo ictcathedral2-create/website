@@ -308,15 +308,14 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 .service-time-val { font-size: 0.9rem; font-weight: 600; color: var(--gold-light); }
 
 /* ─── POSTER CAROUSEL ─── */
-.poster-frame { perspective: 1200px; }
+.poster-frame { perspective: 1200px; display: flex; justify-content: center; }
 .poster-flip {
-  width: 100%; border-radius: 14px; overflow: hidden; position: relative;
+  width: auto; max-width: 100%; max-height: 340px;
+  border-radius: 14px; overflow: hidden; position: relative;
   line-height: 0; transition: transform 0.3s ease;
-  background: rgba(0,0,0,0.25);
-  display: flex; align-items: center; justify-content: center;
 }
 .poster-flip.flipping { transform: scaleX(0); }
-.poster-image { width: 100%; height: 320px; object-fit: contain; display: block; }
+.poster-image { width: 100%; height: 100%; object-fit: cover; display: block; }
 .poster-caption {
   position: absolute; bottom: 0; left: 0; right: 0;
   background: linear-gradient(transparent, rgba(0,0,0,0.8));
@@ -814,7 +813,7 @@ a.footer-contact-row:hover .footer-contact-text { color: var(--gold-light); }
   .hero-desc { order: 3; font-size: 0.85rem; line-height: 1.55; margin-bottom: 1.25rem; }
   .hero-visual { order: 4; margin-bottom: 1.5rem; }
   .service-card { padding: 1.1rem; }
-  .poster-image { height: 190px; object-fit: contain; }
+  .poster-flip { max-height: 210px; }
   .countdown-section { margin-top: 0.85rem; padding-top: 0.85rem; }
   .countdown-label { font-size: 0.7rem; margin-bottom: 0.6rem; }
   .countdown-unit { padding: 0.5rem 0.4rem; }
@@ -1369,6 +1368,7 @@ function PosterCarousel() {
     const items = useMemo(() => (data || []).slice().sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)), [data]);
     const [index, setIndex] = useState(0);
     const [flipping, setFlipping] = useState(false);
+    const [ratio, setRatio] = useState(0.75);
     const timerRef = useRef(null);
 
     const advance = () => {
@@ -1408,8 +1408,13 @@ function PosterCarousel() {
     const current = items[index % items.length];
     return (
         <div className="poster-frame">
-            <div className={`poster-flip${flipping ? " flipping" : ""}`}>
-                <img className="poster-image" src={current.imageData} alt={current.caption || "Event poster"} />
+            <div className={`poster-flip${flipping ? " flipping" : ""}`} style={{ aspectRatio: ratio }}>
+                <img
+                    className="poster-image"
+                    src={current.imageData}
+                    alt={current.caption || "Event poster"}
+                    onLoad={e => setRatio(e.target.naturalWidth / e.target.naturalHeight)}
+                />
                 {current.caption && <div className="poster-caption">{current.caption}</div>}
                 {items.length > 1 && (
                     <button className="poster-next-btn" onClick={handleNextClick} aria-label="Next poster">›</button>
