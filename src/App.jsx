@@ -320,16 +320,18 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 }
 .poster-flip.flipping { transform: scaleX(0); }
 .poster-image { width: 100%; height: auto; display: block; }
+.poster-open-btn { position: absolute; inset: 0; z-index: 1; border: none; background: transparent; cursor: zoom-in; }
+.poster-open-btn:focus-visible { outline: 3px solid var(--gold-light); outline-offset: -3px; }
 .poster-caption {
   position: absolute; bottom: 0; left: 0; right: 0;
   background: linear-gradient(transparent, rgba(0,0,0,0.8));
-  color: white; font-size: 0.75rem; font-weight: 500; padding: 20px 12px 10px;
+  color: white; font-size: 0.75rem; font-weight: 500; padding: 20px 12px 10px; z-index: 2; pointer-events: none;
 }
 .poster-next-btn {
   position: absolute; top: 50%; right: 10px; transform: translateY(-50%);
   width: 34px; height: 34px; border-radius: 50%;
   background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.3);
-  color: white; font-size: 1.5rem; line-height: 1; cursor: pointer;
+  color: white; font-size: 1.5rem; line-height: 1; cursor: pointer; z-index: 3;
   display: flex; align-items: center; justify-content: center; padding: 0 0 2px;
   transition: all 0.2s; backdrop-filter: blur(4px);
 }
@@ -350,6 +352,22 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
   .poster-flip, .poster-empty { height: 100%; }
   .poster-image { width: 100%; height: 100%; object-fit: contain; object-position: center; background: rgba(0,0,0,0.16); }
 }
+
+.poster-viewer-overlay {
+  position: fixed; inset: 0; z-index: 3000; padding: 2rem;
+  display: grid; place-items: center; background: rgba(5,10,20,0.9); backdrop-filter: blur(8px);
+  animation: fadeSlideUp 0.2s ease both;
+}
+.poster-viewer { position: relative; width: fit-content; max-width: 100%; max-height: 100%; }
+.poster-viewer-image { display: block; max-width: 100%; max-height: calc(100vh - 4rem); object-fit: contain; border-radius: 16px; background: #050A14; box-shadow: 0 24px 80px rgba(0,0,0,0.45); }
+.poster-viewer-caption { color: white; text-align: center; font-size: 0.85rem; line-height: 1.5; margin-top: 0.8rem; }
+.poster-viewer-close {
+  position: absolute; top: -14px; right: -14px; z-index: 1; width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center; border: none; border-radius: 50%;
+  background: var(--gold); color: white; font-size: 1.45rem; line-height: 1; cursor: pointer;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.35);
+}
+.poster-viewer-close:hover { background: var(--gold-dark); }
 .poster-loading {
   border: none;
   background: linear-gradient(100deg, rgba(255,255,255,0.04) 30%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.04) 70%);
@@ -1002,7 +1020,11 @@ export default function App() {
         else if (now >= eventTiming.dayStart) eventPhase = "starting";
     }
 
-    const prayerWidget = useFormSubmit("prayerRequests", { name: "", phone: "", request: "" }, ["request"]);
+    const prayerWidget = useFormSubmit(
+        "prayerRequests",
+        { firstName: "", lastName: "", phone: "", request: "" },
+        ["firstName", "lastName", "phone", "request"]
+    );
 
     const stat1 = useAnimatedCount(350, statsVisible);
     const stat2 = useAnimatedCount(7, statsVisible);
@@ -1148,7 +1170,7 @@ export default function App() {
                                 <cite>— 1 Timothy 4:12</cite>
                             </div>
                             <div className="footer-socials">
-                                {["facebook", "instagram", "twitter", "youtube", "whatsapp"].map(s => <div key={s} className="social-btn"><SocialIcon name={s} /></div>)}
+                                {["facebook", "youtube", "whatsapp"].map(s => <div key={s} className="social-btn"><SocialIcon name={s} /></div>)}
                             </div>
                         </div>
                         <div>
@@ -1193,20 +1215,22 @@ export default function App() {
                                 </p>
                             ) : (
                                 <>
-                                    <div className="form-group">
-                                        <label className="form-label">Your Name</label>
-                                        <input
-                                            className="form-input"
-                                            placeholder="Enter your name"
-                                            value={prayerWidget.formData.name}
-                                            onChange={e => prayerWidget.setField("name", e.target.value)}
-                                        />
+                                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
+                                        <div className="form-group">
+                                            <label className="form-label">First Name</label>
+                                            <input className="form-input" placeholder="First name" value={prayerWidget.formData.firstName} onChange={e => prayerWidget.setField("firstName", e.target.value)} />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Last Name</label>
+                                            <input className="form-input" placeholder="Last name" value={prayerWidget.formData.lastName} onChange={e => prayerWidget.setField("lastName", e.target.value)} />
+                                        </div>
                                     </div>
                                     <div className="form-group">
                                         <label className="form-label">Phone Number</label>
                                         <input
                                             className="form-input"
-                                            placeholder="+254 700 000 000"
+                                            type="tel"
+                                            placeholder="Enter your phone number"
                                             value={prayerWidget.formData.phone}
                                             onChange={e => prayerWidget.setField("phone", e.target.value)}
                                         />
@@ -1226,7 +1250,7 @@ export default function App() {
                                         className="btn btn-gold"
                                         style={{ width: "100%", justifyContent: "center" }}
                                         disabled={prayerWidget.submitting}
-                                        onClick={() => prayerWidget.handleSubmit({ source: "widget", anonymous: false })}
+                                        onClick={() => prayerWidget.handleSubmit({ source: "widget", anonymous: false, name: `${prayerWidget.formData.firstName} ${prayerWidget.formData.lastName}`.trim() })}
                                     >
                                         {prayerWidget.submitting ? "Sending..." : "Send Prayer Request"}
                                     </button>
@@ -1287,7 +1311,7 @@ function JoinUsModal({ open, onClose }) {
                             </div>
                             <div className="form-group">
                                 <label className="form-label">Phone Number</label>
-                                <input className="form-input" placeholder="+254 700 000 000" value={registration.formData.phone} onChange={e => registration.setField("phone", e.target.value)} />
+                                <input className="form-input" placeholder="Enter your phone number" value={registration.formData.phone} onChange={e => registration.setField("phone", e.target.value)} />
                             </div>
                             <div className="form-group">
                                 <label className="form-label">Area (Where You Come From)</label>
@@ -1358,7 +1382,7 @@ function MinistryJoinModal({ ministryTitle, onClose }) {
                             </div>
                             <div className="form-group">
                                 <label className="form-label">Phone Number</label>
-                                <input className="form-input" placeholder="+254 700 000 000" value={registration.formData.phone} onChange={e => registration.setField("phone", e.target.value)} />
+                                <input className="form-input" placeholder="Enter your phone number" value={registration.formData.phone} onChange={e => registration.setField("phone", e.target.value)} />
                             </div>
                             {registration.error && <p style={{ color: "var(--orange)", fontSize: "0.8rem", marginBottom: 8 }}>{registration.error}</p>}
                             <button
@@ -1385,6 +1409,7 @@ function PosterCarousel() {
     const items = useMemo(() => (data || []).slice().sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)), [data]);
     const [index, setIndex] = useState(0);
     const [flipping, setFlipping] = useState(false);
+    const [expandedPoster, setExpandedPoster] = useState(null);
     const timerRef = useRef(null);
 
     const advance = () => {
@@ -1407,6 +1432,15 @@ function PosterCarousel() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [items.length]);
 
+    useEffect(() => {
+        if (!expandedPoster) return undefined;
+        const closeOnEscape = event => {
+            if (event.key === "Escape") setExpandedPoster(null);
+        };
+        document.addEventListener("keydown", closeOnEscape);
+        return () => document.removeEventListener("keydown", closeOnEscape);
+    }, [expandedPoster]);
+
     const handleNextClick = () => {
         advance();
         restartTimer();
@@ -1427,20 +1461,32 @@ function PosterCarousel() {
 
     const current = items[index % items.length];
     return (
-        <div className="poster-frame">
-            <div className={`poster-flip${flipping ? " flipping" : ""}`}>
-                <img className="poster-image" src={current.imageData} alt={current.caption || "Event poster"} />
-                {current.caption && <div className="poster-caption">{current.caption}</div>}
+        <>
+            <div className="poster-frame">
+                <div className={`poster-flip${flipping ? " flipping" : ""}`}>
+                    <img className="poster-image" src={current.imageData} alt={current.caption || "Event poster"} />
+                    <button className="poster-open-btn" onClick={() => setExpandedPoster(current)} aria-label={`Open ${current.caption || "event poster"} in full view`} />
+                    {current.caption && <div className="poster-caption">{current.caption}</div>}
+                    {items.length > 1 && (
+                        <button className="poster-next-btn" onClick={handleNextClick} aria-label="Next poster">›</button>
+                    )}
+                </div>
                 {items.length > 1 && (
-                    <button className="poster-next-btn" onClick={handleNextClick} aria-label="Next poster">›</button>
+                    <div className="poster-dots">
+                        {items.map((item, i) => <div key={item.id} className={`poster-dot${i === index ? " active" : ""}`} />)}
+                    </div>
                 )}
             </div>
-            {items.length > 1 && (
-                <div className="poster-dots">
-                    {items.map((item, i) => <div key={item.id} className={`poster-dot${i === index ? " active" : ""}`} />)}
+            {expandedPoster && (
+                <div className="poster-viewer-overlay" role="presentation" onClick={() => setExpandedPoster(null)}>
+                    <div className="poster-viewer" role="dialog" aria-modal="true" aria-label={expandedPoster.caption || "Full event poster"} onClick={event => event.stopPropagation()}>
+                        <button className="poster-viewer-close" onClick={() => setExpandedPoster(null)} aria-label="Close poster viewer">×</button>
+                        <img className="poster-viewer-image" src={expandedPoster.imageData} alt={expandedPoster.caption || "Event poster"} />
+                        {expandedPoster.caption && <div className="poster-viewer-caption">{expandedPoster.caption}</div>}
+                    </div>
                 </div>
             )}
-        </div>
+        </>
     );
 }
 
@@ -1986,8 +2032,8 @@ function EventsPage({ events, navigate, dark }) {
     const [detailsEvent, setDetailsEvent] = useState(null);
     const registration = useFormSubmit(
         "eventRegistrations",
-        { fullName: "", phone: "", email: "", eventTitle: "", specialRequirements: "" },
-        ["fullName", "phone", "email"]
+        { firstName: "", lastName: "", phone: "", eventTitle: "", specialRequirements: "" },
+        ["firstName", "lastName", "phone"]
     );
 
     useEffect(() => {
@@ -2001,7 +2047,6 @@ function EventsPage({ events, navigate, dark }) {
     };
 
     const handleRegistrationSubmit = () => {
-        if (!validateEmail(registration.formData.email)) return;
         registration.handleSubmit();
     };
 
@@ -2080,23 +2125,23 @@ function EventsPage({ events, navigate, dark }) {
                             <>
                                 <div className="grid-2" style={{ gap: "1rem" }}>
                                     <div className="form-group">
-                                        <label className="form-label event-form-label">Full Name</label>
-                                        <input className="form-input" placeholder="Your full name" value={registration.formData.fullName} onChange={e => registration.setField("fullName", e.target.value)} />
+                                        <label className="form-label event-form-label">First Name</label>
+                                        <input className="form-input" placeholder="First name" value={registration.formData.firstName} onChange={e => registration.setField("firstName", e.target.value)} />
                                     </div>
                                     <div className="form-group">
-                                        <label className="form-label event-form-label">Phone Number</label>
-                                        <input className="form-input" placeholder="+254 700 000 000" value={registration.formData.phone} onChange={e => registration.setField("phone", e.target.value)} />
+                                        <label className="form-label event-form-label">Last Name</label>
+                                        <input className="form-input" placeholder="Last name" value={registration.formData.lastName} onChange={e => registration.setField("lastName", e.target.value)} />
                                     </div>
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label event-form-label">Phone Number</label>
+                                    <input className="form-input" placeholder="Enter your phone number" value={registration.formData.phone} onChange={e => registration.setField("phone", e.target.value)} />
                                 </div>
                                 <div className="form-group">
                                     <label className="form-label event-form-label">Select Event</label>
                                     <select className="form-select" value={registration.formData.eventTitle} onChange={e => registration.setField("eventTitle", e.target.value)}>
                                         {events.map((e, i) => <option key={i}>{e.title}</option>)}
                                     </select>
-                                </div>
-                                <div className="form-group">
-                                    <label className="form-label event-form-label">Email Address</label>
-                                    <input className="form-input" placeholder="your@email.com" value={registration.formData.email} onChange={e => registration.setField("email", e.target.value)} />
                                 </div>
                                 <div className="form-group">
                                     <label className="form-label event-form-label">Special Requirements or Questions</label>
@@ -2156,7 +2201,7 @@ function ConnectPage({ navigate, dark }) {
                                             <div className="form-group"><label className="form-label">Last Name</label><input className="form-input" placeholder="Last name" value={contact.formData.lastName} onChange={e => contact.setField("lastName", e.target.value)} /></div>
                                         </div>
                                         <div className="form-group"><label className="form-label">Email</label><input className="form-input" type="email" placeholder="your@email.com" value={contact.formData.email} onChange={e => contact.setField("email", e.target.value)} /></div>
-                                        <div className="form-group"><label className="form-label">Phone</label><input className="form-input" placeholder="+254 700 000 000" value={contact.formData.phone} onChange={e => contact.setField("phone", e.target.value)} /></div>
+                                        <div className="form-group"><label className="form-label">Phone</label><input className="form-input" placeholder="Enter your phone number" value={contact.formData.phone} onChange={e => contact.setField("phone", e.target.value)} /></div>
                                         <div className="form-group">
                                             <label className="form-label">How Can We Help?</label>
                                             <select className="form-select" value={contact.formData.helpType} onChange={e => contact.setField("helpType", e.target.value)}>
@@ -2244,7 +2289,7 @@ function ConnectPage({ navigate, dark }) {
                                 ) : (
                                     <>
                                         <div className="form-group"><label className="form-label">Your Name</label><input className="form-input" placeholder="Full name" value={smallGroup.formData.name} onChange={e => smallGroup.setField("name", e.target.value)} /></div>
-                                        <div className="form-group"><label className="form-label">Phone Number</label><input className="form-input" placeholder="+254 700 000 000" value={smallGroup.formData.phone} onChange={e => smallGroup.setField("phone", e.target.value)} /></div>
+                                        <div className="form-group"><label className="form-label">Phone Number</label><input className="form-input" placeholder="Enter your phone number" value={smallGroup.formData.phone} onChange={e => smallGroup.setField("phone", e.target.value)} /></div>
                                         <div className="form-group">
                                             <label className="form-label">Preferred Group</label>
                                             <select className="form-select" value={smallGroup.formData.preferredGroup} onChange={e => smallGroup.setField("preferredGroup", e.target.value)}>
@@ -2291,6 +2336,11 @@ function ConnectPage({ navigate, dark }) {
 
 function GivePage({ dark }) {
     const [copied, setCopied] = useState("");
+    const [stkForm, setStkForm] = useState({ accountType: "Offering", amount: "", phone: "" });
+    const [stkState, setStkState] = useState("idle"); // idle | sending | awaiting | success | error
+    const [stkError, setStkError] = useState(null);
+    const [stkReceipt, setStkReceipt] = useState(null);
+    const pollRef = useRef(null);
 
     const copyToClipboard = (text, label) => {
         navigator.clipboard?.writeText(text).then(() => {
@@ -2298,6 +2348,57 @@ function GivePage({ dark }) {
             setTimeout(() => setCopied(""), 2000);
         });
     };
+
+    const setStkField = (key, value) => setStkForm(prev => ({ ...prev, [key]: value }));
+
+    const pollStatus = (checkoutRequestId, attemptsLeft) => {
+        if (attemptsLeft <= 0) {
+            setStkState("error");
+            setStkError("We didn't hear back in time. If you completed the payment on your phone, it'll still be recorded — otherwise please try again.");
+            return;
+        }
+        pollRef.current = setTimeout(async () => {
+            try {
+                const res = await fetch(`/api/stk-status?checkoutRequestId=${encodeURIComponent(checkoutRequestId)}`);
+                const data = await res.json();
+                if (data.status === "completed") {
+                    setStkState("success");
+                    setStkReceipt(data.mpesaReceiptNumber);
+                } else if (data.status === "failed") {
+                    setStkState("error");
+                    setStkError(data.resultDesc || "The payment was not completed.");
+                } else {
+                    pollStatus(checkoutRequestId, attemptsLeft - 1);
+                }
+            } catch {
+                pollStatus(checkoutRequestId, attemptsLeft - 1);
+            }
+        }, 3000);
+    };
+
+    const handleStkSubmit = async () => {
+        if (!stkForm.phone.trim()) { setStkError("Enter your M-Pesa phone number."); setStkState("error"); return; }
+        if (!stkForm.amount || Number(stkForm.amount) < 1) { setStkError("Enter an amount to give."); setStkState("error"); return; }
+
+        setStkState("sending");
+        setStkError(null);
+        try {
+            const res = await fetch("/api/stk-push", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(stkForm),
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || "Something went wrong.");
+            setStkState("awaiting");
+            pollStatus(data.checkoutRequestId, 20);
+        } catch (err) {
+            setStkState("error");
+            setStkError(err.message || "Something went wrong initiating the payment.");
+        }
+    };
+
+    useEffect(() => () => clearTimeout(pollRef.current), []);
 
     return (
         <>
@@ -2311,6 +2412,61 @@ function GivePage({ dark }) {
 
             <div className="section section-cream">
                 <div className="container-sm">
+                    <div className="card" style={{ padding: "2.5rem", marginBottom: "2rem" }}>
+                        <div style={{ fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--gold-dark)", fontWeight: 700, marginBottom: "0.5rem", textAlign: "center" }}>Give Instantly</div>
+                        <h2 style={{ fontFamily: "var(--font-display)", fontSize: "1.5rem", fontWeight: 700, color: "var(--navy)", textAlign: "center", marginBottom: "1.5rem" }}>Pay with M-Pesa (STK Push)</h2>
+
+                        {stkState === "success" ? (
+                            <div style={{ textAlign: "center", padding: "1rem 0" }}>
+                                <p style={{ color: "var(--navy)", fontWeight: 600 }}>✓ Thank you for your generosity! Payment received.</p>
+                                {stkReceipt && <p style={{ color: "var(--gray-400)", fontSize: "0.85rem", marginTop: 6 }}>M-Pesa receipt: {stkReceipt}</p>}
+                                <button className="btn btn-navy btn-sm" style={{ marginTop: "1rem" }} onClick={() => { setStkState("idle"); setStkForm({ accountType: "Offering", amount: "", phone: "" }); }}>
+                                    Give Again
+                                </button>
+                            </div>
+                        ) : stkState === "awaiting" ? (
+                            <div style={{ textAlign: "center", padding: "1rem 0" }}>
+                                <p style={{ color: "var(--navy)", fontWeight: 600 }}>📱 Check your phone</p>
+                                <p style={{ color: "var(--gray-600)", fontSize: "0.9rem", marginTop: 6 }}>Enter your M-Pesa PIN on the prompt sent to {stkForm.phone} to complete your gift.</p>
+                            </div>
+                        ) : (
+                            <>
+                                <div className="form-group">
+                                    <label className="form-label">Giving Towards</label>
+                                    <select className="form-select" value={stkForm.accountType} onChange={e => setStkField("accountType", e.target.value)}>
+                                        <option>Offering</option>
+                                        <option>Tithe</option>
+                                        <option>Thanksgiving</option>
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Amount (KSh)</label>
+                                    <div className="amount-grid">
+                                        {[100, 500, 1000, 2000].map(n => (
+                                            <button key={n} type="button" className={`amount-btn${Number(stkForm.amount) === n ? " selected" : ""}`} onClick={() => setStkField("amount", String(n))}>
+                                                {n.toLocaleString()}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <input className="form-input" type="number" min="1" placeholder="Or enter a custom amount" value={stkForm.amount} onChange={e => setStkField("amount", e.target.value)} />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">M-Pesa Phone Number</label>
+                                    <input className="form-input" type="tel" placeholder="07XX XXX XXX" value={stkForm.phone} onChange={e => setStkField("phone", e.target.value)} />
+                                </div>
+                                {stkState === "error" && stkError && <p style={{ color: "var(--orange)", fontSize: "0.85rem", marginBottom: 12 }}>{stkError}</p>}
+                                <button className="btn btn-gold" style={{ width: "100%", justifyContent: "center" }} disabled={stkState === "sending"} onClick={handleStkSubmit}>
+                                    {stkState === "sending" ? "Sending request..." : "Give Now →"}
+                                </button>
+                            </>
+                        )}
+                    </div>
+
+                    <div className="section-header">
+                        <div className="overline">Or Give Manually</div>
+                        <h2 className="section-title" style={{ fontSize: "1.5rem" }}>Enter It Yourself on M-Pesa</h2>
+                    </div>
+
                     <div className="card" style={{ padding: "2.5rem", textAlign: "center", marginBottom: "2rem" }}>
                         <div style={{ fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--gold-dark)", fontWeight: 700, marginBottom: "0.75rem" }}>M-Pesa Lipa na M-Pesa</div>
                         <div style={{ fontFamily: "var(--font-display)", fontSize: "1.3rem", fontWeight: 600, lineHeight: 1, color: "var(--gray-600)", marginBottom: "0.45rem" }}>Paybill Number</div>
@@ -2388,7 +2544,7 @@ function TestimoniesPage({ navigate, dark }) {
     const testimony = useFormSubmit(
         "testimonies",
         { name: "", category: "Testimony / Personal Story", title: "", story: "" },
-        ["name", "title", "story"]
+        ["title", "story"]
     );
 
     const sortedTestimonies = (testimonies || []).slice().sort((a, b) => b.createdAt - a.createdAt);
@@ -2440,7 +2596,7 @@ function TestimoniesPage({ navigate, dark }) {
                             <p style={{ textAlign: "center", color: "var(--navy)", fontWeight: 600, padding: "1rem 0" }}>✓ Thank you for sharing! Your testimony has been submitted and will appear once approved.</p>
                         ) : (
                             <>
-                                <div className="form-group"><label className="form-label">Your Name</label><input className="form-input" placeholder="Your full name" value={testimony.formData.name} onChange={e => testimony.setField("name", e.target.value)} /></div>
+                                <div className="form-group"><label className="form-label">Your Name (Optional)</label><input className="form-input" placeholder="Your full name" value={testimony.formData.name} onChange={e => testimony.setField("name", e.target.value)} /></div>
                                 <div className="form-group">
                                     <label className="form-label">Category</label>
                                     <select className="form-select" value={testimony.formData.category} onChange={e => testimony.setField("category", e.target.value)}>

@@ -101,17 +101,16 @@ const SECTIONS = [
         path: "eventRegistrations",
         statusOptions: ["registered", "confirmed", "cancelled"],
         columns: [
-            { key: "fullName", label: "Name" },
+            { key: "firstName", label: "Name", render: (v, item) => `${item.firstName || ""} ${item.lastName || ""}`.trim() },
             { key: "eventTitle", label: "Event" },
             { key: "phone", label: "Phone" },
-            { key: "email", label: "Email" },
             { key: "specialRequirements", label: "Notes" },
         ],
         fields: [
-            { key: "fullName", label: "Full Name", type: "text" },
+            { key: "firstName", label: "First Name", type: "text" },
+            { key: "lastName", label: "Last Name", type: "text" },
             { key: "eventTitle", label: "Event", type: "text" },
             { key: "phone", label: "Phone", type: "text" },
-            { key: "email", label: "Email", type: "text" },
             { key: "specialRequirements", label: "Notes", type: "textarea" },
         ],
         pendingStatus: "registered",
@@ -192,6 +191,25 @@ const SECTIONS = [
             { key: "frequency", label: "Frequency", type: "select", options: ["One-Time Gift", "Weekly", "Monthly"] },
         ],
         pendingStatus: "new",
+    },
+    {
+        key: "mpesaTransactions",
+        label: "M-Pesa Transactions",
+        path: "mpesaTransactions",
+        statusOptions: ["pending", "completed", "failed"],
+        columns: [
+            { key: "phone", label: "Phone" },
+            { key: "accountType", label: "Giving Towards" },
+            { key: "amount", label: "Amount", render: v => `KSh ${Number(v || 0).toLocaleString()}` },
+            { key: "mpesaReceiptNumber", label: "Receipt" },
+        ],
+        fields: [
+            { key: "phone", label: "Phone", type: "text" },
+            { key: "accountType", label: "Giving Towards", type: "text" },
+            { key: "amount", label: "Amount (KSh)", type: "number" },
+            { key: "mpesaReceiptNumber", label: "M-Pesa Receipt", type: "text" },
+        ],
+        pendingStatus: "pending",
     },
 ];
 
