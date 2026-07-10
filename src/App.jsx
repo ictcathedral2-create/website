@@ -310,14 +310,11 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 /* ─── POSTER CAROUSEL ─── */
 .poster-frame { perspective: 1200px; }
 .poster-flip {
-  width: 100%; height: 360px;
-  border-radius: 14px; overflow: hidden; position: relative;
-  background: rgba(0,0,0,0.22); border: 1px solid rgba(255,255,255,0.1);
-  transition: transform 0.3s ease;
-  display: flex; align-items: center; justify-content: center;
+  width: 100%; border-radius: 14px; overflow: hidden; position: relative;
+  line-height: 0; transition: transform 0.3s ease;
 }
 .poster-flip.flipping { transform: scaleX(0); }
-.poster-image { width: 100%; height: 100%; object-fit: contain; display: block; }
+.poster-image { width: 100%; height: auto; display: block; }
 .poster-caption {
   position: absolute; bottom: 0; left: 0; right: 0;
   background: linear-gradient(transparent, rgba(0,0,0,0.8));
@@ -806,8 +803,20 @@ a.footer-contact-row:hover .footer-contact-text { color: var(--gold-light); }
   .mobile-menu-btn { display: flex; align-items: center; gap: 0.75rem; }
   .nav-cta { display: none; }
   .section { padding: 3.5rem 1.25rem; }
-  .hero-content { padding: 7rem 1.25rem 3rem; }
-  .hero-stats { gap: 1.5rem; }
+  .hero-content { padding: 5.5rem 1.25rem 2rem; gap: 0; }
+  .hero-text-col { display: contents; }
+  .hero-badge { order: 1; font-size: 0.62rem; padding: 0.35rem 0.75rem; margin-bottom: 1rem; }
+  .hero-title { order: 2; font-size: 1.8rem; margin-bottom: 0.75rem; }
+  .hero-desc { order: 3; font-size: 0.85rem; line-height: 1.55; margin-bottom: 1.25rem; }
+  .hero-visual { order: 4; margin-bottom: 1.5rem; }
+  .service-card { padding: 1.1rem; }
+  .poster-image { max-height: 190px; object-fit: cover; }
+  .countdown-section { margin-top: 0.85rem; padding-top: 0.85rem; }
+  .countdown-label { font-size: 0.7rem; margin-bottom: 0.6rem; }
+  .countdown-unit { padding: 0.5rem 0.4rem; }
+  .countdown-num { font-size: 1.25rem; }
+  .hero-btns { order: 5; }
+  .hero-stats { order: 6; gap: 1.5rem; margin-top: 1.5rem; }
   .footer-grid { grid-template-columns: 1fr; }
   .footer-grid > div + div { border-left: none; padding-left: 0; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.06); }
   .event-card { flex-direction: column; gap: 1rem; }
@@ -1432,13 +1441,13 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
                     <path className="hero-wave-fill" d="M0,32 C240,60 480,0 720,20 C960,40 1200,58 1440,24 L1440,60 L0,60 Z" />
                 </svg>
                 <div className="hero-content container">
-                    <div>
-                        <div className="hero-badge">✝ ACK St Paul's Cathedral · Embu · Est. 1954</div>
+                    <div className="hero-text-col">
+                        <div className="hero-badge">✝ ACK St Paul's Cathedral · Embu</div>
                         <h1 className="hero-title">
                             Where Youth<br /><span>Encounter God</span><br />& Change the World
                         </h1>
                         <p className="hero-desc">
-                            A generation rising in faith, purpose, and power. Join ACK St Pauls Youths — Embu's most vibrant youth community.
+                            A generation rising in faith, purpose, and power. Join ACK St Pauls Youths, Embu's most vibrant youth community.
                         </p>
                         <div className="hero-btns">
                             <button className="btn btn-gold" onClick={onJoinUs}>Join Us Today</button>
