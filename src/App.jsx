@@ -266,7 +266,7 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 
 .hero-title {
   font-family: 'Playfair Display', serif;
-  font-size: clamp(2.5rem, 5vw, 4.2rem);
+  font-size: clamp(2.1rem, 4vw, 3.4rem);
   font-weight: 900; line-height: 1.1; color: white;
   margin-bottom: 1.5rem;
   animation: fadeSlideUp 0.7s 0.1s ease both;
@@ -312,9 +312,11 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 .poster-flip {
   width: 100%; border-radius: 14px; overflow: hidden; position: relative;
   line-height: 0; transition: transform 0.3s ease;
+  background: rgba(0,0,0,0.25);
+  display: flex; align-items: center; justify-content: center;
 }
 .poster-flip.flipping { transform: scaleX(0); }
-.poster-image { width: 100%; height: auto; display: block; }
+.poster-image { width: 100%; height: 320px; object-fit: contain; display: block; }
 .poster-caption {
   position: absolute; bottom: 0; left: 0; right: 0;
   background: linear-gradient(transparent, rgba(0,0,0,0.8));
@@ -333,7 +335,7 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 .poster-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.25); transition: all 0.25s; }
 .poster-dot.active { background: var(--gold); width: 16px; border-radius: 3px; }
 .poster-empty {
-  width: 100%; height: 360px; border-radius: 14px;
+  width: 100%; height: 320px; border-radius: 14px;
   background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   text-align: center; padding: 1.5rem;
@@ -806,11 +808,13 @@ a.footer-contact-row:hover .footer-contact-text { color: var(--gold-light); }
   .hero-content { padding: 5.5rem 1.25rem 2rem; gap: 0; }
   .hero-text-col { display: contents; }
   .hero-badge { order: 1; font-size: 0.62rem; padding: 0.35rem 0.75rem; margin-bottom: 1rem; }
-  .hero-title { order: 2; font-size: 1.8rem; margin-bottom: 0.75rem; }
+  .hero-title { order: 2; font-size: 1.55rem; margin-bottom: 0.75rem; }
+  .hero-title-break-1 { display: none; }
+  .poster-empty { height: 190px; }
   .hero-desc { order: 3; font-size: 0.85rem; line-height: 1.55; margin-bottom: 1.25rem; }
   .hero-visual { order: 4; margin-bottom: 1.5rem; }
   .service-card { padding: 1.1rem; }
-  .poster-image { max-height: 190px; object-fit: cover; }
+  .poster-image { height: 190px; object-fit: contain; }
   .countdown-section { margin-top: 0.85rem; padding-top: 0.85rem; }
   .countdown-label { font-size: 0.7rem; margin-bottom: 0.6rem; }
   .countdown-unit { padding: 0.5rem 0.4rem; }
@@ -1444,7 +1448,7 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
                     <div className="hero-text-col">
                         <div className="hero-badge">✝ ACK St Paul's Cathedral · Embu</div>
                         <h1 className="hero-title">
-                            Where Youth<br /><span>Encounter God</span><br />& Change the World
+                            Where Youth <br className="hero-title-break-1" /><span>Encounter God</span><br />& Change the World
                         </h1>
                         <p className="hero-desc">
                             A generation rising in faith, purpose, and power. Join ACK St Pauls Youths, Embu's most vibrant youth community.
