@@ -51,6 +51,21 @@ export async function deleteEvent(id) {
   await remove(ref(db, `events/${id}`));
 }
 
+// Public-facing gallery (event posters / after-event photos), managed only by admins but readable by anyone.
+export async function createGalleryItem(data) {
+  const newRef = push(ref(db, "gallery"));
+  await set(newRef, { ...data, createdAt: Date.now() });
+  return newRef.key;
+}
+
+export async function updateGalleryItem(id, data) {
+  await set(ref(db, `gallery/${id}`), data);
+}
+
+export async function deleteGalleryItem(id) {
+  await remove(ref(db, `gallery/${id}`));
+}
+
 async function syncPublicTestimony(id, status, record) {
   if (status === "approved" && record) {
     const rest = { ...record };

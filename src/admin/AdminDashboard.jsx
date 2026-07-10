@@ -2,12 +2,18 @@ import { useState } from "react";
 import { useFirebaseCollection } from "../hooks/useFirebaseCollection";
 import SubmissionSection from "./SubmissionSection";
 import EventsManager from "./EventsManager";
+import GalleryManager from "./GalleryManager";
 
 const SECTIONS = [
     {
         key: "manageEvents",
         label: "Manage Events",
         type: "events",
+    },
+    {
+        key: "manageGallery",
+        label: "Gallery / Posters",
+        type: "gallery",
     },
     {
         key: "joinUsRegistrations",
@@ -254,6 +260,8 @@ export default function AdminDashboard({ user, onLogout }) {
             <main className="admin-main" style={{ flex: 1, padding: "2.5rem 3rem", overflowY: "auto" }}>
                 {current?.type === "events" ? (
                     <EventsManager />
+                ) : current?.type === "gallery" ? (
+                    <GalleryManager />
                 ) : current && (
                     <SubmissionSection
                         title={current.label}

@@ -307,6 +307,42 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 .service-time-name { font-size: 0.85rem; color: rgba(255,255,255,0.75); }
 .service-time-val { font-size: 0.9rem; font-weight: 600; color: var(--gold-light); }
 
+/* ─── POSTER CAROUSEL ─── */
+.poster-frame { perspective: 1200px; }
+.poster-flip {
+  width: 100%; aspect-ratio: 3 / 4; max-height: 260px;
+  border-radius: 14px; overflow: hidden; position: relative;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  transition: transform 0.3s ease;
+}
+.poster-flip.flipping { transform: scaleX(0); }
+.poster-image { width: 100%; height: 100%; object-fit: cover; display: block; }
+.poster-caption {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: linear-gradient(transparent, rgba(0,0,0,0.8));
+  color: white; font-size: 0.75rem; font-weight: 500; padding: 20px 12px 10px;
+}
+.poster-dots { display: flex; gap: 6px; justify-content: center; margin-top: 0.85rem; }
+.poster-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.25); transition: all 0.25s; }
+.poster-dot.active { background: var(--gold); width: 16px; border-radius: 3px; }
+.poster-empty {
+  width: 100%; aspect-ratio: 3 / 4; max-height: 260px; border-radius: 14px;
+  background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 1.5rem;
+}
+
+.happening-now-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(224,115,48,0.15); border: 1px solid rgba(224,115,48,0.4);
+  padding: 0.5rem 1rem; border-radius: 50px;
+  font-size: 0.8rem; font-weight: 700; color: var(--orange); text-transform: uppercase; letter-spacing: 0.08em;
+}
+.happening-now-badge::before {
+  content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--orange);
+  animation: urgentBlink 1s ease-in-out infinite;
+}
+
 .countdown-section {
   margin-top: 1.5rem; padding-top: 1.5rem;
   border-top: 1px solid rgba(201,168,76,0.2);
@@ -903,7 +939,29 @@ export default function App() {
     const statsRef = useRef(null);
     const events = useEvents();
     const nextEvent = events[0] || null;
-    const countdown = useCountdown(nextEvent?.date || null);
+
+    const eventTiming = useMemo(() => {
+        if (!nextEvent) return null;
+        const dayStart = new Date(nextEvent.date.getFullYear(), nextEvent.date.getMonth(), nextEvent.date.getDate(), 0, 0, 0);
+        let startDateTime = dayStart;
+        if (nextEvent.startTime) {
+            const [hh, mm] = nextEvent.startTime.split(":").map(Number);
+            if (!Number.isNaN(hh)) {
+                startDateTime = new Date(dayStart);
+                startDateTime.setHours(hh, mm || 0, 0, 0);
+            }
+        }
+        return { dayStart, startDateTime };
+    }, [nextEvent]);
+
+    const countdown = useCountdown(eventTiming?.startDateTime || null);
+
+    let eventPhase = "upcoming";
+    if (nextEvent && eventTiming) {
+        const now = new Date();
+        if (now >= eventTiming.startDateTime) eventPhase = "now";
+        else if (now >= eventTiming.dayStart) eventPhase = "starting";
+    }
 
     const prayerWidget = useFormSubmit("prayerRequests", { name: "", phone: "", request: "" }, ["request"]);
 
@@ -1025,7 +1083,7 @@ export default function App() {
                 </div>
 
                 {/* ─── PAGES ─── */}
-                {activePage === "Home" && <HomePage countdown={countdown} nextEvent={nextEvent} events={events} navigate={navigate} statsRef={statsRef} stat1={stat1} stat2={stat2} stat3={stat3} stat4={stat4} dark={dark} onJoinUs={() => setJoinUsOpen(true)} />}
+                {activePage === "Home" && <HomePage countdown={countdown} nextEvent={nextEvent} eventPhase={eventPhase} events={events} navigate={navigate} statsRef={statsRef} stat1={stat1} stat2={stat2} stat3={stat3} stat4={stat4} dark={dark} onJoinUs={() => setJoinUsOpen(true)} />}
                 {activePage === "About" && <AboutPage navigate={navigate} dark={dark} />}
                 {activePage === "Ministries" && <MinistriesPage navigate={navigate} dark={dark} />}
                 {activePage === "Sermons" && <SermonsPage navigate={navigate} dark={dark} activeTab={activeTab} setActiveTab={setActiveTab} />}
@@ -1280,7 +1338,53 @@ function MinistryJoinModal({ ministryTitle, onClose }) {
     );
 }
 
-function HomePage({ countdown, nextEvent, events, navigate, statsRef, stat1, stat2, stat3, stat4, dark, onJoinUs }) {
+// Auto-rotating carousel of admin-uploaded event posters / after-event photos.
+// Flips to the next item every 5 seconds; swaps the image mid-flip so the
+// transition reads as a page turn rather than a jarring cut.
+function PosterCarousel() {
+    const { data } = useFirebaseCollection("gallery");
+    const items = useMemo(() => (data || []).slice().sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)), [data]);
+    const [index, setIndex] = useState(0);
+    const [flipping, setFlipping] = useState(false);
+
+    useEffect(() => {
+        if (items.length < 2) return;
+        const id = setInterval(() => {
+            setFlipping(true);
+            setTimeout(() => {
+                setIndex(i => (i + 1) % items.length);
+                setFlipping(false);
+            }, 300);
+        }, 5000);
+        return () => clearInterval(id);
+    }, [items.length]);
+
+    if (!items.length) {
+        return (
+            <div className="poster-empty">
+                <div style={{ fontSize: "0.78rem", textTransform: "uppercase", letterSpacing: "0.12em", color: "var(--gold-light)", fontWeight: 700 }}>Gallery</div>
+                <div style={{ color: "rgba(255,255,255,0.55)", fontSize: "0.82rem", marginTop: 8 }}>Event posters and photos will appear here.</div>
+            </div>
+        );
+    }
+
+    const current = items[index % items.length];
+    return (
+        <div className="poster-frame">
+            <div className={`poster-flip${flipping ? " flipping" : ""}`}>
+                <img className="poster-image" src={current.imageData} alt={current.caption || "Event poster"} />
+                {current.caption && <div className="poster-caption">{current.caption}</div>}
+            </div>
+            {items.length > 1 && (
+                <div className="poster-dots">
+                    {items.map((item, i) => <div key={item.id} className={`poster-dot${i === index ? " active" : ""}`} />)}
+                </div>
+            )}
+        </div>
+    );
+}
+
+function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef, stat1, stat2, stat3, stat4, dark, onJoinUs }) {
     const newsletter = useFormSubmit("newsletterSignups", { email: "" }, ["email"]);
     const { videos, loading: videosLoading } = useYouTubeVideos();
     const [activeVideo, setActiveVideo] = useState(null);
@@ -1322,30 +1426,22 @@ function HomePage({ countdown, nextEvent, events, navigate, statsRef, stat1, sta
                     </div>
                     <div className="hero-visual animate-float">
                         <div className="service-card">
-                            <div style={{ fontSize: "0.78rem", textTransform: "uppercase", letterSpacing: "0.12em", color: "var(--gold-light)", fontWeight: 700, marginBottom: "0.75rem" }}>
-                                🕊 This Sunday at ACK St Pauls
-                            </div>
-                            <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.2rem", fontWeight: 700, color: "white", marginBottom: "0.25rem" }}>
-                                "Rise Up & Shine"
-                            </div>
-                            <div style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.6)" }}>Isaiah 60:1</div>
-                            <div className="service-times-grid">
-                                {[["Devotion", "8:00 AM"], ["Youth Service", "8:30 AM"], ["Bible Study", "11:00 AM"]].map(([n, t]) => (
-                                    <div key={n} className="service-time-item">
-                                        <span className="service-time-name">{n}</span>
-                                        <span className="service-time-val">{t}</span>
-                                    </div>
-                                ))}
-                            </div>
+                            <PosterCarousel />
                             <div className="countdown-section">
-                                {countdown.expired ? (
+                                {!nextEvent ? (
                                     <div style={{ textAlign: "center", padding: "1rem 0" }}>
                                         <div style={{ fontSize: "0.85rem", color: "var(--gold-light)", fontWeight: 600 }}>✨ Stay tuned for our next event!</div>
                                         <button className="btn btn-gold btn-sm" style={{ marginTop: "0.75rem" }} onClick={() => navigate("Events")}>View Upcoming Events</button>
                                     </div>
+                                ) : eventPhase === "now" ? (
+                                    <div style={{ textAlign: "center", padding: "0.5rem 0" }}>
+                                        <span className="happening-now-badge">Happening Now</span>
+                                        <div style={{ fontSize: "0.85rem", color: "white", fontWeight: 600, marginTop: 10 }}>{nextEvent.title}</div>
+                                        <button className="btn btn-gold btn-sm" style={{ marginTop: "0.75rem" }} onClick={() => navigate("Events")}>View Details</button>
+                                    </div>
                                 ) : (
                                     <>
-                                        <div className="countdown-label">Next Up: {nextEvent?.title} In</div>
+                                        <div className="countdown-label">{eventPhase === "starting" ? "Starting In" : `Next Up: ${nextEvent.title} In`}</div>
                                         <div className="countdown-grid">
                                             {[["d", "Days"], ["h", "Hrs"], ["m", "Min"], ["s", "Sec"]].map(([k, l]) => (
                                                 <div key={k} className="countdown-unit">
@@ -1358,6 +1454,24 @@ function HomePage({ countdown, nextEvent, events, navigate, statsRef, stat1, sta
                                 )}
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* THIS SUNDAY */}
+            <div className="section-sm section-light">
+                <div className="container">
+                    <div className="section-header" style={{ marginBottom: "2rem" }}>
+                        <div className="overline">This Sunday at ACK St Pauls</div>
+                        <h2 className="section-title" style={{ fontSize: "1.6rem" }}>"Rise Up &amp; Shine" <span style={{ color: "var(--gray-400)", fontWeight: 400, fontSize: "0.9rem" }}>· Isaiah 60:1</span></h2>
+                    </div>
+                    <div className="service-times-grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))" }}>
+                        {[["Devotion", "8:00 AM"], ["Youth Service", "8:30 AM"], ["Bible Study", "11:00 AM"]].map(([n, t]) => (
+                            <div key={n} className="service-time-item" style={{ background: "var(--cream)", border: "1px solid rgba(201,168,76,0.2)" }}>
+                                <span className="service-time-name" style={{ color: "var(--gray-600)" }}>{n}</span>
+                                <span className="service-time-val" style={{ color: "var(--gold-dark)" }}>{t}</span>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>

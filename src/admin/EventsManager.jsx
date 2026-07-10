@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useFirebaseCollection } from "../hooks/useFirebaseCollection";
 import { createEvent, updateEvent, deleteEvent } from "./adminDb";
 
-const EMPTY_FORM = { day: "", month: "", title: "", time: "", desc: "" };
+const EMPTY_FORM = { day: "", month: "", title: "", time: "", desc: "", startTime: "" };
 
 function EventForm({ initial, onCancel, onSave, saving }) {
     const [formData, setFormData] = useState(initial);
@@ -28,6 +28,13 @@ function EventForm({ initial, onCancel, onSave, saving }) {
                 <div className="form-group" style={{ marginBottom: 0 }}>
                     <label className="form-label">Time / Schedule</label>
                     <input className="form-input" placeholder="Sun · 4:00 PM – 6:30 PM" value={formData.time} onChange={e => setField("time", e.target.value)} />
+                </div>
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label className="form-label">Exact Start Time (optional)</label>
+                    <input className="form-input" type="time" value={formData.startTime || ""} onChange={e => setField("startTime", e.target.value)} />
+                    <div style={{ fontSize: "0.75rem", color: "var(--gray-400)", marginTop: 4 }}>
+                        Powers the "Starting In" / "Happening Now" countdown on the Home page. Leave blank to skip that precision.
+                    </div>
                 </div>
                 <div className="form-group" style={{ marginBottom: 0 }}>
                     <label className="form-label">Description</label>
@@ -107,7 +114,7 @@ export default function EventsManager() {
                     <div key={item.id} className="card" style={{ padding: "1.5rem" }}>
                         {editingId === item.id ? (
                             <EventForm
-                                initial={{ day: item.day, month: item.month, title: item.title, time: item.time, desc: item.desc }}
+                                initial={{ day: item.day, month: item.month, title: item.title, time: item.time, desc: item.desc, startTime: item.startTime || "" }}
                                 saving={busy}
                                 onCancel={() => setEditingId(null)}
                                 onSave={formData => handleUpdate(item.id, formData)}
