@@ -310,12 +310,12 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 /* ─── POSTER CAROUSEL ─── */
 .poster-frame { perspective: 1200px; }
 .poster-flip {
-  width: 100%; height: 320px;
+  width: 100%; height: auto;
   border-radius: 14px; overflow: hidden; position: relative;
   line-height: 0; transition: transform 0.3s ease;
 }
 .poster-flip.flipping { transform: scaleX(0); }
-.poster-image { width: 100%; height: 100%; object-fit: cover; display: block; }
+.poster-image { width: 100%; height: auto; display: block; }
 .poster-caption {
   position: absolute; bottom: 0; left: 0; right: 0;
   background: linear-gradient(transparent, rgba(0,0,0,0.8));
@@ -334,7 +334,7 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 .poster-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.25); transition: all 0.25s; }
 .poster-dot.active { background: var(--gold); width: 16px; border-radius: 3px; }
 .poster-empty {
-  width: 100%; height: 320px; border-radius: 14px;
+  width: 100%; height: 420px; border-radius: 14px;
   background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   text-align: center; padding: 1.5rem;
@@ -816,11 +816,10 @@ a.footer-contact-row:hover .footer-contact-text { color: var(--gold-light); }
   .hero-badge { order: 1; font-size: 0.62rem; padding: 0.35rem 0.75rem; margin-bottom: 1rem; }
   .hero-title { order: 2; font-size: 1.55rem; margin-bottom: 0.75rem; }
   .hero-title-break-1 { display: none; }
-  .poster-empty { height: 190px; }
+  .poster-empty { height: 250px; }
   .hero-desc { order: 3; font-size: 0.85rem; line-height: 1.55; margin-bottom: 1.25rem; }
   .hero-visual { order: 4; margin-bottom: 1.5rem; }
   .service-card { padding: 1.1rem; }
-  .poster-flip { height: 190px; }
   .countdown-section { margin-top: 0.85rem; padding-top: 0.85rem; }
   .countdown-label { font-size: 0.7rem; margin-bottom: 0.6rem; }
   .countdown-unit { padding: 0.5rem 0.4rem; }
