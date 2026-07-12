@@ -9,6 +9,14 @@ const NAV_LINKS = ["Home", "Ministries", "Sermons", "Events", "Connect", "Give",
 
 const slugify = str => str.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
+// Maps a page name to its URL path (e.g. "Home" -> "/home") and back, so every
+// page has a real, shareable, bookmarkable, refreshable URL instead of hidden state.
+const pageToPath = page => `/${slugify(page)}`;
+const pageFromPath = pathname => {
+    const slug = pathname.replace(/^\/+|\/+$/g, "").toLowerCase();
+    return NAV_LINKS.find(p => slugify(p) === slug) || "Home";
+};
+
 export const styles = `
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap');
 
@@ -984,7 +992,7 @@ function useAnimatedCount(end, trigger) {
 }
 
 export default function App() {
-    const [activePage, setActivePage] = useState("Home");
+    const [activePage, setActivePage] = useState(() => pageFromPath(window.location.pathname));
     const [dark, setDark] = useState(false);
     const [prayerOpen, setPrayerOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -1044,13 +1052,34 @@ export default function App() {
         return () => window.removeEventListener("scroll", onScroll);
     }, []);
 
-    const navigate = (page) => { setActivePage(page); setMobileMenuOpen(false); setMobileSubmenuOpen(null); window.scrollTo({ top: 0, behavior: "smooth" }); };
+    const navigate = (page) => {
+        if (window.location.pathname !== pageToPath(page)) window.history.pushState({}, "", pageToPath(page));
+        setActivePage(page);
+        setMobileMenuOpen(false);
+        setMobileSubmenuOpen(null);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    };
     const navigateToAnchor = (page, id) => {
+        if (window.location.pathname !== pageToPath(page)) window.history.pushState({}, "", pageToPath(page));
         setActivePage(page);
         setMobileMenuOpen(false);
         setMobileSubmenuOpen(null);
         setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
     };
+
+    // Keeps activePage in sync with the browser's back/forward buttons.
+    useEffect(() => {
+        const onPopState = () => setActivePage(pageFromPath(window.location.pathname));
+        window.addEventListener("popstate", onPopState);
+        return () => window.removeEventListener("popstate", onPopState);
+    }, []);
+
+    // Keeps the browser tab title matched to whichever page is showing.
+    useEffect(() => {
+        document.title = activePage === "Home"
+            ? "ACK St Pauls Youths | Youth Ministry in Embu, Kenya"
+            : `${activePage} | ACK St Pauls Youths`;
+    }, [activePage]);
     const NAV_DROPDOWNS = {
         Ministries: MINISTRIES.map(m => ({ label: m.title, id: slugify(m.title) })),
         Events: events.map(e => ({ label: e.title, id: slugify(e.title) })),
