@@ -1,13 +1,20 @@
 import { db, ref, set, push, remove } from "../firebase";
 
-// Updates a submission's status. For testimonies, also mirrors the record to
-// the public-readable `publicTestimonies` path when approved (and removes it
-// otherwise), since the main `submissions` tree is admin-only for reads.
+// Collections whose approved records get mirrored to a public-readable path,
+// since their `submissions/*` tree is admin-only for reads.
+const PUBLIC_MIRRORS = {
+  testimonies: "publicTestimonies",
+  businessListings: "publicBusinessListings",
+  jobPostings: "publicJobPostings",
+};
+
+// Updates a submission's status. For mirrored collections, also syncs the
+// public copy (added when approved, removed otherwise).
 export async function updateSubmissionStatus(collection, id, status, record = null) {
   await set(ref(db, `submissions/${collection}/${id}/status`), status);
 
-  if (collection === "testimonies") {
-    await syncPublicTestimony(id, status, record);
+  if (PUBLIC_MIRRORS[collection]) {
+    await syncPublicMirror(collection, id, status, record);
   }
 }
 
@@ -18,21 +25,33 @@ export async function createSubmission(collection, data) {
   return newRef.key;
 }
 
-// Updates a submission's full field set (not just status). For testimonies,
-// re-syncs the public copy if it's currently approved so edits show up there too.
+// Updates a submission's full field set (not just status). For mirrored
+// collections, re-syncs the public copy if it's currently approved so edits
+// show up there too.
 export async function updateSubmissionFields(collection, id, data) {
   await set(ref(db, `submissions/${collection}/${id}`), data);
 
-  if (collection === "testimonies") {
-    await syncPublicTestimony(id, data.status, { id, ...data });
+  if (PUBLIC_MIRRORS[collection]) {
+    await syncPublicMirror(collection, id, data.status, { id, ...data });
   }
 }
 
 // Permanently deletes a submission record.
 export async function deleteSubmission(collection, id) {
   await remove(ref(db, `submissions/${collection}/${id}`));
-  if (collection === "testimonies") {
-    await remove(ref(db, `publicTestimonies/${id}`));
+  if (PUBLIC_MIRRORS[collection]) {
+    await remove(ref(db, `${PUBLIC_MIRRORS[collection]}/${id}`));
+  }
+}
+
+async function syncPublicMirror(collection, id, status, record) {
+  const publicPath = PUBLIC_MIRRORS[collection];
+  if (status === "approved" && record) {
+    const rest = { ...record };
+    delete rest.id;
+    await set(ref(db, `${publicPath}/${id}`), { ...rest, status: "approved" });
+  } else {
+    await remove(ref(db, `${publicPath}/${id}`));
   }
 }
 
@@ -64,14 +83,4 @@ export async function updateGalleryItem(id, data) {
 
 export async function deleteGalleryItem(id) {
   await remove(ref(db, `gallery/${id}`));
-}
-
-async function syncPublicTestimony(id, status, record) {
-  if (status === "approved" && record) {
-    const rest = { ...record };
-    delete rest.id;
-    await set(ref(db, `publicTestimonies/${id}`), { ...rest, status: "approved" });
-  } else {
-    await remove(ref(db, `publicTestimonies/${id}`));
-  }
 }

@@ -5,7 +5,7 @@ import { useYouTubeVideos } from "./hooks/useYouTubeVideos";
 import { validateEmail, validatePhone } from "./validation";
 import logo from "./assets/logo.png";
 
-const NAV_LINKS = ["Home", "Ministries", "Sermons", "Events", "Connect", "Give", "Testimonies", "About"];
+const NAV_LINKS = ["Home", "Ministries", "Sermons", "Events", "Connect", "Give", "Community", "Testimonies", "About"];
 
 const slugify = str => str.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
@@ -1151,6 +1151,7 @@ export default function App() {
                 {activePage === "Events" && <EventsPage events={events} navigate={navigate} dark={dark} />}
                 {activePage === "Connect" && <ConnectPage navigate={navigate} dark={dark} />}
                 {activePage === "Give" && <GivePage dark={dark} />}
+                {activePage === "Community" && <CommunityPage dark={dark} />}
                 {activePage === "Testimonies" && <TestimoniesPage navigate={navigate} dark={dark} />}
 
                 {/* ─── FOOTER ─── */}
@@ -2508,6 +2509,275 @@ function GivePage({ dark }) {
                     </p>
                 </div>
             </div>
+        </>
+    );
+}
+
+const BUSINESS_CATEGORIES = ["Retail & Shops", "Food & Catering", "Services", "Agriculture", "Technology", "Fashion & Beauty", "Transport", "Other"];
+const JOB_TYPES = ["Full-time", "Part-time", "Internship", "Volunteer", "Casual"];
+
+// Builds a wa.me deep link so business/job "chat" happens on WhatsApp directly —
+// no in-site messaging system or user accounts required.
+function whatsappLink(phone, message) {
+    const digits = String(phone || "").replace(/\D/g, "");
+    const normalized = digits.startsWith("0") ? `254${digits.slice(1)}` : digits;
+    return `https://wa.me/${normalized}?text=${encodeURIComponent(message)}`;
+}
+
+function BusinessListingModal({ open, onClose }) {
+    const listing = useFormSubmit(
+        "businessListings",
+        { businessName: "", ownerName: "", phone: "", category: BUSINESS_CATEGORIES[0], description: "" },
+        ["businessName", "ownerName", "phone", "description"]
+    );
+
+    if (!open) return null;
+
+    const handleClose = () => {
+        listing.reset();
+        onClose();
+    };
+
+    return (
+        <div className="modal-overlay" onClick={handleClose}>
+            <div className="modal-card" onClick={e => e.stopPropagation()}>
+                <div className="modal-header">
+                    <button className="modal-close" onClick={handleClose} aria-label="Close">✕</button>
+                    <div style={{ fontFamily: "var(--font-display)", fontSize: "1.7rem", fontWeight: 700, lineHeight: 1 }}>List Your Business</div>
+                    <div style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.7)", marginTop: 4 }}>Submissions are reviewed by our team before appearing publicly.</div>
+                </div>
+                <div className="modal-body">
+                    {listing.submitted ? (
+                        <p style={{ textAlign: "center", color: "var(--navy)", fontWeight: 600, padding: "1rem 0" }}>
+                            ✓ Thanks! Your listing will appear here once approved.
+                        </p>
+                    ) : (
+                        <>
+                            <div className="form-group">
+                                <label className="form-label">Business Name</label>
+                                <input className="form-input" placeholder="e.g. Grace Fresh Produce" value={listing.formData.businessName} onChange={e => listing.setField("businessName", e.target.value)} />
+                            </div>
+                            <div className="grid-2" style={{ gap: "1rem" }}>
+                                <div className="form-group">
+                                    <label className="form-label">Owner Name</label>
+                                    <input className="form-input" placeholder="Your name" value={listing.formData.ownerName} onChange={e => listing.setField("ownerName", e.target.value)} />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Phone Number</label>
+                                    <input className="form-input" type="tel" inputMode="numeric" maxLength={10} placeholder="07XXXXXXXX or 01XXXXXXXX" value={listing.formData.phone} onChange={e => listing.setField("phone", e.target.value.replace(/\D/g, "").slice(0, 10))} />
+                                </div>
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">Category</label>
+                                <select className="form-select" value={listing.formData.category} onChange={e => listing.setField("category", e.target.value)}>
+                                    {BUSINESS_CATEGORIES.map(c => <option key={c}>{c}</option>)}
+                                </select>
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">Description</label>
+                                <textarea className="form-textarea" maxLength={400} placeholder="What does your business offer? (max 400 characters)" value={listing.formData.description} onChange={e => listing.setField("description", e.target.value)} />
+                            </div>
+                            {listing.error && <p style={{ color: "var(--orange)", fontSize: "0.8rem", marginBottom: 8 }}>{listing.error}</p>}
+                            <button
+                                className="btn btn-gold"
+                                style={{ width: "100%", justifyContent: "center" }}
+                                disabled={listing.submitting}
+                                onClick={() => listing.handleSubmit({ status: "pending" })}
+                            >
+                                {listing.submitting ? "Submitting..." : "Submit for Review →"}
+                            </button>
+                        </>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function JobPostingModal({ open, onClose }) {
+    const posting = useFormSubmit(
+        "jobPostings",
+        { jobTitle: "", company: "", contactPhone: "", jobType: JOB_TYPES[0], description: "" },
+        ["jobTitle", "company", "contactPhone", "description"]
+    );
+
+    if (!open) return null;
+
+    const handleClose = () => {
+        posting.reset();
+        onClose();
+    };
+
+    return (
+        <div className="modal-overlay" onClick={handleClose}>
+            <div className="modal-card" onClick={e => e.stopPropagation()}>
+                <div className="modal-header">
+                    <button className="modal-close" onClick={handleClose} aria-label="Close">✕</button>
+                    <div style={{ fontFamily: "var(--font-display)", fontSize: "1.7rem", fontWeight: 700, lineHeight: 1 }}>Post a Job</div>
+                    <div style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.7)", marginTop: 4 }}>Submissions are reviewed by our team before appearing publicly.</div>
+                </div>
+                <div className="modal-body">
+                    {posting.submitted ? (
+                        <p style={{ textAlign: "center", color: "var(--navy)", fontWeight: 600, padding: "1rem 0" }}>
+                            ✓ Thanks! Your job posting will appear here once approved.
+                        </p>
+                    ) : (
+                        <>
+                            <div className="grid-2" style={{ gap: "1rem" }}>
+                                <div className="form-group">
+                                    <label className="form-label">Job Title</label>
+                                    <input className="form-input" placeholder="e.g. Sales Assistant" value={posting.formData.jobTitle} onChange={e => posting.setField("jobTitle", e.target.value)} />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Company / Organization</label>
+                                    <input className="form-input" placeholder="Company name" value={posting.formData.company} onChange={e => posting.setField("company", e.target.value)} />
+                                </div>
+                            </div>
+                            <div className="grid-2" style={{ gap: "1rem" }}>
+                                <div className="form-group">
+                                    <label className="form-label">Contact Phone</label>
+                                    <input className="form-input" type="tel" inputMode="numeric" maxLength={10} placeholder="07XXXXXXXX or 01XXXXXXXX" value={posting.formData.contactPhone} onChange={e => posting.setField("contactPhone", e.target.value.replace(/\D/g, "").slice(0, 10))} />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Job Type</label>
+                                    <select className="form-select" value={posting.formData.jobType} onChange={e => posting.setField("jobType", e.target.value)}>
+                                        {JOB_TYPES.map(t => <option key={t}>{t}</option>)}
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">Description</label>
+                                <textarea className="form-textarea" maxLength={400} placeholder="Role details, requirements, how to apply (max 400 characters)" value={posting.formData.description} onChange={e => posting.setField("description", e.target.value)} />
+                            </div>
+                            {posting.error && <p style={{ color: "var(--orange)", fontSize: "0.8rem", marginBottom: 8 }}>{posting.error}</p>}
+                            <button
+                                className="btn btn-gold"
+                                style={{ width: "100%", justifyContent: "center" }}
+                                disabled={posting.submitting}
+                                onClick={() => posting.handleSubmit({ status: "pending" })}
+                            >
+                                {posting.submitting ? "Submitting..." : "Submit for Review →"}
+                            </button>
+                        </>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function BusinessCard({ b }) {
+    return (
+        <div className="card" style={{ padding: "1.75rem" }}>
+            <div className="blog-cat">{b.category}</div>
+            <div className="blog-title" style={{ marginTop: 6 }}>{b.businessName}</div>
+            <div style={{ fontSize: "0.82rem", color: "var(--gray-400)", marginTop: 2 }}>By {b.ownerName}</div>
+            <div className="blog-excerpt" style={{ marginTop: 8 }}>{b.description}</div>
+            <a
+                className="btn btn-gold btn-sm"
+                style={{ marginTop: "1rem", width: "100%", justifyContent: "center" }}
+                href={whatsappLink(b.phone, `Hi ${b.businessName}, I found your business on the ACK St Pauls Youths website and I'd like to connect.`)}
+                target="_blank"
+                rel="noreferrer"
+            >
+                💬 Chat on WhatsApp
+            </a>
+        </div>
+    );
+}
+
+function JobCard({ j }) {
+    return (
+        <div className="card" style={{ padding: "1.75rem" }}>
+            <div className="blog-cat">{j.jobType}</div>
+            <div className="blog-title" style={{ marginTop: 6 }}>{j.jobTitle}</div>
+            <div style={{ fontSize: "0.82rem", color: "var(--gray-400)", marginTop: 2 }}>{j.company}</div>
+            <div className="blog-excerpt" style={{ marginTop: 8 }}>{j.description}</div>
+            <a
+                className="btn btn-gold btn-sm"
+                style={{ marginTop: "1rem", width: "100%", justifyContent: "center" }}
+                href={whatsappLink(j.contactPhone, `Hi, I saw the ${j.jobTitle} opportunity at ${j.company} on the ACK St Pauls Youths website and I'd like to find out more.`)}
+                target="_blank"
+                rel="noreferrer"
+            >
+                💬 Chat on WhatsApp
+            </a>
+        </div>
+    );
+}
+
+function CommunityPage({ dark }) {
+    const [activeTab, setActiveTab] = useState("Business");
+    const [showBusinessForm, setShowBusinessForm] = useState(false);
+    const [showJobForm, setShowJobForm] = useState(false);
+    const { data: businessData, loading: businessLoading } = useFirebaseCollection("publicBusinessListings");
+    const { data: jobData, loading: jobLoading } = useFirebaseCollection("publicJobPostings");
+
+    const businesses = (businessData || []).slice().sort((a, b) => b.createdAt - a.createdAt);
+    const jobs = (jobData || []).slice().sort((a, b) => b.createdAt - a.createdAt);
+
+    return (
+        <>
+            <div style={{ background: "linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 50%, var(--gold-dark) 100%)", padding: "8rem 2rem 4rem", textAlign: "center" }}>
+                <div className="overline" style={{ color: "var(--gold-light)" }}>Grow Together</div>
+                <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2.75rem, 5vw, 4.5rem)", fontWeight: 700, lineHeight: 0.95, color: "white", marginBottom: "1rem" }}>Community Board</h1>
+                <p style={{ color: "rgba(255,255,255,0.85)", maxWidth: 560, margin: "0 auto" }}>
+                    A place for our youth to support each other's businesses and share job opportunities. Every listing is reviewed by our team before it goes live.
+                </p>
+            </div>
+
+            <div className="section section-cream">
+                <div className="container">
+                    <div className="tab-nav">
+                        {["Business", "Jobs"].map(t => (
+                            <button key={t} className={`tab-btn${activeTab === t ? " active" : ""}`} onClick={() => setActiveTab(t)}>
+                                {t === "Business" ? "Business Directory" : "Job Board"}
+                            </button>
+                        ))}
+                    </div>
+
+                    {activeTab === "Business" && (
+                        <>
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem", marginBottom: "2rem" }}>
+                                <div>
+                                    <h2 className="section-title" style={{ fontSize: "1.6rem", marginBottom: "0.25rem" }}>Business Directory</h2>
+                                    <p style={{ color: "var(--gray-600)", fontSize: "0.9rem" }}>Support youth-run businesses and connect directly on WhatsApp.</p>
+                                </div>
+                                <button className="btn btn-gold" onClick={() => setShowBusinessForm(true)}>+ List Your Business</button>
+                            </div>
+                            {businessLoading && <p style={{ color: "var(--gray-400)" }}>Loading…</p>}
+                            {!businessLoading && businesses.length === 0 && (
+                                <p style={{ textAlign: "center", color: "var(--gray-400)", padding: "2rem 0" }}>No businesses listed yet — be the first to add yours!</p>
+                            )}
+                            <div className="grid-3">
+                                {businesses.map(b => <BusinessCard key={b.id} b={b} />)}
+                            </div>
+                        </>
+                    )}
+
+                    {activeTab === "Jobs" && (
+                        <>
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem", marginBottom: "2rem" }}>
+                                <div>
+                                    <h2 className="section-title" style={{ fontSize: "1.6rem", marginBottom: "0.25rem" }}>Job Board</h2>
+                                    <p style={{ color: "var(--gray-600)", fontSize: "0.9rem" }}>Opportunities shared by our community — reach out directly on WhatsApp.</p>
+                                </div>
+                                <button className="btn btn-gold" onClick={() => setShowJobForm(true)}>+ Post a Job</button>
+                            </div>
+                            {jobLoading && <p style={{ color: "var(--gray-400)" }}>Loading…</p>}
+                            {!jobLoading && jobs.length === 0 && (
+                                <p style={{ textAlign: "center", color: "var(--gray-400)", padding: "2rem 0" }}>No job opportunities posted yet — check back soon!</p>
+                            )}
+                            <div className="grid-3">
+                                {jobs.map(j => <JobCard key={j.id} j={j} />)}
+                            </div>
+                        </>
+                    )}
+                </div>
+            </div>
+
+            <BusinessListingModal open={showBusinessForm} onClose={() => setShowBusinessForm(false)} />
+            <JobPostingModal open={showJobForm} onClose={() => setShowJobForm(false)} />
         </>
     );
 }
