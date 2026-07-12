@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { submitForm } from "../db";
+import { validatePhone } from "../validation";
 
 export function useFormSubmit(collection, initialData, requiredFields = []) {
   const [formData, setFormData] = useState(initialData);
@@ -25,6 +26,12 @@ export function useFormSubmit(collection, initialData, requiredFields = []) {
         setError(`Please fill in the required fields.`);
         return false;
       }
+    }
+    // Any form that collects a phone number gets the same Kenyan-format check,
+    // even if the field wasn't marked required (e.g. optional phone fields).
+    if ("phone" in formData && formData.phone && !validatePhone(formData.phone)) {
+      setError("Enter a valid phone number: 10 digits starting with 01 or 07 (e.g. 0712345678).");
+      return false;
     }
     setSubmitting(true);
     setError(null);

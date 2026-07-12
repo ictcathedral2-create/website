@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { useFormSubmit } from "./hooks/useFormSubmit";
 import { useFirebaseCollection } from "./hooks/useFirebaseCollection";
 import { useYouTubeVideos } from "./hooks/useYouTubeVideos";
-import { validateEmail } from "./validation";
+import { validateEmail, validatePhone } from "./validation";
 import logo from "./assets/logo.png";
 
 const NAV_LINKS = ["Home", "Ministries", "Sermons", "Events", "Connect", "Give", "Testimonies", "About"];
@@ -842,7 +842,7 @@ a.footer-contact-row:hover .footer-contact-text { color: var(--gold-light); }
   .section { padding: 3.5rem 1.25rem; }
   .hero-content { padding: 5.5rem 1.25rem 2rem; gap: 0; }
   .hero-text-col { display: contents; }
-  .hero-badge { order: 1; font-size: 0.62rem; padding: 0.35rem 0.75rem; margin-bottom: 1rem; }
+  .hero-badge { order: 1; font-size: 0.62rem; padding: 0.35rem 0.75rem; margin-bottom: 1rem; justify-self: center; }
   .hero-title { order: 2; font-size: 2.45rem; margin-bottom: 0.75rem; }
   .hero-title-break-1 { display: none; }
   .poster-empty { height: 250px; }
@@ -1230,9 +1230,11 @@ export default function App() {
                                         <input
                                             className="form-input"
                                             type="tel"
-                                            placeholder="Enter your phone number"
+                                            inputMode="numeric"
+                                            maxLength={10}
+                                            placeholder="07XXXXXXXX or 01XXXXXXXX"
                                             value={prayerWidget.formData.phone}
-                                            onChange={e => prayerWidget.setField("phone", e.target.value)}
+                                            onChange={e => prayerWidget.setField("phone", e.target.value.replace(/\D/g, "").slice(0, 10))}
                                         />
                                     </div>
                                     <div className="form-group">
@@ -1311,7 +1313,7 @@ function JoinUsModal({ open, onClose }) {
                             </div>
                             <div className="form-group">
                                 <label className="form-label">Phone Number</label>
-                                <input className="form-input" placeholder="Enter your phone number" value={registration.formData.phone} onChange={e => registration.setField("phone", e.target.value)} />
+                                <input className="form-input" type="tel" inputMode="numeric" maxLength={10} placeholder="07XXXXXXXX or 01XXXXXXXX" value={registration.formData.phone} onChange={e => registration.setField("phone", e.target.value.replace(/\D/g, "").slice(0, 10))} />
                             </div>
                             <div className="form-group">
                                 <label className="form-label">Area (Where You Come From)</label>
@@ -1382,7 +1384,7 @@ function MinistryJoinModal({ ministryTitle, onClose }) {
                             </div>
                             <div className="form-group">
                                 <label className="form-label">Phone Number</label>
-                                <input className="form-input" placeholder="Enter your phone number" value={registration.formData.phone} onChange={e => registration.setField("phone", e.target.value)} />
+                                <input className="form-input" type="tel" inputMode="numeric" maxLength={10} placeholder="07XXXXXXXX or 01XXXXXXXX" value={registration.formData.phone} onChange={e => registration.setField("phone", e.target.value.replace(/\D/g, "").slice(0, 10))} />
                             </div>
                             {registration.error && <p style={{ color: "var(--orange)", fontSize: "0.8rem", marginBottom: 8 }}>{registration.error}</p>}
                             <button
@@ -2135,7 +2137,7 @@ function EventsPage({ events, navigate, dark }) {
                                 </div>
                                 <div className="form-group">
                                     <label className="form-label event-form-label">Phone Number</label>
-                                    <input className="form-input" placeholder="Enter your phone number" value={registration.formData.phone} onChange={e => registration.setField("phone", e.target.value)} />
+                                    <input className="form-input" type="tel" inputMode="numeric" maxLength={10} placeholder="07XXXXXXXX or 01XXXXXXXX" value={registration.formData.phone} onChange={e => registration.setField("phone", e.target.value.replace(/\D/g, "").slice(0, 10))} />
                                 </div>
                                 <div className="form-group">
                                     <label className="form-label event-form-label">Select Event</label>
@@ -2201,7 +2203,7 @@ function ConnectPage({ navigate, dark }) {
                                             <div className="form-group"><label className="form-label">Last Name</label><input className="form-input" placeholder="Last name" value={contact.formData.lastName} onChange={e => contact.setField("lastName", e.target.value)} /></div>
                                         </div>
                                         <div className="form-group"><label className="form-label">Email</label><input className="form-input" type="email" placeholder="your@email.com" value={contact.formData.email} onChange={e => contact.setField("email", e.target.value)} /></div>
-                                        <div className="form-group"><label className="form-label">Phone</label><input className="form-input" placeholder="Enter your phone number" value={contact.formData.phone} onChange={e => contact.setField("phone", e.target.value)} /></div>
+                                        <div className="form-group"><label className="form-label">Phone</label><input className="form-input" type="tel" inputMode="numeric" maxLength={10} placeholder="07XXXXXXXX or 01XXXXXXXX" value={contact.formData.phone} onChange={e => contact.setField("phone", e.target.value.replace(/\D/g, "").slice(0, 10))} /></div>
                                         <div className="form-group">
                                             <label className="form-label">How Can We Help?</label>
                                             <select className="form-select" value={contact.formData.helpType} onChange={e => contact.setField("helpType", e.target.value)}>
@@ -2289,7 +2291,7 @@ function ConnectPage({ navigate, dark }) {
                                 ) : (
                                     <>
                                         <div className="form-group"><label className="form-label">Your Name</label><input className="form-input" placeholder="Full name" value={smallGroup.formData.name} onChange={e => smallGroup.setField("name", e.target.value)} /></div>
-                                        <div className="form-group"><label className="form-label">Phone Number</label><input className="form-input" placeholder="Enter your phone number" value={smallGroup.formData.phone} onChange={e => smallGroup.setField("phone", e.target.value)} /></div>
+                                        <div className="form-group"><label className="form-label">Phone Number</label><input className="form-input" type="tel" inputMode="numeric" maxLength={10} placeholder="07XXXXXXXX or 01XXXXXXXX" value={smallGroup.formData.phone} onChange={e => smallGroup.setField("phone", e.target.value.replace(/\D/g, "").slice(0, 10))} /></div>
                                         <div className="form-group">
                                             <label className="form-label">Preferred Group</label>
                                             <select className="form-select" value={smallGroup.formData.preferredGroup} onChange={e => smallGroup.setField("preferredGroup", e.target.value)}>
@@ -2377,7 +2379,7 @@ function GivePage({ dark }) {
     };
 
     const handleStkSubmit = async () => {
-        if (!stkForm.phone.trim()) { setStkError("Enter your M-Pesa phone number."); setStkState("error"); return; }
+        if (!validatePhone(stkForm.phone)) { setStkError("Enter a valid phone number: 10 digits starting with 01 or 07 (e.g. 0712345678)."); setStkState("error"); return; }
         if (!stkForm.amount || Number(stkForm.amount) < 1) { setStkError("Enter an amount to give."); setStkState("error"); return; }
 
         setStkState("sending");
@@ -2452,7 +2454,7 @@ function GivePage({ dark }) {
                                 </div>
                                 <div className="form-group">
                                     <label className="form-label">M-Pesa Phone Number</label>
-                                    <input className="form-input" type="tel" placeholder="07XX XXX XXX" value={stkForm.phone} onChange={e => setStkField("phone", e.target.value)} />
+                                    <input className="form-input" type="tel" inputMode="numeric" maxLength={10} placeholder="07XXXXXXXX or 01XXXXXXXX" value={stkForm.phone} onChange={e => setStkField("phone", e.target.value.replace(/\D/g, "").slice(0, 10))} />
                                 </div>
                                 {stkState === "error" && stkError && <p style={{ color: "var(--orange)", fontSize: "0.85rem", marginBottom: 12 }}>{stkError}</p>}
                                 <button className="btn btn-gold" style={{ width: "100%", justifyContent: "center" }} disabled={stkState === "sending"} onClick={handleStkSubmit}>

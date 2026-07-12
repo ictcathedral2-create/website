@@ -11,8 +11,10 @@ export function validateRequired(fields, data) {
   return null;
 }
 
+// Kenyan mobile numbers only: exactly 10 digits, starting with 01 or 07 (e.g. 0712345678, 0112345678).
 export function validatePhone(phone) {
-  return /^\+?[\d\s-]{7,15}$/.test(phone);
+  const digitsOnly = String(phone || "").replace(/\D/g, "");
+  return /^(01|07)\d{8}$/.test(digitsOnly);
 }
 
 export function sanitize(str, maxLength = 1000) {
