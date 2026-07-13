@@ -618,16 +618,16 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 .blog-meta { font-size: 0.78rem; color: var(--gray-400); margin-top: 0.75rem; display: flex; justify-content: space-between; }
 
 /* ─── FORMS ─── */
-.form-group { margin-bottom: 1.25rem; }
-.form-label { display: block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--navy); margin-bottom: 0.45rem; }
+.form-group { margin-bottom: 0.9rem; }
+.form-label { display: block; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--navy); margin-bottom: 0.35rem; }
 .form-input, .form-select, .form-textarea {
-  width: 100%; padding: 0.85rem 1rem; border-radius: 10px;
+  width: 100%; padding: 0.65rem 0.85rem; border-radius: 10px;
   border: 1.5px solid var(--gray-200); font-family: var(--font-body);
-  font-size: 0.92rem; font-weight: 500; color: var(--gray-800); outline: none;
+  font-size: 0.88rem; font-weight: 500; color: var(--gray-800); outline: none;
   transition: border-color 0.2s; background: white;
 }
 .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,168,76,0.12); }
-.form-textarea { resize: vertical; min-height: 110px; }
+.form-textarea { resize: vertical; min-height: 80px; }
 
 /* ─── GIVING ─── */
 .giving-hero {
@@ -782,13 +782,14 @@ a.footer-contact-row:hover .footer-contact-text { color: var(--gold-light); }
   padding: 1.5rem; animation: fadeSlideUp 0.2s ease both;
 }
 .modal-card {
-  background: white; border-radius: 20px; max-width: 480px; width: 100%;
-  overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  background: white; border-radius: 20px; max-width: 440px; width: 100%;
+  max-height: 88vh; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  display: flex; flex-direction: column;
 }
 .dark-mode .modal-card { background: #131D35 !important; }
 .modal-header {
   background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
-  padding: 1.75rem 2rem; color: white; position: relative;
+  padding: 1.35rem 1.5rem; color: white; position: relative; flex-shrink: 0;
 }
 .modal-close {
   position: absolute; top: 1rem; right: 1rem;
@@ -803,7 +804,7 @@ a.footer-contact-row:hover .footer-contact-text { color: var(--gold-light); }
   background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.4);
   border-radius: 12px; padding: 0.5rem 1rem; margin-bottom: 0.75rem;
 }
-.modal-body { padding: 2rem; }
+.modal-body { padding: 1.5rem; overflow-y: auto; }
 .modal-body p { color: var(--gray-600); line-height: 1.75; font-size: 0.95rem; }
 .dark-mode .modal-body p { color: #A0A8B8 !important; }
 
