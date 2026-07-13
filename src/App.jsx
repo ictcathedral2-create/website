@@ -3,6 +3,7 @@ import { useFormSubmit } from "./hooks/useFormSubmit";
 import { useFirebaseCollection } from "./hooks/useFirebaseCollection";
 import { useYouTubeVideos } from "./hooks/useYouTubeVideos";
 import { validateEmail, validatePhone } from "./validation";
+import { compressImage, readPdfAsDataUri } from "./utils/fileToDataUri";
 import logo from "./assets/logo.png";
 
 const NAV_LINKS = ["Home", "Ministries", "Sermons", "Events", "Connect", "Give", "Community", "Testimonies", "About"];
@@ -2556,15 +2557,54 @@ function whatsappLink(phone, message) {
 function BusinessListingModal({ open, onClose }) {
     const listing = useFormSubmit(
         "businessListings",
-        { businessName: "", ownerName: "", phone: "", category: BUSINESS_CATEGORIES[0], description: "" },
+        { businessName: "", ownerName: "", phone: "", category: BUSINESS_CATEGORIES[0], description: "", mediaType: "none", mediaData: "", mediaUrl: "" },
         ["businessName", "ownerName", "phone", "description"]
     );
+    const [mediaError, setMediaError] = useState(null);
+    const [mediaBusy, setMediaBusy] = useState(false);
 
     if (!open) return null;
 
     const handleClose = () => {
         listing.reset();
+        setMediaError(null);
         onClose();
+    };
+
+    const handleMediaTypeChange = type => {
+        listing.setField("mediaType", type);
+        listing.setField("mediaData", "");
+        listing.setField("mediaUrl", "");
+        setMediaError(null);
+    };
+
+    const handlePhotoChange = async e => {
+        const file = e.target.files?.[0];
+        e.target.value = "";
+        if (!file) return;
+        if (!file.type.startsWith("image/")) { setMediaError("Please choose an image file."); return; }
+        setMediaBusy(true);
+        setMediaError(null);
+        try {
+            listing.setField("mediaData", await compressImage(file));
+        } catch (err) {
+            setMediaError(err.message || "Couldn't process that image.");
+        } finally {
+            setMediaBusy(false);
+        }
+    };
+
+    const handleSubmit = () => {
+        if (listing.formData.mediaType === "image" && !listing.formData.mediaData) {
+            setMediaError("Upload a photo, or switch to \"No media\".");
+            return;
+        }
+        if (listing.formData.mediaType === "video" && !listing.formData.mediaUrl.trim()) {
+            setMediaError("Paste a video link, or switch to \"No media\".");
+            return;
+        }
+        setMediaError(null);
+        listing.handleSubmit({ status: "pending" });
     };
 
     return (
@@ -2606,12 +2646,34 @@ function BusinessListingModal({ open, onClose }) {
                                 <label className="form-label">Description</label>
                                 <textarea className="form-textarea" maxLength={400} placeholder="What does your business offer? (max 400 characters)" value={listing.formData.description} onChange={e => listing.setField("description", e.target.value)} />
                             </div>
-                            {listing.error && <p style={{ color: "var(--orange)", fontSize: "0.8rem", marginBottom: 8 }}>{listing.error}</p>}
+                            <div className="form-group">
+                                <label className="form-label">Photo or Video (Optional)</label>
+                                <div className="tab-nav" style={{ marginBottom: "0.75rem" }}>
+                                    {[["none", "No Media"], ["image", "Upload Photo"], ["video", "Video Link"]].map(([val, label]) => (
+                                        <button key={val} type="button" className={`tab-btn${listing.formData.mediaType === val ? " active" : ""}`} onClick={() => handleMediaTypeChange(val)}>{label}</button>
+                                    ))}
+                                </div>
+                                {listing.formData.mediaType === "image" && (
+                                    <>
+                                        <label className="btn btn-navy btn-sm" style={{ cursor: mediaBusy ? "not-allowed" : "pointer", opacity: mediaBusy ? 0.6 : 1 }}>
+                                            {mediaBusy ? "Processing..." : listing.formData.mediaData ? "✓ Photo Selected — Change" : "Choose Photo"}
+                                            <input type="file" accept="image/*" onChange={handlePhotoChange} disabled={mediaBusy} style={{ display: "none" }} />
+                                        </label>
+                                        {listing.formData.mediaData && (
+                                            <img src={listing.formData.mediaData} alt="Preview" style={{ display: "block", marginTop: "0.75rem", maxWidth: "100%", maxHeight: 160, borderRadius: 10 }} />
+                                        )}
+                                    </>
+                                )}
+                                {listing.formData.mediaType === "video" && (
+                                    <input className="form-input" placeholder="Paste a YouTube, TikTok, or Facebook video link" value={listing.formData.mediaUrl} onChange={e => listing.setField("mediaUrl", e.target.value)} />
+                                )}
+                            </div>
+                            {(mediaError || listing.error) && <p style={{ color: "var(--orange)", fontSize: "0.8rem", marginBottom: 8 }}>{mediaError || listing.error}</p>}
                             <button
                                 className="btn btn-gold"
                                 style={{ width: "100%", justifyContent: "center" }}
-                                disabled={listing.submitting}
-                                onClick={() => listing.handleSubmit({ status: "pending" })}
+                                disabled={listing.submitting || mediaBusy}
+                                onClick={handleSubmit}
                             >
                                 {listing.submitting ? "Submitting..." : "Submit for Review →"}
                             </button>
@@ -2626,15 +2688,54 @@ function BusinessListingModal({ open, onClose }) {
 function JobPostingModal({ open, onClose }) {
     const posting = useFormSubmit(
         "jobPostings",
-        { jobTitle: "", company: "", contactPhone: "", jobType: JOB_TYPES[0], description: "" },
+        { jobTitle: "", company: "", contactPhone: "", jobType: JOB_TYPES[0], description: "", advertType: "image", advertData: "" },
         ["jobTitle", "company", "contactPhone", "description"]
     );
+    const [advertError, setAdvertError] = useState(null);
+    const [advertBusy, setAdvertBusy] = useState(false);
 
     if (!open) return null;
 
     const handleClose = () => {
         posting.reset();
+        setAdvertError(null);
         onClose();
+    };
+
+    const handleAdvertTypeChange = type => {
+        posting.setField("advertType", type);
+        posting.setField("advertData", "");
+        setAdvertError(null);
+    };
+
+    const handleAdvertChange = async e => {
+        const file = e.target.files?.[0];
+        e.target.value = "";
+        if (!file) return;
+        setAdvertBusy(true);
+        setAdvertError(null);
+        try {
+            if (posting.formData.advertType === "image") {
+                if (!file.type.startsWith("image/")) throw new Error("Please choose an image file.");
+                posting.setField("advertData", await compressImage(file));
+            } else {
+                if (file.type !== "application/pdf") throw new Error("Please choose a PDF file.");
+                posting.setField("advertData", await readPdfAsDataUri(file));
+            }
+        } catch (err) {
+            setAdvertError(err.message || "Couldn't process that file.");
+        } finally {
+            setAdvertBusy(false);
+        }
+    };
+
+    const handleSubmit = () => {
+        if (!posting.formData.advertData) {
+            setAdvertError("Upload your job advert (image or PDF) before submitting.");
+            return;
+        }
+        setAdvertError(null);
+        posting.handleSubmit({ status: "pending" });
     };
 
     return (
@@ -2678,12 +2779,30 @@ function JobPostingModal({ open, onClose }) {
                                 <label className="form-label">Description</label>
                                 <textarea className="form-textarea" maxLength={400} placeholder="Role details, requirements, how to apply (max 400 characters)" value={posting.formData.description} onChange={e => posting.setField("description", e.target.value)} />
                             </div>
-                            {posting.error && <p style={{ color: "var(--orange)", fontSize: "0.8rem", marginBottom: 8 }}>{posting.error}</p>}
+                            <div className="form-group">
+                                <label className="form-label">Job Advert (Required)</label>
+                                <div className="tab-nav" style={{ marginBottom: "0.75rem" }}>
+                                    {[["image", "Image Poster"], ["pdf", "PDF Document"]].map(([val, label]) => (
+                                        <button key={val} type="button" className={`tab-btn${posting.formData.advertType === val ? " active" : ""}`} onClick={() => handleAdvertTypeChange(val)}>{label}</button>
+                                    ))}
+                                </div>
+                                <label className="btn btn-navy btn-sm" style={{ cursor: advertBusy ? "not-allowed" : "pointer", opacity: advertBusy ? 0.6 : 1 }}>
+                                    {advertBusy ? "Processing..." : posting.formData.advertData ? "✓ Advert Selected — Change" : `Choose ${posting.formData.advertType === "pdf" ? "PDF" : "Image"}`}
+                                    <input type="file" accept={posting.formData.advertType === "pdf" ? "application/pdf" : "image/*"} onChange={handleAdvertChange} disabled={advertBusy} style={{ display: "none" }} />
+                                </label>
+                                {posting.formData.advertType === "image" && posting.formData.advertData && (
+                                    <img src={posting.formData.advertData} alt="Preview" style={{ display: "block", marginTop: "0.75rem", maxWidth: "100%", maxHeight: 160, borderRadius: 10 }} />
+                                )}
+                                {posting.formData.advertType === "pdf" && posting.formData.advertData && (
+                                    <div style={{ marginTop: "0.75rem", fontSize: "0.82rem", color: "var(--navy)", fontWeight: 600 }}>📄 PDF attached</div>
+                                )}
+                            </div>
+                            {(advertError || posting.error) && <p style={{ color: "var(--orange)", fontSize: "0.8rem", marginBottom: 8 }}>{advertError || posting.error}</p>}
                             <button
                                 className="btn btn-gold"
                                 style={{ width: "100%", justifyContent: "center" }}
-                                disabled={posting.submitting}
-                                onClick={() => posting.handleSubmit({ status: "pending" })}
+                                disabled={posting.submitting || advertBusy}
+                                onClick={handleSubmit}
                             >
                                 {posting.submitting ? "Submitting..." : "Submit for Review →"}
                             </button>
@@ -2697,40 +2816,56 @@ function JobPostingModal({ open, onClose }) {
 
 function BusinessCard({ b }) {
     return (
-        <div className="card" style={{ padding: "1.75rem" }}>
-            <div className="blog-cat">{b.category}</div>
-            <div className="blog-title" style={{ marginTop: 6 }}>{b.businessName}</div>
-            <div style={{ fontSize: "0.82rem", color: "var(--gray-400)", marginTop: 2 }}>By {b.ownerName}</div>
-            <div className="blog-excerpt" style={{ marginTop: 8 }}>{b.description}</div>
-            <a
-                className="btn btn-gold btn-sm"
-                style={{ marginTop: "1rem", width: "100%", justifyContent: "center" }}
-                href={whatsappLink(b.phone, `Hi ${b.businessName}, I found your business on the ACK St Pauls Youths website and I'd like to connect.`)}
-                target="_blank"
-                rel="noreferrer"
-            >
-                💬 Chat on WhatsApp
-            </a>
+        <div className="card" style={{ overflow: "hidden" }}>
+            {b.mediaType === "image" && b.mediaData && (
+                <img src={b.mediaData} alt={b.businessName} style={{ width: "100%", aspectRatio: "4 / 3", objectFit: "cover", display: "block" }} />
+            )}
+            <div style={{ padding: "1.75rem" }}>
+                <div className="blog-cat">{b.category}</div>
+                <div className="blog-title" style={{ marginTop: 6 }}>{b.businessName}</div>
+                <div style={{ fontSize: "0.82rem", color: "var(--gray-400)", marginTop: 2 }}>By {b.ownerName}</div>
+                <div className="blog-excerpt" style={{ marginTop: 8 }}>{b.description}</div>
+                {b.mediaType === "video" && b.mediaUrl && (
+                    <a href={b.mediaUrl} target="_blank" rel="noreferrer" className="ministry-link" style={{ marginTop: 8 }}>▶ Watch Video</a>
+                )}
+                <a
+                    className="btn btn-gold btn-sm"
+                    style={{ marginTop: "1rem", width: "100%", justifyContent: "center" }}
+                    href={whatsappLink(b.phone, `Hi ${b.businessName}, I found your business on the ACK St Pauls Youths website and I'd like to connect.`)}
+                    target="_blank"
+                    rel="noreferrer"
+                >
+                    💬 Chat on WhatsApp
+                </a>
+            </div>
         </div>
     );
 }
 
 function JobCard({ j }) {
     return (
-        <div className="card" style={{ padding: "1.75rem" }}>
-            <div className="blog-cat">{j.jobType}</div>
-            <div className="blog-title" style={{ marginTop: 6 }}>{j.jobTitle}</div>
-            <div style={{ fontSize: "0.82rem", color: "var(--gray-400)", marginTop: 2 }}>{j.company}</div>
-            <div className="blog-excerpt" style={{ marginTop: 8 }}>{j.description}</div>
-            <a
-                className="btn btn-gold btn-sm"
-                style={{ marginTop: "1rem", width: "100%", justifyContent: "center" }}
-                href={whatsappLink(j.contactPhone, `Hi, I saw the ${j.jobTitle} opportunity at ${j.company} on the ACK St Pauls Youths website and I'd like to find out more.`)}
-                target="_blank"
-                rel="noreferrer"
-            >
-                💬 Chat on WhatsApp
-            </a>
+        <div className="card" style={{ overflow: "hidden" }}>
+            {j.advertType === "image" && j.advertData && (
+                <img src={j.advertData} alt={`${j.jobTitle} advert`} style={{ width: "100%", aspectRatio: "4 / 3", objectFit: "cover", display: "block" }} />
+            )}
+            <div style={{ padding: "1.75rem" }}>
+                <div className="blog-cat">{j.jobType}</div>
+                <div className="blog-title" style={{ marginTop: 6 }}>{j.jobTitle}</div>
+                <div style={{ fontSize: "0.82rem", color: "var(--gray-400)", marginTop: 2 }}>{j.company}</div>
+                <div className="blog-excerpt" style={{ marginTop: 8 }}>{j.description}</div>
+                {j.advertType === "pdf" && j.advertData && (
+                    <a href={j.advertData} download={`${j.jobTitle || "job-advert"}.pdf`} className="ministry-link" style={{ marginTop: 8 }}>📄 View Job Advert (PDF)</a>
+                )}
+                <a
+                    className="btn btn-gold btn-sm"
+                    style={{ marginTop: "1rem", width: "100%", justifyContent: "center" }}
+                    href={whatsappLink(j.contactPhone, `Hi, I saw the ${j.jobTitle} opportunity at ${j.company} on the ACK St Pauls Youths website and I'd like to find out more.`)}
+                    target="_blank"
+                    rel="noreferrer"
+                >
+                    💬 Chat on WhatsApp
+                </a>
+            </div>
         </div>
     );
 }

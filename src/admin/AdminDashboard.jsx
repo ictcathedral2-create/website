@@ -60,6 +60,13 @@ const SECTIONS = [
         path: "businessListings",
         statusOptions: ["pending", "approved", "rejected"],
         columns: [
+            {
+                key: "mediaType", label: "Media", render: (v, item) => {
+                    if (v === "image" && item.mediaData) return <img src={item.mediaData} alt="" style={{ width: 48, height: 48, objectFit: "cover", borderRadius: 6 }} />;
+                    if (v === "video" && item.mediaUrl) return <a href={item.mediaUrl} target="_blank" rel="noreferrer">▶ Video</a>;
+                    return "—";
+                }
+            },
             { key: "businessName", label: "Business" },
             { key: "ownerName", label: "Owner" },
             { key: "phone", label: "Phone" },
@@ -81,6 +88,13 @@ const SECTIONS = [
         path: "jobPostings",
         statusOptions: ["pending", "approved", "rejected"],
         columns: [
+            {
+                key: "advertType", label: "Advert", render: (v, item) => {
+                    if (v === "image" && item.advertData) return <img src={item.advertData} alt="" style={{ width: 48, height: 48, objectFit: "cover", borderRadius: 6 }} />;
+                    if (v === "pdf" && item.advertData) return <a href={item.advertData} target="_blank" rel="noreferrer">📄 PDF</a>;
+                    return "—";
+                }
+            },
             { key: "jobTitle", label: "Job Title" },
             { key: "company", label: "Company" },
             { key: "contactPhone", label: "Phone" },
