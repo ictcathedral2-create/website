@@ -464,7 +464,7 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 
 .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
 .grid-3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem; }
-.grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; }
+.grid-4 { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem; align-items: stretch; }
 
 /* ─── ABOUT ─── */
 .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
@@ -494,7 +494,7 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 .value-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); }
 
 /* ─── TEAM ─── */
-.team-card { text-align: center; padding: 2rem 1.5rem; }
+.team-card { text-align: center; padding: 2rem 1.5rem; height: 100%; display: flex; flex-direction: column; }
 .team-avatar {
   width: 100px; height: 100px; border-radius: 50%;
   background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
@@ -505,8 +505,16 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
   box-shadow: 0 4px 20px rgba(201,168,76,0.25);
 }
 .team-name { font-family: var(--font-display); font-size: 1.45rem; font-weight: 700; line-height: 1; color: var(--navy); }
-.team-role { font-size: 0.82rem; color: var(--gold-dark); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; }
+.team-role { font-size: 0.82rem; color: var(--gold-dark); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; min-height: 2.2em; }
 .team-bio { font-size: 0.9rem; color: var(--gray-600); line-height: 1.7; margin-top: 0.75rem; }
+.team-bio-clamp {
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.team-read-more {
+  background: none; border: none; padding: 0; margin-top: 6px; cursor: pointer;
+  font-size: 0.8rem; font-weight: 600; color: var(--gold-dark); align-self: center;
+}
 
 /* ─── MINISTRY CARDS ─── */
 .ministry-card { padding: 2rem; }
@@ -566,6 +574,20 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 .event-title { font-family: var(--font-display); font-size: 1.35rem; font-weight: 700; line-height: 1.05; color: var(--navy); display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .event-meta { font-size: 0.82rem; color: var(--gray-400); margin-top: 4px; }
 .event-desc { font-size: 0.9rem; color: var(--gray-600); margin-top: 0.4rem; line-height: 1.65; }
+
+/* Home page "Upcoming Events" preview cards — uniform size, 3-line clamped description */
+.home-events-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); align-items: stretch; }
+.home-event-card { align-items: flex-start; height: 100%; }
+.home-event-body { display: flex; flex-direction: column; width: 100%; min-height: 200px; }
+.home-event-desc-clamp {
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.home-event-read-more {
+  background: none; border: none; padding: 0; margin-top: 6px; cursor: pointer;
+  font-size: 0.8rem; font-weight: 600; color: var(--gold-dark); align-self: flex-start;
+}
+.home-event-body .btn { margin-top: auto; align-self: flex-start; }
 
 .event-date-block.urgent { background: var(--orange); animation: urgentGlow 1.4s ease-in-out infinite; }
 .event-date-block.urgent .event-day { color: white; }
@@ -1049,6 +1071,50 @@ function useAnimatedCount(end, trigger) {
         return () => clearInterval(id);
     }, [end, trigger]);
     return val;
+}
+
+function HomeEventCard({ e, navigate }) {
+    const [expanded, setExpanded] = useState(false);
+    const canExpand = (e.desc || "").length > 130;
+
+    return (
+        <div id={slugify(e.title)} className="card event-card home-event-card">
+            <div className={`event-date-block${e.urgent ? " urgent" : ""}`}>
+                <div className="event-day">{e.day}</div>
+                <div className="event-month">{e.month}</div>
+            </div>
+            <div className="home-event-body">
+                <div className="event-title">{e.title}{e.urgent && <span className="event-urgent-badge">Starting Soon</span>}</div>
+                <div className="event-meta">📅 {e.time}</div>
+                <div className={`event-desc${expanded ? "" : " home-event-desc-clamp"}`}>{e.desc}</div>
+                {canExpand && (
+                    <button className="home-event-read-more" onClick={() => setExpanded(!expanded)}>
+                        {expanded ? "Show Less" : "Read More"} →
+                    </button>
+                )}
+                <button className="btn btn-gold btn-sm" onClick={() => navigate("Events")}>Register Now</button>
+            </div>
+        </div>
+    );
+}
+
+function TeamCard({ t }) {
+    const [expanded, setExpanded] = useState(false);
+    const canExpand = (t.bio || "").length > 130;
+
+    return (
+        <div className="card team-card">
+            <div className="team-avatar">{t.initials}</div>
+            <div className="team-name">{t.name}</div>
+            <div className="team-role">{t.role}</div>
+            <div className={`team-bio${expanded ? "" : " team-bio-clamp"}`}>{t.bio}</div>
+            {canExpand && (
+                <button className="team-read-more" onClick={() => setExpanded(!expanded)}>
+                    {expanded ? "Show Less" : "Read More"} →
+                </button>
+            )}
+        </div>
+    );
 }
 
 export default function App() {
@@ -1643,20 +1709,9 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
                         <div className="gold-line" />
                     </div>
                     {events.length === 0 && <p style={{ textAlign: "center", color: "var(--gray-400)" }}>No upcoming events yet — check back soon!</p>}
-                    <div className="grid-2">
+                    <div className="grid-2 home-events-grid">
                         {events.slice(0, 4).map((e, i) => (
-                            <div key={i} id={slugify(e.title)} className="card event-card">
-                                <div className={`event-date-block${e.urgent ? " urgent" : ""}`}>
-                                    <div className="event-day">{e.day}</div>
-                                    <div className="event-month">{e.month}</div>
-                                </div>
-                                <div>
-                                    <div className="event-title">{e.title}{e.urgent && <span className="event-urgent-badge">Starting Soon</span>}</div>
-                                    <div className="event-meta">📅 {e.time}</div>
-                                    <div className="event-desc">{e.desc}</div>
-                                    <button className="btn btn-gold btn-sm" style={{ marginTop: "0.75rem" }} onClick={() => navigate("Events")}>Register Now</button>
-                                </div>
-                            </div>
+                            <HomeEventCard key={i} e={e} navigate={navigate} />
                         ))}
                     </div>
                     <div style={{ textAlign: "center", marginTop: "2rem" }}>
@@ -1850,14 +1905,7 @@ function AboutPage({ navigate, dark }) {
                         <div className="gold-line" />
                     </div>
                     <div className="grid-4">
-                        {TEAM.map((t, i) => (
-                            <div key={i} className="card team-card">
-                                <div className="team-avatar">{t.initials}</div>
-                                <div className="team-name">{t.name}</div>
-                                <div className="team-role">{t.role}</div>
-                                <div className="team-bio">{t.bio}</div>
-                            </div>
-                        ))}
+                        {TEAM.map((t, i) => <TeamCard key={i} t={t} />)}
                     </div>
                 </div>
             </div>
