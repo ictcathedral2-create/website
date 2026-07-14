@@ -717,9 +717,22 @@ a.footer-contact-row:hover .footer-contact-text { color: var(--gold-light); }
   border: none; cursor: pointer; font-size: 1.4rem;
   box-shadow: 0 4px 25px rgba(201,168,76,0.6);
   transition: all 0.3s; display: flex; align-items: center; justify-content: center;
-  color: white;
+  color: white; position: relative;
 }
 .support-toggle:hover { transform: scale(1.08); }
+.support-badge {
+  position: absolute; top: -4px; right: -4px;
+  background: var(--orange); color: white; font-size: 0.68rem; font-weight: 700;
+  min-width: 19px; height: 19px; border-radius: 10px; padding: 0 4px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 0 2px white; line-height: 1;
+}
+.dark-mode .support-badge { box-shadow: 0 0 0 2px #0A0F1E !important; }
+.chat-unread-badge {
+  background: var(--orange); color: white; font-size: 0.65rem; font-weight: 700;
+  min-width: 16px; height: 16px; border-radius: 9px; padding: 0 4px;
+  display: inline-flex; align-items: center; justify-content: center; line-height: 1;
+}
 .support-panel {
   position: absolute; bottom: 70px; right: 0;
   width: 320px; max-height: min(520px, 80vh); display: flex; flex-direction: column;
@@ -1937,10 +1950,36 @@ function VideoModal({ video, onClose }) {
     );
 }
 
+function WrittenSermonModal({ sermon, onClose }) {
+    if (!sermon) return null;
+    return (
+        <div className="modal-overlay" onClick={onClose}>
+            <div className="modal-card" onClick={e => e.stopPropagation()} style={{ maxWidth: 620 }}>
+                <div className="modal-header">
+                    <button className="modal-close" onClick={onClose} aria-label="Close">✕</button>
+                    <div style={{ fontFamily: "var(--font-display)", fontSize: "1.6rem", fontWeight: 700, lineHeight: 1.1 }}>{sermon.title}</div>
+                    <div style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.7)", marginTop: 6 }}>
+                        {sermon.pastor}{sermon.date && ` · ${sermon.date}`}{sermon.scripture && ` · ${sermon.scripture}`}
+                    </div>
+                </div>
+                <div className="modal-body">
+                    <p style={{ whiteSpace: "pre-wrap" }}>{sermon.body}</p>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 function SermonsPage({ navigate, dark, activeTab, setActiveTab }) {
     const { videos: videosOldestFirst, loading, error } = useYouTubeVideos();
     const videos = [...videosOldestFirst].reverse();
     const [activeVideo, setActiveVideo] = useState(null);
+    const { data: writtenData, loading: writtenLoading } = useFirebaseCollection("writtenSermons");
+    const writtenSermons = (writtenData || []).slice().sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    const [activeSermon, setActiveSermon] = useState(null);
+    const { data: galleryData, loading: galleryLoading } = useFirebaseCollection("sermonGallery");
+    const galleryImages = (galleryData || []).slice().sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    const [lightboxImage, setLightboxImage] = useState(null);
 
     return (
         <>
@@ -1952,7 +1991,7 @@ function SermonsPage({ navigate, dark, activeTab, setActiveTab }) {
             <div className="section section-cream">
                 <div className="container">
                     <div className="tab-nav">
-                        {["Video", "Gallery"].map(t => (
+                        {["Video", "Written", "Gallery"].map(t => (
                             <button key={t} className={`tab-btn${activeTab === t ? " active" : ""}`} onClick={() => setActiveTab(t)}>{t}</button>
                         ))}
                     </div>
@@ -2016,17 +2055,65 @@ function SermonsPage({ navigate, dark, activeTab, setActiveTab }) {
 
                     <VideoModal video={activeVideo} onClose={() => setActiveVideo(null)} />
 
-                    {activeTab === "Gallery" && (
-                        <div className="gallery-grid">
-                            {["🙌", "✝️", "🎵", "🙏", "🌟", "💛", "🕊️"].map((e, i) => (
-                                <div key={i} className="gallery-item">
-                                    <div className="gallery-bg" style={{ background: `linear-gradient(${135 + i * 20}deg, ${["var(--navy)", "var(--gold-dark)", "#1E3A7A", "var(--orange)", "var(--navy-mid)", "var(--gold)", "#2A4A80"][i]} 0%, ${["#1A3660", "var(--gold)", "var(--navy)", "#C9673A", "var(--navy)", "var(--orange)", "var(--navy-mid)"][i]} 100%)` }}>
-                                        <span style={{ opacity: 0.4, fontSize: "2.5rem" }}>{e}</span>
-                                    </div>
+                    {activeTab === "Written" && (
+                        <>
+                            {writtenLoading && (
+                                <div style={{ textAlign: "center", padding: "3rem 0", color: "var(--gray-400)" }}>Loading written sermons…</div>
+                            )}
+                            {!writtenLoading && writtenSermons.length === 0 && (
+                                <div style={{ textAlign: "center", padding: "3rem 0", color: "var(--gray-400)" }}>No written sermons posted yet. Check back soon!</div>
+                            )}
+                            {!writtenLoading && writtenSermons.length > 0 && (
+                                <div className="grid-3">
+                                    {writtenSermons.map(s => (
+                                        <div key={s.id} className="card blog-card">
+                                            <div className="blog-content">
+                                                <div className="blog-cat">{s.scripture || "Sermon"}</div>
+                                                <div className="blog-title">{s.title}</div>
+                                                <div className="blog-excerpt">{s.body?.length > 160 ? `${s.body.slice(0, 160)}…` : s.body}</div>
+                                                <div className="blog-meta">
+                                                    <span>{s.pastor}</span>
+                                                    <span>{s.date}</span>
+                                                </div>
+                                                <button
+                                                    onClick={() => setActiveSermon(s)}
+                                                    style={{ background: "none", border: "none", padding: 0, marginTop: "0.85rem", cursor: "pointer", fontSize: "0.82rem", fontWeight: 600, color: "var(--gold-dark)" }}
+                                                >
+                                                    Read Full Sermon →
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
+                            )}
+                        </>
                     )}
+
+                    <WrittenSermonModal sermon={activeSermon} onClose={() => setActiveSermon(null)} />
+
+                    {activeTab === "Gallery" && (
+                        <>
+                            {galleryLoading && (
+                                <div style={{ textAlign: "center", padding: "3rem 0", color: "var(--gray-400)" }}>Loading gallery…</div>
+                            )}
+                            {!galleryLoading && galleryImages.length === 0 && (
+                                <div style={{ textAlign: "center", padding: "3rem 0", color: "var(--gray-400)" }}>No photos posted yet. Check back soon!</div>
+                            )}
+                            {!galleryLoading && galleryImages.length > 0 && (
+                                <div className="gallery-grid">
+                                    {galleryImages.map(img => (
+                                        <div key={img.id} className="gallery-item" onClick={() => setLightboxImage(img)}>
+                                            <div className="gallery-bg" style={{ padding: 0 }}>
+                                                <img src={img.imageData} alt={img.caption || "Sermon gallery photo"} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </>
+                    )}
+
+                    {lightboxImage && <PosterLightbox src={lightboxImage.imageData} alt={lightboxImage.caption || "Sermon gallery photo"} onClose={() => setLightboxImage(null)} />}
                 </div>
             </div>
         </>

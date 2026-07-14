@@ -4,6 +4,8 @@ import SubmissionSection from "./SubmissionSection";
 import EventsManager from "./EventsManager";
 import GalleryManager from "./GalleryManager";
 import SupportChatsManager from "./SupportChatsManager";
+import WrittenSermonsManager from "./WrittenSermonsManager";
+import SermonGalleryManager from "./SermonGalleryManager";
 
 function normalizeUrl(url) {
     const trimmed = String(url || "").trim();
@@ -21,6 +23,16 @@ const SECTIONS = [
         key: "manageGallery",
         label: "Gallery / Posters",
         type: "gallery",
+    },
+    {
+        key: "writtenSermons",
+        label: "Written Sermons",
+        type: "writtenSermons",
+    },
+    {
+        key: "sermonGallery",
+        label: "Sermons Gallery",
+        type: "sermonGallery",
     },
     {
         key: "supportCenter",
@@ -356,6 +368,10 @@ export default function AdminDashboard({ user, onLogout }) {
                     <GalleryManager />
                 ) : current?.type === "support" ? (
                     <SupportChatsManager />
+                ) : current?.type === "writtenSermons" ? (
+                    <WrittenSermonsManager />
+                ) : current?.type === "sermonGallery" ? (
+                    <SermonGalleryManager />
                 ) : current && (
                     <SubmissionSection
                         title={current.label}

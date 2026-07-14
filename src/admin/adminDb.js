@@ -84,3 +84,33 @@ export async function updateGalleryItem(id, data) {
 export async function deleteGalleryItem(id) {
   await remove(ref(db, `gallery/${id}`));
 }
+
+// Public-facing written sermons, managed only by admins but readable by anyone.
+export async function createWrittenSermon(data) {
+  const newRef = push(ref(db, "writtenSermons"));
+  await set(newRef, { ...data, createdAt: Date.now() });
+  return newRef.key;
+}
+
+export async function updateWrittenSermon(id, data) {
+  await set(ref(db, `writtenSermons/${id}`), data);
+}
+
+export async function deleteWrittenSermon(id) {
+  await remove(ref(db, `writtenSermons/${id}`));
+}
+
+// Public-facing sermons gallery (photos from services/preaching), managed only by admins but readable by anyone.
+export async function createSermonGalleryItem(data) {
+  const newRef = push(ref(db, "sermonGallery"));
+  await set(newRef, { ...data, createdAt: Date.now() });
+  return newRef.key;
+}
+
+export async function updateSermonGalleryItem(id, data) {
+  await set(ref(db, `sermonGallery/${id}`), data);
+}
+
+export async function deleteSermonGalleryItem(id) {
+  await remove(ref(db, `sermonGallery/${id}`));
+}

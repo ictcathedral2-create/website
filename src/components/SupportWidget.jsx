@@ -4,6 +4,7 @@ import { createSupportRequest, addSupportMessage } from "../supportDb";
 import { useFirebaseDoc } from "../hooks/useFirebaseDoc";
 
 const STORAGE_KEY = "supportChatIds";
+const SEEN_KEY = "supportSeenAt";
 const SUPPORT_WHATSAPP = "0702426830";
 
 const SERVICE_TYPES = [
@@ -31,6 +32,31 @@ function getStoredChatIds() {
 function addStoredChatId(id) {
     const ids = getStoredChatIds();
     if (!ids.includes(id)) localStorage.setItem(STORAGE_KEY, JSON.stringify([id, ...ids]));
+}
+
+function getSeenAtMap() {
+    try {
+        const raw = JSON.parse(localStorage.getItem(SEEN_KEY) || "{}");
+        return raw && typeof raw === "object" ? raw : {};
+    } catch {
+        return {};
+    }
+}
+
+function countUnread(chat, seenAt) {
+    if (!chat?.messages) return 0;
+    return Object.values(chat.messages).filter(m => m.sender === "admin" && m.at > (seenAt || 0)).length;
+}
+
+// Invisible per-chat subscriber that reports its unread admin-message count up
+// to the widget, so the toggle button can show one combined badge without
+// every chat's full thread being mounted.
+function ChatUnreadWatcher({ chatId, seenAt, onCount }) {
+    const { data: chat } = useFirebaseDoc(`supportChats/${chatId}`);
+    useEffect(() => {
+        onCount(chatId, countUnread(chat, seenAt));
+    }, [chat, seenAt, chatId, onCount]);
+    return null;
 }
 
 function NewRequestForm({ onCreated }) {
@@ -108,7 +134,7 @@ function NewRequestForm({ onCreated }) {
     );
 }
 
-function ChatThread({ chatId, onBack }) {
+function ChatThread({ chatId, onBack, onSeen }) {
     const { data: chat, loading } = useFirebaseDoc(`supportChats/${chatId}`);
     const [reply, setReply] = useState("");
     const [sending, setSending] = useState(false);
@@ -119,6 +145,12 @@ function ChatThread({ chatId, onBack }) {
     useEffect(() => {
         if (threadRef.current) threadRef.current.scrollTop = threadRef.current.scrollHeight;
     }, [messages.length, chat?.adminTyping]);
+
+    // Marks every message currently in the thread as seen — covers both the
+    // initial open and any new messages that arrive while it stays open.
+    useEffect(() => {
+        if (messages.length) onSeen(chatId, messages[messages.length - 1][1].at);
+    }, [messages.length, chatId, onSeen]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleReply = async () => {
         if (!reply.trim()) return;
@@ -174,28 +206,32 @@ function ChatThread({ chatId, onBack }) {
     );
 }
 
-function MyRequestsList({ chatIds, onOpen }) {
+function MyRequestsList({ chatIds, seenAtMap, onOpen }) {
     if (chatIds.length === 0) {
         return <p style={{ color: "var(--gray-400)", fontSize: "0.85rem" }}>You haven't sent any requests from this device yet. Use "New Request" to get started.</p>;
     }
     return (
         <div>
-            {chatIds.map(id => <RequestPreview key={id} chatId={id} onOpen={() => onOpen(id)} />)}
+            {chatIds.map(id => <RequestPreview key={id} chatId={id} seenAt={seenAtMap[id]} onOpen={() => onOpen(id)} />)}
         </div>
     );
 }
 
-function RequestPreview({ chatId, onOpen }) {
+function RequestPreview({ chatId, seenAt, onOpen }) {
     const { data: chat } = useFirebaseDoc(`supportChats/${chatId}`);
     if (!chat) return null;
     const typeLabel = SERVICE_TYPES.find(t => t.value === chat.type)?.label || "Support Request";
+    const unread = countUnread(chat, seenAt);
     return (
         <button className="chat-request-item" onClick={onOpen}>
             <span>
                 <div style={{ fontWeight: 600, fontSize: "0.82rem", color: "var(--navy)" }}>{typeLabel}</div>
                 <div style={{ fontSize: "0.72rem", color: "var(--gray-400)" }}>{new Date(chat.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</div>
             </span>
-            <span className={`chat-status-pill ${chat.status}`}>{chat.status}</span>
+            <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                {unread > 0 && <span className="chat-unread-badge">{unread}</span>}
+                <span className={`chat-status-pill ${chat.status}`}>{chat.status}</span>
+            </span>
         </button>
     );
 }
@@ -205,6 +241,23 @@ export default function SupportWidget() {
     const [chatIds, setChatIds] = useState(() => getStoredChatIds());
     const [tab, setTab] = useState(() => (chatIds.length > 0 ? "mine" : "new"));
     const [activeChatId, setActiveChatId] = useState(null);
+    const [seenAtMap, setSeenAtMap] = useState(() => getSeenAtMap());
+    const [unreadMap, setUnreadMap] = useState({});
+
+    const markSeen = (chatId, at) => {
+        setSeenAtMap(prev => {
+            if ((prev[chatId] || 0) >= at) return prev;
+            const next = { ...prev, [chatId]: at };
+            localStorage.setItem(SEEN_KEY, JSON.stringify(next));
+            return next;
+        });
+    };
+
+    const handleUnreadCount = (chatId, count) => {
+        setUnreadMap(prev => (prev[chatId] === count ? prev : { ...prev, [chatId]: count }));
+    };
+
+    const totalUnread = Object.values(unreadMap).reduce((sum, n) => sum + n, 0);
 
     const handleCreated = id => {
         setChatIds(getStoredChatIds());
@@ -214,6 +267,9 @@ export default function SupportWidget() {
 
     return (
         <div className="support-widget">
+            {chatIds.map(id => (
+                <ChatUnreadWatcher key={id} chatId={id} seenAt={seenAtMap[id]} onCount={handleUnreadCount} />
+            ))}
             <div className={`support-panel${open ? " open" : ""}`}>
                 <div className="support-header">
                     <div className="support-title">Help Center</div>
@@ -221,15 +277,17 @@ export default function SupportWidget() {
                 </div>
                 <div className="support-tab-nav">
                     <button className={`support-tab-btn${tab === "new" ? " active" : ""}`} onClick={() => { setTab("new"); setActiveChatId(null); }}>New Request</button>
-                    <button className={`support-tab-btn${tab === "mine" ? " active" : ""}`} onClick={() => setTab("mine")}>My Requests</button>
+                    <button className={`support-tab-btn${tab === "mine" ? " active" : ""}`} onClick={() => setTab("mine")}>
+                        My Requests{totalUnread > 0 && <span className="chat-unread-badge" style={{ marginLeft: 5 }}>{totalUnread}</span>}
+                    </button>
                     <button className={`support-tab-btn${tab === "whatsapp" ? " active" : ""}`} onClick={() => setTab("whatsapp")}>WhatsApp</button>
                 </div>
                 <div className="support-body">
                     {tab === "new" && <NewRequestForm onCreated={handleCreated} />}
                     {tab === "mine" && (
                         activeChatId
-                            ? <ChatThread chatId={activeChatId} onBack={() => setActiveChatId(null)} />
-                            : <MyRequestsList chatIds={chatIds} onOpen={setActiveChatId} />
+                            ? <ChatThread chatId={activeChatId} onBack={() => setActiveChatId(null)} onSeen={markSeen} />
+                            : <MyRequestsList chatIds={chatIds} seenAtMap={seenAtMap} onOpen={setActiveChatId} />
                     )}
                     {tab === "whatsapp" && (
                         <div style={{ textAlign: "center", padding: "0.5rem 0" }}>
@@ -249,7 +307,10 @@ export default function SupportWidget() {
                     )}
                 </div>
             </div>
-            <button className="support-toggle" onClick={() => setOpen(!open)} aria-label="Help">❓</button>
+            <button className="support-toggle" onClick={() => setOpen(!open)} aria-label="Help">
+                ❓
+                {totalUnread > 0 && <span className="support-badge">{totalUnread > 9 ? "9+" : totalUnread}</span>}
+            </button>
         </div>
     );
 }
