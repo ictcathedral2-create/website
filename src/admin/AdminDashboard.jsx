@@ -3,6 +3,13 @@ import { useFirebaseCollection } from "../hooks/useFirebaseCollection";
 import SubmissionSection from "./SubmissionSection";
 import EventsManager from "./EventsManager";
 import GalleryManager from "./GalleryManager";
+import SupportChatsManager from "./SupportChatsManager";
+
+function normalizeUrl(url) {
+    const trimmed = String(url || "").trim();
+    if (!trimmed) return "";
+    return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+}
 
 const SECTIONS = [
     {
@@ -14,6 +21,13 @@ const SECTIONS = [
         key: "manageGallery",
         label: "Gallery / Posters",
         type: "gallery",
+    },
+    {
+        key: "supportCenter",
+        label: "Support Center",
+        type: "support",
+        rawPath: "supportChats",
+        pendingStatus: "new",
     },
     {
         key: "joinUsRegistrations",
@@ -72,6 +86,7 @@ const SECTIONS = [
             { key: "phone", label: "Phone" },
             { key: "category", label: "Category" },
             { key: "description", label: "Description" },
+            { key: "websiteUrl", label: "Website", render: v => v ? <a href={normalizeUrl(v)} target="_blank" rel="noreferrer">🔗 Link</a> : "—" },
         ],
         fields: [
             { key: "businessName", label: "Business Name", type: "text" },
@@ -79,6 +94,7 @@ const SECTIONS = [
             { key: "phone", label: "Phone", type: "text" },
             { key: "category", label: "Category", type: "select", options: ["Retail & Shops", "Food & Catering", "Services", "Agriculture", "Technology", "Fashion & Beauty", "Transport", "Other"] },
             { key: "description", label: "Description", type: "textarea" },
+            { key: "websiteUrl", label: "Website / Social Link", type: "text" },
         ],
         pendingStatus: "pending",
     },
@@ -100,6 +116,7 @@ const SECTIONS = [
             { key: "contactPhone", label: "Phone" },
             { key: "jobType", label: "Type" },
             { key: "description", label: "Description" },
+            { key: "jobUrl", label: "Link", render: v => v ? <a href={normalizeUrl(v)} target="_blank" rel="noreferrer">🔗 Link</a> : "—" },
         ],
         fields: [
             { key: "jobTitle", label: "Job Title", type: "text" },
@@ -107,6 +124,7 @@ const SECTIONS = [
             { key: "contactPhone", label: "Contact Phone", type: "text" },
             { key: "jobType", label: "Job Type", type: "select", options: ["Full-time", "Part-time", "Internship", "Volunteer", "Casual"] },
             { key: "description", label: "Description", type: "textarea" },
+            { key: "jobUrl", label: "Application Link / Website", type: "text" },
         ],
         pendingStatus: "pending",
     },
@@ -269,8 +287,8 @@ const SECTIONS = [
     },
 ];
 
-function SidebarBadge({ path, pendingStatus }) {
-    const { data } = useFirebaseCollection(`submissions/${path}`);
+function SidebarBadge({ path, rawPath, pendingStatus }) {
+    const { data } = useFirebaseCollection(rawPath || `submissions/${path}`);
     const count = (data || []).filter(item => item.status === pendingStatus).length;
     if (!count) return null;
     return (
@@ -320,7 +338,7 @@ export default function AdminDashboard({ user, onLogout }) {
                             }}
                         >
                             {s.label}
-                            {s.pendingStatus && <SidebarBadge path={s.path} pendingStatus={s.pendingStatus} />}
+                            {s.pendingStatus && <SidebarBadge path={s.path} rawPath={s.rawPath} pendingStatus={s.pendingStatus} />}
                         </button>
                     ))}
                 </div>
@@ -336,6 +354,8 @@ export default function AdminDashboard({ user, onLogout }) {
                     <EventsManager />
                 ) : current?.type === "gallery" ? (
                     <GalleryManager />
+                ) : current?.type === "support" ? (
+                    <SupportChatsManager />
                 ) : current && (
                     <SubmissionSection
                         title={current.label}

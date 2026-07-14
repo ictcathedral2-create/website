@@ -4,6 +4,7 @@ import { useFirebaseCollection } from "./hooks/useFirebaseCollection";
 import { useYouTubeVideos } from "./hooks/useYouTubeVideos";
 import { validateEmail, validatePhone } from "./validation";
 import { compressImage, readPdfAsDataUri } from "./utils/fileToDataUri";
+import SupportWidget from "./components/SupportWidget";
 import logo from "./assets/logo.png";
 
 const NAV_LINKS = ["Home", "Ministries", "Sermons", "Events", "Connect", "Give", "Community", "Testimonies", "About"];
@@ -706,11 +707,11 @@ a.footer-contact-row:hover .footer-contact-text { color: var(--gold-light); }
   flex-wrap: wrap; gap: 1rem;
 }
 
-/* ─── PRAYER WIDGET ─── */
-.prayer-widget {
+/* ─── SUPPORT WIDGET ─── */
+.support-widget {
   position: fixed; bottom: 2rem; right: 2rem; z-index: 900;
 }
-.prayer-toggle {
+.support-toggle {
   width: 58px; height: 58px; border-radius: 50%;
   background: linear-gradient(135deg, var(--gold), var(--gold-dark));
   border: none; cursor: pointer; font-size: 1.4rem;
@@ -718,20 +719,52 @@ a.footer-contact-row:hover .footer-contact-text { color: var(--gold-light); }
   transition: all 0.3s; display: flex; align-items: center; justify-content: center;
   color: white;
 }
-.prayer-toggle:hover { transform: scale(1.08); }
-.prayer-panel {
+.support-toggle:hover { transform: scale(1.08); }
+.support-panel {
   position: absolute; bottom: 70px; right: 0;
-  width: 300px; background: white; border-radius: 16px;
+  width: 320px; max-height: min(520px, 80vh); display: flex; flex-direction: column;
+  background: white; border-radius: 16px;
   box-shadow: 0 20px 60px rgba(0,0,0,0.2);
   border: 1px solid rgba(201,168,76,0.2);
   overflow: hidden; transform-origin: bottom right;
   transition: all 0.3s; transform: scale(0.8); opacity: 0; pointer-events: none;
 }
-.prayer-panel.open { transform: scale(1); opacity: 1; pointer-events: all; }
-.prayer-header { background: linear-gradient(135deg, var(--navy), var(--navy-mid)); padding: 1.25rem; color: white; }
-.prayer-title { font-family: var(--font-display); font-size: 1.35rem; font-weight: 700; line-height: 1; }
-.prayer-subtitle { font-size: 0.78rem; opacity: 0.7; margin-top: 2px; }
-.prayer-body { padding: 1.25rem; }
+.support-panel.open { transform: scale(1); opacity: 1; pointer-events: all; }
+.dark-mode .support-panel { background: #131D35 !important; }
+.support-header { background: linear-gradient(135deg, var(--navy), var(--navy-mid)); padding: 1.1rem 1.25rem; color: white; flex-shrink: 0; }
+.support-title { font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; line-height: 1; }
+.support-subtitle { font-size: 0.76rem; opacity: 0.7; margin-top: 2px; }
+.support-tab-nav { display: flex; border-bottom: 1px solid var(--gray-200); flex-shrink: 0; }
+.dark-mode .support-tab-nav { border-color: rgba(201,168,76,0.15) !important; }
+.support-tab-btn {
+  flex: 1; padding: 0.6rem 0.4rem; border: none; background: transparent; cursor: pointer;
+  font-size: 0.72rem; font-weight: 600; color: var(--gray-400); border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+.support-tab-btn.active { color: var(--navy); border-bottom-color: var(--gold); }
+.dark-mode .support-tab-btn.active { color: var(--gold-light) !important; }
+.support-body { padding: 1.1rem; overflow-y: auto; flex: 1; }
+
+/* Chat thread inside the "My Requests" tab */
+.chat-request-item {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 0.7rem 0.85rem; border-radius: 10px; border: 1px solid var(--gray-200);
+  cursor: pointer; margin-bottom: 0.6rem; text-align: left; width: 100%; background: none;
+  font-family: var(--font-body);
+}
+.dark-mode .chat-request-item { border-color: rgba(201,168,76,0.2) !important; }
+.chat-status-pill { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 2px 8px; border-radius: 20px; }
+.chat-status-pill.new { background: rgba(224,115,48,0.15); color: var(--orange); }
+.chat-status-pill.responded { background: rgba(78,150,110,0.15); color: #4E966E; }
+.chat-status-pill.closed { background: var(--gray-100); color: var(--gray-400); }
+.chat-thread { display: flex; flex-direction: column; gap: 0.6rem; max-height: 260px; overflow-y: auto; margin-bottom: 0.85rem; padding-right: 2px; }
+.chat-bubble { max-width: 82%; padding: 0.55rem 0.8rem; border-radius: 12px; font-size: 0.84rem; line-height: 1.45; }
+.chat-bubble.user { align-self: flex-end; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: white; border-bottom-right-radius: 3px; }
+.chat-bubble.admin { align-self: flex-start; background: var(--gray-100); color: var(--gray-800); border-bottom-left-radius: 3px; }
+.dark-mode .chat-bubble.admin { background: #1A2540 !important; color: #E8E4DC !important; }
+.chat-bubble-meta { font-size: 0.65rem; opacity: 0.7; margin-top: 3px; }
+.chat-reply-row { display: flex; gap: 0.5rem; align-items: flex-end; }
+.chat-reply-row textarea { flex: 1; min-height: 42px; }
 
 /* ─── DARK MODE TOGGLE ─── */
 .theme-toggle {
@@ -799,6 +832,9 @@ a.footer-contact-row:hover .footer-contact-text { color: var(--gold-light); }
   transition: background 0.2s;
 }
 .modal-close:hover { background: rgba(255,255,255,0.25); }
+.lightbox-img { max-width: 92vw; max-height: 88vh; border-radius: 14px; box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+.lightbox-close { position: fixed; top: 1.5rem; right: 1.5rem; background: rgba(255,255,255,0.15); }
+.lightbox-close:hover { background: rgba(255,255,255,0.3); }
 .modal-date-badge {
   display: inline-flex; flex-direction: column; align-items: center;
   background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.4);
@@ -868,9 +904,9 @@ a.footer-contact-row:hover .footer-contact-text { color: var(--gold-light); }
   .footer-grid { grid-template-columns: 1fr; }
   .footer-grid > div + div { border-left: none; padding-left: 0; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.06); }
   .event-card { flex-direction: column; gap: 1rem; }
-  .prayer-widget { bottom: 1rem; right: 1rem; }
-  .prayer-toggle { width: 48px; height: 48px; font-size: 1.1rem; }
-  .prayer-panel { width: 280px; }
+  .support-widget { bottom: 1rem; right: 1rem; }
+  .support-toggle { width: 48px; height: 48px; font-size: 1.1rem; }
+  .support-panel { width: 280px; }
   .featured-sermon-grid .featured-sermon-thumb { min-height: 200px !important; padding: 1.75rem !important; }
   .featured-sermon-grid .featured-sermon-info { padding: 1.75rem !important; }
   .featured-sermon-grid .featured-sermon-title { font-size: 1.4rem !important; }
@@ -996,7 +1032,6 @@ function useAnimatedCount(end, trigger) {
 export default function App() {
     const [activePage, setActivePage] = useState(() => pageFromPath(window.location.pathname));
     const [dark, setDark] = useState(false);
-    const [prayerOpen, setPrayerOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [mobileSubmenuOpen, setMobileSubmenuOpen] = useState(null);
     const [joinUsOpen, setJoinUsOpen] = useState(false);
@@ -1029,12 +1064,6 @@ export default function App() {
         if (now >= eventTiming.startDateTime) eventPhase = "now";
         else if (now >= eventTiming.dayStart) eventPhase = "starting";
     }
-
-    const prayerWidget = useFormSubmit(
-        "prayerRequests",
-        { firstName: "", lastName: "", phone: "", request: "" },
-        ["firstName", "lastName", "phone", "request"]
-    );
 
     const stat1 = useAnimatedCount(350, statsVisible);
     const stat2 = useAnimatedCount(7, statsVisible);
@@ -1233,70 +1262,7 @@ export default function App() {
                     </div>
                 </footer>
 
-                {/* ─── PRAYER WIDGET ─── */}
-                <div className="prayer-widget">
-                    <div className={`prayer-panel${prayerOpen ? " open" : ""}`}>
-                        <div className="prayer-header">
-                            <div className="prayer-title">🙏 Prayer Support</div>
-                            <div className="prayer-subtitle">We're here for you, always.</div>
-                        </div>
-                        <div className="prayer-body">
-                            {prayerWidget.submitted ? (
-                                <p style={{ textAlign: "center", padding: "1rem 0", color: "var(--navy)", fontWeight: 600 }}>
-                                    🙏 Your prayer request has been sent. Our team is praying for you.
-                                </p>
-                            ) : (
-                                <>
-                                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
-                                        <div className="form-group">
-                                            <label className="form-label">First Name</label>
-                                            <input className="form-input" placeholder="First name" value={prayerWidget.formData.firstName} onChange={e => prayerWidget.setField("firstName", e.target.value)} />
-                                        </div>
-                                        <div className="form-group">
-                                            <label className="form-label">Last Name</label>
-                                            <input className="form-input" placeholder="Last name" value={prayerWidget.formData.lastName} onChange={e => prayerWidget.setField("lastName", e.target.value)} />
-                                        </div>
-                                    </div>
-                                    <div className="form-group">
-                                        <label className="form-label">Phone Number</label>
-                                        <input
-                                            className="form-input"
-                                            type="tel"
-                                            inputMode="numeric"
-                                            maxLength={10}
-                                            placeholder="07XXXXXXXX or 01XXXXXXXX"
-                                            value={prayerWidget.formData.phone}
-                                            onChange={e => prayerWidget.setField("phone", e.target.value.replace(/\D/g, "").slice(0, 10))}
-                                        />
-                                    </div>
-                                    <div className="form-group">
-                                        <label className="form-label">Prayer Request</label>
-                                        <textarea
-                                            className="form-textarea"
-                                            style={{ minHeight: 80 }}
-                                            placeholder="Share your prayer need..."
-                                            value={prayerWidget.formData.request}
-                                            onChange={e => prayerWidget.setField("request", e.target.value)}
-                                        />
-                                    </div>
-                                    {prayerWidget.error && <p style={{ color: "var(--orange)", fontSize: "0.8rem", marginBottom: 8 }}>{prayerWidget.error}</p>}
-                                    <button
-                                        className="btn btn-gold"
-                                        style={{ width: "100%", justifyContent: "center" }}
-                                        disabled={prayerWidget.submitting}
-                                        onClick={() => prayerWidget.handleSubmit({ source: "widget", anonymous: false, name: `${prayerWidget.formData.firstName} ${prayerWidget.formData.lastName}`.trim() })}
-                                    >
-                                        {prayerWidget.submitting ? "Sending..." : "Send Prayer Request"}
-                                    </button>
-                                    <p style={{ fontSize: "0.75rem", textAlign: "center", color: "var(--gray-400)", marginTop: 8 }}>
-                                        Your request is kept confidential. Our team prays daily.
-                                    </p>
-                                </>
-                            )}
-                        </div>
-                    </div>
-                    <button className="prayer-toggle" onClick={() => setPrayerOpen(!prayerOpen)}>🙏</button>
-                </div>
+                <SupportWidget />
 
                 <JoinUsModal open={joinUsOpen} onClose={() => setJoinUsOpen(false)} />
             </div>
@@ -2555,10 +2521,27 @@ function whatsappLink(phone, message) {
     return `https://wa.me/${normalized}?text=${encodeURIComponent(message)}`;
 }
 
+// Users often paste links without a scheme (e.g. "facebook.com/mybiz") — treat
+// those as https so the anchor doesn't resolve relative to our own site.
+function normalizeUrl(url) {
+    const trimmed = String(url || "").trim();
+    if (!trimmed) return "";
+    return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+}
+
+function PosterLightbox({ src, alt, onClose }) {
+    return (
+        <div className="modal-overlay" onClick={onClose}>
+            <img src={src} alt={alt} className="lightbox-img" onClick={e => e.stopPropagation()} />
+            <button className="modal-close lightbox-close" onClick={onClose} aria-label="Close">✕</button>
+        </div>
+    );
+}
+
 function BusinessListingModal({ open, onClose }) {
     const listing = useFormSubmit(
         "businessListings",
-        { businessName: "", ownerName: "", phone: "", category: BUSINESS_CATEGORIES[0], description: "", mediaType: "none", mediaData: "", mediaUrl: "" },
+        { businessName: "", ownerName: "", phone: "", category: BUSINESS_CATEGORIES[0], description: "", websiteUrl: "", mediaType: "none", mediaData: "", mediaUrl: "" },
         ["businessName", "ownerName", "phone", "description"]
     );
     const [mediaError, setMediaError] = useState(null);
@@ -2648,6 +2631,10 @@ function BusinessListingModal({ open, onClose }) {
                                 <textarea className="form-textarea" maxLength={400} placeholder="What does your business offer? (max 400 characters)" value={listing.formData.description} onChange={e => listing.setField("description", e.target.value)} />
                             </div>
                             <div className="form-group">
+                                <label className="form-label">Website or Social Link (Optional)</label>
+                                <input className="form-input" placeholder="e.g. facebook.com/yourbusiness" value={listing.formData.websiteUrl} onChange={e => listing.setField("websiteUrl", e.target.value)} />
+                            </div>
+                            <div className="form-group">
                                 <label className="form-label">Photo or Video (Optional)</label>
                                 <div className="tab-nav" style={{ marginBottom: "0.75rem" }}>
                                     {[["none", "No Media"], ["image", "Upload Photo"], ["video", "Video Link"]].map(([val, label]) => (
@@ -2689,7 +2676,7 @@ function BusinessListingModal({ open, onClose }) {
 function JobPostingModal({ open, onClose }) {
     const posting = useFormSubmit(
         "jobPostings",
-        { jobTitle: "", company: "", contactPhone: "", jobType: JOB_TYPES[0], description: "", advertType: "image", advertData: "" },
+        { jobTitle: "", company: "", contactPhone: "", jobType: JOB_TYPES[0], description: "", jobUrl: "", advertType: "image", advertData: "" },
         ["jobTitle", "company", "contactPhone", "description"]
     );
     const [advertError, setAdvertError] = useState(null);
@@ -2781,6 +2768,10 @@ function JobPostingModal({ open, onClose }) {
                                 <textarea className="form-textarea" maxLength={400} placeholder="Role details, requirements, how to apply (max 400 characters)" value={posting.formData.description} onChange={e => posting.setField("description", e.target.value)} />
                             </div>
                             <div className="form-group">
+                                <label className="form-label">Application Link or Website (Optional)</label>
+                                <input className="form-input" placeholder="e.g. yourcompany.com/careers" value={posting.formData.jobUrl} onChange={e => posting.setField("jobUrl", e.target.value)} />
+                            </div>
+                            <div className="form-group">
                                 <label className="form-label">Job Advert (Required)</label>
                                 <div className="tab-nav" style={{ marginBottom: "0.75rem" }}>
                                     {[["image", "Image Poster"], ["pdf", "PDF Document"]].map(([val, label]) => (
@@ -2816,19 +2807,30 @@ function JobPostingModal({ open, onClose }) {
 }
 
 function BusinessCard({ b }) {
+    const [lightbox, setLightbox] = useState(false);
     return (
         <div className="card" style={{ overflow: "hidden" }}>
             {b.mediaType === "image" && b.mediaData && (
-                <img src={b.mediaData} alt={b.businessName} style={{ width: "100%", aspectRatio: "4 / 3", objectFit: "cover", display: "block" }} />
+                <img
+                    src={b.mediaData}
+                    alt={b.businessName}
+                    style={{ width: "100%", aspectRatio: "4 / 3", objectFit: "cover", display: "block", cursor: "pointer" }}
+                    onClick={() => setLightbox(true)}
+                />
             )}
             <div style={{ padding: "1.75rem" }}>
                 <div className="blog-cat">{b.category}</div>
                 <div className="blog-title" style={{ marginTop: 6 }}>{b.businessName}</div>
                 <div style={{ fontSize: "0.82rem", color: "var(--gray-400)", marginTop: 2 }}>By {b.ownerName}</div>
                 <div className="blog-excerpt" style={{ marginTop: 8 }}>{b.description}</div>
-                {b.mediaType === "video" && b.mediaUrl && (
-                    <a href={b.mediaUrl} target="_blank" rel="noreferrer" className="ministry-link" style={{ marginTop: 8 }}>▶ Watch Video</a>
-                )}
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 2 }}>
+                    {b.mediaType === "video" && b.mediaUrl && (
+                        <a href={b.mediaUrl} target="_blank" rel="noreferrer" className="ministry-link">▶ Watch Video</a>
+                    )}
+                    {b.websiteUrl && (
+                        <a href={normalizeUrl(b.websiteUrl)} target="_blank" rel="noreferrer" className="ministry-link">🔗 Visit Website</a>
+                    )}
+                </div>
                 <a
                     className="btn btn-gold btn-sm"
                     style={{ marginTop: "1rem", width: "100%", justifyContent: "center" }}
@@ -2839,34 +2841,53 @@ function BusinessCard({ b }) {
                     💬 Chat on WhatsApp
                 </a>
             </div>
+            {lightbox && <PosterLightbox src={b.mediaData} alt={b.businessName} onClose={() => setLightbox(false)} />}
         </div>
     );
 }
 
 function JobCard({ j }) {
+    const [lightbox, setLightbox] = useState(false);
+    const downloadName = `${(j.jobTitle || "job-advert").replace(/[^a-z0-9]+/gi, "-").toLowerCase()}.${j.advertType === "pdf" ? "pdf" : "jpg"}`;
     return (
         <div className="card" style={{ overflow: "hidden" }}>
             {j.advertType === "image" && j.advertData && (
-                <img src={j.advertData} alt={`${j.jobTitle} advert`} style={{ width: "100%", aspectRatio: "4 / 3", objectFit: "cover", display: "block" }} />
+                <img
+                    src={j.advertData}
+                    alt={`${j.jobTitle} advert`}
+                    style={{ width: "100%", aspectRatio: "4 / 3", objectFit: "cover", display: "block", cursor: "pointer" }}
+                    onClick={() => setLightbox(true)}
+                />
+            )}
+            {j.advertType === "pdf" && j.advertData && (
+                <a
+                    href={j.advertData}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ width: "100%", aspectRatio: "4 / 3", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, background: "var(--gray-100)", textDecoration: "none" }}
+                >
+                    <span style={{ fontSize: "2.5rem" }}>📄</span>
+                    <span style={{ fontSize: "0.8rem", fontWeight: 600, color: "var(--navy)" }}>View PDF Advert</span>
+                </a>
             )}
             <div style={{ padding: "1.75rem" }}>
                 <div className="blog-cat">{j.jobType}</div>
                 <div className="blog-title" style={{ marginTop: 6 }}>{j.jobTitle}</div>
                 <div style={{ fontSize: "0.82rem", color: "var(--gray-400)", marginTop: 2 }}>{j.company}</div>
                 <div className="blog-excerpt" style={{ marginTop: 8 }}>{j.description}</div>
-                {j.advertType === "pdf" && j.advertData && (
-                    <a href={j.advertData} download={`${j.jobTitle || "job-advert"}.pdf`} className="ministry-link" style={{ marginTop: 8 }}>📄 View Job Advert (PDF)</a>
+                {j.jobUrl && (
+                    <a href={normalizeUrl(j.jobUrl)} target="_blank" rel="noreferrer" className="ministry-link">🔗 View Full Listing</a>
                 )}
                 <a
                     className="btn btn-gold btn-sm"
                     style={{ marginTop: "1rem", width: "100%", justifyContent: "center" }}
-                    href={whatsappLink(j.contactPhone, `Hi, I saw the ${j.jobTitle} opportunity at ${j.company} on the ACK St Pauls Youths website and I'd like to find out more.`)}
-                    target="_blank"
-                    rel="noreferrer"
+                    href={j.advertData}
+                    download={downloadName}
                 >
-                    💬 Chat on WhatsApp
+                    ⬇ Download {j.advertType === "pdf" ? "PDF" : "Poster"}
                 </a>
             </div>
+            {lightbox && <PosterLightbox src={j.advertData} alt={`${j.jobTitle} advert`} onClose={() => setLightbox(false)} />}
         </div>
     );
 }
@@ -2925,7 +2946,7 @@ function CommunityPage({ dark }) {
                             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem", marginBottom: "2rem" }}>
                                 <div>
                                     <h2 className="section-title" style={{ fontSize: "1.6rem", marginBottom: "0.25rem" }}>Job Board</h2>
-                                    <p style={{ color: "var(--gray-600)", fontSize: "0.9rem" }}>Opportunities shared by our community — reach out directly on WhatsApp.</p>
+                                    <p style={{ color: "var(--gray-600)", fontSize: "0.9rem" }}>Opportunities shared by our community — view or download each advert.</p>
                                 </div>
                                 <button className="btn btn-gold" onClick={() => setShowJobForm(true)}>+ Post a Job</button>
                             </div>
