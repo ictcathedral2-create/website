@@ -712,16 +712,18 @@ a.footer-contact-row:hover .footer-contact-text { color: var(--gold-light); }
   position: fixed; bottom: 2rem; right: 2rem; z-index: 900;
 }
 .support-toggle {
-  width: 58px; height: 58px; border-radius: 50%;
+  height: 48px; padding: 0 1.1rem 0 1.3rem; border-radius: 50px;
   background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-  border: none; cursor: pointer; font-size: 1.4rem;
+  border: none; cursor: pointer;
   box-shadow: 0 4px 25px rgba(201,168,76,0.6);
-  transition: all 0.3s; display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s; display: flex; align-items: center; gap: 8px; justify-content: center;
   color: white; position: relative;
 }
-.support-toggle:hover { transform: scale(1.08); }
+.support-toggle:hover { transform: scale(1.05); }
+.support-toggle-label { font-size: 0.85rem; font-weight: 700; white-space: nowrap; }
+.support-toggle-icon { width: 20px; height: 20px; flex-shrink: 0; }
 .support-badge {
-  position: absolute; top: -4px; right: -4px;
+  position: absolute; top: -6px; right: -6px;
   background: var(--orange); color: white; font-size: 0.68rem; font-weight: 700;
   min-width: 19px; height: 19px; border-radius: 10px; padding: 0 4px;
   display: flex; align-items: center; justify-content: center;
@@ -923,7 +925,9 @@ a.footer-contact-row:hover .footer-contact-text { color: var(--gold-light); }
   .footer-grid > div + div { border-left: none; padding-left: 0; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.06); }
   .event-card { flex-direction: column; gap: 1rem; }
   .support-widget { bottom: 1rem; right: 1rem; }
-  .support-toggle { width: 48px; height: 48px; font-size: 1.1rem; }
+  .support-toggle { height: 44px; padding: 0 0.9rem 0 1.1rem; }
+  .support-toggle-label { font-size: 0.8rem; }
+  .support-toggle-icon { width: 18px; height: 18px; }
   .support-panel { width: 280px; }
   .featured-sermon-grid .featured-sermon-thumb { min-height: 200px !important; padding: 1.75rem !important; }
   .featured-sermon-grid .featured-sermon-info { padding: 1.75rem !important; }

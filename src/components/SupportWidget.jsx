@@ -308,7 +308,13 @@ export default function SupportWidget() {
                 </div>
             </div>
             <button className="support-toggle" onClick={() => setOpen(!open)} aria-label="Help">
-                ❓
+                <span className="support-toggle-label">Help</span>
+                <svg className="support-toggle-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M12 2C6.48 2 2 5.94 2 10.8c0 2.77 1.46 5.24 3.75 6.86-.14 1.13-.5 2.63-1.36 3.96a.5.5 0 0 0 .58.75c2.05-.6 3.6-1.63 4.6-2.44.76.15 1.56.23 2.43.23 5.52 0 10-3.94 10-8.8S17.52 2 12 2Z" />
+                    <circle cx="8" cy="10.8" r="1.15" fill="white" />
+                    <circle cx="12" cy="10.8" r="1.15" fill="white" />
+                    <circle cx="16" cy="10.8" r="1.15" fill="white" />
+                </svg>
                 {totalUnread > 0 && <span className="support-badge">{totalUnread > 9 ? "9+" : totalUnread}</span>}
             </button>
         </div>
