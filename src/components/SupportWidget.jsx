@@ -118,7 +118,7 @@ function ChatThread({ chatId, onBack }) {
 
     useEffect(() => {
         if (threadRef.current) threadRef.current.scrollTop = threadRef.current.scrollHeight;
-    }, [messages.length]);
+    }, [messages.length, chat?.adminTyping]);
 
     const handleReply = async () => {
         if (!reply.trim()) return;
@@ -152,6 +152,11 @@ function ChatThread({ chatId, onBack }) {
                         <div className="chat-bubble-meta">{new Date(m.at).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</div>
                     </div>
                 ))}
+                {chat.adminTyping && (
+                    <div className="chat-bubble admin typing-indicator">
+                        <span className="typing-dot" /><span className="typing-dot" /><span className="typing-dot" />
+                    </div>
+                )}
             </div>
             <div className="chat-reply-row">
                 <textarea

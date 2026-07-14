@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useFirebaseCollection } from "../hooks/useFirebaseCollection";
 import { db, ref, set, push, remove } from "../firebase";
+
+const TYPING_IDLE_MS = 2500;
 
 const TYPE_LABELS = {
     prayer: "Prayer Request",
@@ -22,6 +24,10 @@ async function sendAdminReply(chatId, text) {
     await set(ref(db, `supportChats/${chatId}/status`), "responded");
 }
 
+async function setAdminTyping(chatId, typing) {
+    await set(ref(db, `supportChats/${chatId}/adminTyping`), typing);
+}
+
 async function setChatStatus(chatId, status) {
     await set(ref(db, `supportChats/${chatId}/status`), status);
 }
@@ -36,9 +42,36 @@ function ChatCard({ chat }) {
     const [expanded, setExpanded] = useState(false);
     const messages = chat.messages ? Object.entries(chat.messages).sort((a, b) => a[1].at - b[1].at) : [];
     const colors = STATUS_COLORS[chat.status] || STATUS_COLORS.new;
+    const typingTimeoutRef = useRef(null);
+    const isTypingRef = useRef(false);
+
+    const stopTyping = () => {
+        if (typingTimeoutRef.current) {
+            clearTimeout(typingTimeoutRef.current);
+            typingTimeoutRef.current = null;
+        }
+        if (isTypingRef.current) {
+            isTypingRef.current = false;
+            setAdminTyping(chat.id, false);
+        }
+    };
+
+    // Clear the typing flag if the admin navigates away or collapses the card mid-reply.
+    useEffect(() => () => stopTyping(), []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    const handleReplyChange = e => {
+        setReplyText(e.target.value);
+        if (!isTypingRef.current) {
+            isTypingRef.current = true;
+            setAdminTyping(chat.id, true);
+        }
+        if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = setTimeout(stopTyping, TYPING_IDLE_MS);
+    };
 
     const handleReply = async () => {
         if (!replyText.trim()) return;
+        stopTyping();
         setSending(true);
         try {
             await sendAdminReply(chat.id, replyText.trim());
@@ -102,14 +135,14 @@ function ChatCard({ chat }) {
                             style={{ minHeight: 42, flex: 1 }}
                             placeholder="Type a reply..."
                             value={replyText}
-                            onChange={e => setReplyText(e.target.value)}
+                            onChange={handleReplyChange}
                         />
                         <button className="btn btn-gold btn-sm" disabled={sending || !replyText.trim()} onClick={handleReply}>
                             {sending ? "..." : "Reply"}
                         </button>
                     </div>
                     <div style={{ display: "flex", gap: "0.6rem", flexWrap: "wrap" }}>
-                        <button className="btn btn-navy btn-sm" onClick={() => setExpanded(false)}>Collapse</button>
+                        <button className="btn btn-navy btn-sm" onClick={() => { stopTyping(); setExpanded(false); }}>Collapse</button>
                         {chat.status !== "closed" && (
                             <button className="btn btn-navy btn-sm" onClick={() => setChatStatus(chat.id, "closed")}>Mark Closed</button>
                         )}

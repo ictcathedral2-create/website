@@ -763,6 +763,11 @@ a.footer-contact-row:hover .footer-contact-text { color: var(--gold-light); }
 .chat-bubble.admin { align-self: flex-start; background: var(--gray-100); color: var(--gray-800); border-bottom-left-radius: 3px; }
 .dark-mode .chat-bubble.admin { background: #1A2540 !important; color: #E8E4DC !important; }
 .chat-bubble-meta { font-size: 0.65rem; opacity: 0.7; margin-top: 3px; }
+.typing-indicator { display: flex; align-items: center; gap: 4px; padding: 0.65rem 0.9rem !important; }
+.typing-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.4; animation: typingBounce 1.2s infinite ease-in-out; }
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typingBounce { 0%, 60%, 100% { transform: translateY(0); opacity: 0.4; } 30% { transform: translateY(-4px); opacity: 1; } }
 .chat-reply-row { display: flex; gap: 0.5rem; align-items: flex-end; }
 .chat-reply-row textarea { flex: 1; min-height: 42px; }
 
