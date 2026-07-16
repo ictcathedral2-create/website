@@ -1,14 +1,15 @@
-import admin from "firebase-admin";
+import { cert, getApps, getApp, initializeApp } from "firebase-admin/app";
+import { getDatabase } from "firebase-admin/database";
 
 const DARAJA_BASE = process.env.MPESA_ENV === "sandbox"
   ? "https://sandbox.safaricom.co.ke"
   : "https://api.safaricom.co.ke";
 
 function initFirebase() {
-  if (admin.apps.length) return admin.app();
+  if (getApps().length) return getApp();
   const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-  return admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
+  return initializeApp({
+    credential: cert(serviceAccount),
     databaseURL: process.env.FIREBASE_DATABASE_URL,
   });
 }
@@ -92,7 +93,7 @@ export default async function handler(req, res) {
     }
 
     const app = initFirebase();
-    const db = app.database();
+    const db = getDatabase(app);
     await db.ref(`submissions/mpesaTransactions/${stkData.CheckoutRequestID}`).set({
       phone: normalizedPhone,
       amount: numericAmount,

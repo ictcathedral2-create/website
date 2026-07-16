@@ -1,10 +1,12 @@
-import admin from "firebase-admin";
+import { cert, getApps, getApp, initializeApp } from "firebase-admin/app";
+import { getAuth } from "firebase-admin/auth";
+import { getDatabase } from "firebase-admin/database";
 
 function initFirebase() {
-  if (admin.apps.length) return admin.app();
+  if (getApps().length) return getApp();
   const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-  return admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
+  return initializeApp({
+    credential: cert(serviceAccount),
     databaseURL: process.env.FIREBASE_DATABASE_URL,
   });
 }
@@ -18,14 +20,14 @@ function roleOf(value) {
   return null;
 }
 
-async function requireSuper(db, req) {
+async function requireSuper(auth, db, req) {
   const authHeader = req.headers.authorization || "";
   const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
   if (!token) return { error: "Missing auth token.", status: 401 };
 
   let decoded;
   try {
-    decoded = await admin.auth().verifyIdToken(token);
+    decoded = await auth.verifyIdToken(token);
   } catch {
     return { error: "Invalid or expired session. Please log in again.", status: 401 };
   }
@@ -51,15 +53,16 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "Missing FIREBASE_SERVICE_ACCOUNT or FIREBASE_DATABASE_URL env vars." });
   }
 
-  let db, auth;
+  let auth, db, caller;
   try {
     const app = initFirebase();
-    db = app.database();
-    auth = await requireSuper(db, req);
+    auth = getAuth(app);
+    db = getDatabase(app);
+    caller = await requireSuper(auth, db, req);
   } catch (err) {
     return res.status(500).json({ error: `Firebase Admin init failed: ${err.message || err}` });
   }
-  if (auth.error) return res.status(auth.status).json({ error: auth.error });
+  if (caller.error) return res.status(caller.status).json({ error: caller.error });
 
   const { action, email, password, role, uid } = req.body || {};
 
@@ -69,12 +72,12 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: "Email and a password of at least 6 characters are required." });
       }
       const roleToSet = role === "super" ? "super" : "admin";
-      const userRecord = await admin.auth().createUser({ email, password });
+      const userRecord = await auth.createUser({ email, password });
       await db.ref(`admins/${userRecord.uid}`).set({
         email,
         role: roleToSet,
         addedAt: Date.now(),
-        addedBy: auth.uid,
+        addedBy: caller.uid,
       });
       return res.status(200).json({ uid: userRecord.uid });
     }
@@ -89,8 +92,8 @@ export default async function handler(req, res) {
       if (roleOf(current) === "super" && role === "admin" && (await countSupers(db)) <= 1) {
         return res.status(400).json({ error: "Can't demote the last super user." });
       }
-      const email = typeof current === "object" ? current.email : (await admin.auth().getUser(uid)).email;
-      await db.ref(`admins/${uid}`).set({ email, role, addedAt: (current && current.addedAt) || Date.now(), addedBy: (current && current.addedBy) || auth.uid });
+      const email = typeof current === "object" ? current.email : (await auth.getUser(uid)).email;
+      await db.ref(`admins/${uid}`).set({ email, role, addedAt: (current && current.addedAt) || Date.now(), addedBy: (current && current.addedBy) || caller.uid });
       return res.status(200).json({ ok: true });
     }
 
@@ -98,18 +101,18 @@ export default async function handler(req, res) {
       if (!uid || !password || password.length < 6) {
         return res.status(400).json({ error: "Missing uid or password too short (min 6 characters)." });
       }
-      await admin.auth().updateUser(uid, { password });
+      await auth.updateUser(uid, { password });
       return res.status(200).json({ ok: true });
     }
 
     if (action === "delete") {
       if (!uid) return res.status(400).json({ error: "Missing uid." });
-      if (uid === auth.uid) return res.status(400).json({ error: "You can't delete your own account while logged in as it." });
+      if (uid === caller.uid) return res.status(400).json({ error: "You can't delete your own account while logged in as it." });
       const snap = await db.ref(`admins/${uid}`).once("value");
       if (roleOf(snap.val()) === "super" && (await countSupers(db)) <= 1) {
         return res.status(400).json({ error: "Can't delete the last super user." });
       }
-      await admin.auth().deleteUser(uid).catch(() => {});
+      await auth.deleteUser(uid).catch(() => {});
       await db.ref(`admins/${uid}`).remove();
       return res.status(200).json({ ok: true });
     }

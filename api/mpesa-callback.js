@@ -1,10 +1,11 @@
-import admin from "firebase-admin";
+import { cert, getApps, getApp, initializeApp } from "firebase-admin/app";
+import { getDatabase } from "firebase-admin/database";
 
 function initFirebase() {
-  if (admin.apps.length) return admin.app();
+  if (getApps().length) return getApp();
   const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-  return admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
+  return initializeApp({
+    credential: cert(serviceAccount),
     databaseURL: process.env.FIREBASE_DATABASE_URL,
   });
 }
@@ -21,7 +22,7 @@ export default async function handler(req, res) {
     const { CheckoutRequestID, ResultCode, ResultDesc, CallbackMetadata } = stkCallback;
 
     const app = initFirebase();
-    const db = app.database();
+    const db = getDatabase(app);
     const ref = db.ref(`submissions/mpesaTransactions/${CheckoutRequestID}`);
 
     if (ResultCode === 0) {

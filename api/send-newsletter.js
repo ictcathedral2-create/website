@@ -1,14 +1,15 @@
-import admin from "firebase-admin";
+import { cert, getApps, getApp, initializeApp } from "firebase-admin/app";
+import { getDatabase } from "firebase-admin/database";
 
 const SITE_URL = "https://ackstpaulsyouths.vercel.app";
 const YOUTUBE_API_KEY = process.env.VITE_YOUTUBE_API_KEY;
 const YOUTUBE_CHANNEL_HANDLE = process.env.VITE_YOUTUBE_CHANNEL_HANDLE || "ackcathedralyouthembu";
 
 function initFirebase() {
-  if (admin.apps.length) return admin.app();
+  if (getApps().length) return getApp();
   const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-  return admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
+  return initializeApp({
+    credential: cert(serviceAccount),
     databaseURL: process.env.FIREBASE_DATABASE_URL,
   });
 }
@@ -171,7 +172,7 @@ export default async function handler(req, res) {
 
   try {
     const app = initFirebase();
-    const db = app.database();
+    const db = getDatabase(app);
 
     const [subscribers, events, sermon] = await Promise.all([
       getActiveSubscribers(db),
