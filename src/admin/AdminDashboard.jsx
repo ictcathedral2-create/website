@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useFirebaseCollection } from "../hooks/useFirebaseCollection";
+import { useAdminRole } from "../hooks/useAdminRole";
 import SubmissionSection from "./SubmissionSection";
 import EventsManager from "./EventsManager";
 import GalleryManager from "./GalleryManager";
 import SupportChatsManager from "./SupportChatsManager";
 import WrittenSermonsManager from "./WrittenSermonsManager";
 import SermonGalleryManager from "./SermonGalleryManager";
+import AdminUsersManager from "./AdminUsersManager";
 
 function normalizeUrl(url) {
     const trimmed = String(url || "").trim();
@@ -40,6 +42,12 @@ const SECTIONS = [
         type: "support",
         rawPath: "supportChats",
         pendingStatus: "new",
+    },
+    {
+        key: "adminUsers",
+        label: "Admin Users",
+        type: "adminUsers",
+        superOnly: true,
     },
     {
         key: "joinUsRegistrations",
@@ -313,7 +321,9 @@ function SidebarBadge({ path, rawPath, pendingStatus }) {
 export default function AdminDashboard({ user, onLogout }) {
     const [activeSection, setActiveSection] = useState("testimonies");
     const [mobileOpen, setMobileOpen] = useState(false);
-    const current = SECTIONS.find(s => s.key === activeSection);
+    const role = useAdminRole(user?.uid);
+    const visibleSections = SECTIONS.filter(s => !s.superOnly || role === "super");
+    const current = visibleSections.find(s => s.key === activeSection);
 
     const selectSection = key => {
         setActiveSection(key);
@@ -336,7 +346,7 @@ export default function AdminDashboard({ user, onLogout }) {
                     </div>
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                    {SECTIONS.map(s => (
+                    {visibleSections.map(s => (
                         <button
                             key={s.key}
                             onClick={() => selectSection(s.key)}
@@ -372,6 +382,8 @@ export default function AdminDashboard({ user, onLogout }) {
                     <WrittenSermonsManager />
                 ) : current?.type === "sermonGallery" ? (
                     <SermonGalleryManager />
+                ) : current?.type === "adminUsers" ? (
+                    <AdminUsersManager currentUid={user?.uid} />
                 ) : current && (
                     <SubmissionSection
                         title={current.label}
