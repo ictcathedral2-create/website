@@ -51,10 +51,14 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "Missing FIREBASE_SERVICE_ACCOUNT or FIREBASE_DATABASE_URL env vars." });
   }
 
-  const app = initFirebase();
-  const db = app.database();
-
-  const auth = await requireSuper(db, req);
+  let db, auth;
+  try {
+    const app = initFirebase();
+    db = app.database();
+    auth = await requireSuper(db, req);
+  } catch (err) {
+    return res.status(500).json({ error: `Firebase Admin init failed: ${err.message || err}` });
+  }
   if (auth.error) return res.status(auth.status).json({ error: auth.error });
 
   const { action, email, password, role, uid } = req.body || {};
