@@ -601,6 +601,27 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 
 .event-form-label { text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.7rem !important; color: var(--gold-dark) !important; font-weight: 700 !important; }
 
+/* Events page */
+.events-hero { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 50%, var(--gold-dark) 100%); padding: 8rem 2rem 4rem; text-align: center; }
+.events-page-heading { display: flex; align-items: end; justify-content: space-between; gap: 1.5rem; margin-bottom: 2rem; }
+.events-page-heading .section-header { text-align: left; margin: 0; }
+.events-page-heading .gold-line { margin-left: 0; }
+.events-intro { max-width: 520px; color: var(--gray-600); font-size: 0.92rem; margin-top: 0.65rem; }
+.events-count { flex-shrink: 0; padding: 0.55rem 0.85rem; border: 1px solid rgba(201,168,76,0.35); border-radius: 999px; color: var(--gold-dark); background: rgba(201,168,76,0.08); font-size: 0.76rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+.events-list { display: grid; gap: 1rem; }
+.events-page-card { position: relative; display: grid; grid-template-columns: 68px minmax(0, 1fr) auto; gap: 1.25rem; align-items: center; padding: 1.25rem; overflow: hidden; transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; }
+.events-page-card::before { content: ''; position: absolute; top: 0; bottom: 0; left: 0; width: 4px; background: linear-gradient(var(--gold), var(--gold-dark)); opacity: 0; transition: opacity 0.2s ease; }
+.events-page-card:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(14,32,68,0.09); border-color: rgba(201,168,76,0.38); }
+.events-page-card:hover::before { opacity: 1; }
+.events-page-card .event-date-block { width: 68px; min-width: 68px; }
+.events-page-card .event-title { font-size: 1.3rem !important; }
+.events-page-card .event-meta { display: flex; align-items: center; gap: 0.35rem; margin-top: 0.5rem; font-weight: 600; }
+.events-page-card .event-desc { max-width: 680px; }
+.events-page-card .event-actions { flex-direction: row; min-width: 0; align-items: center; }
+.events-page-card .event-actions .btn { min-width: 118px; white-space: nowrap; }
+.event-registration-card { padding: 2.5rem; max-width: 600px; margin: 0 auto; border-top: 4px solid var(--gold); }
+.dark-mode .events-count { color: var(--gold-light); background: rgba(201,168,76,0.12); }
+
 /* ─── STATS ─── */
 .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 2rem; text-align: center; }
 .stat-num { font-family: var(--font-display); font-size: 3.65rem; font-weight: 700; color: var(--gold); line-height: 0.9; }
@@ -955,6 +976,14 @@ a.footer-contact-row:hover .footer-contact-text { color: var(--gold-light); }
   .featured-sermon-grid .featured-sermon-title { font-size: 1.4rem !important; }
   .community-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.35rem; }
   .community-tabs .tab-btn { width: 100%; min-width: 0; padding: 0.7rem 0.4rem; font-size: 0.78rem; line-height: 1.2; }
+  .events-hero { padding: 6.75rem 1.25rem 3.25rem; }
+  .events-page-heading { align-items: flex-start; flex-direction: column; gap: 0.9rem; }
+  .events-count { align-self: flex-start; }
+  .events-page-card { grid-template-columns: 58px minmax(0, 1fr); gap: 1rem; padding: 1.1rem; }
+  .events-page-card .event-date-block { width: 58px; min-width: 58px; }
+  .events-page-card .event-actions { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; margin-top: 0.1rem; }
+  .events-page-card .event-actions .btn { width: 100%; min-width: 0; padding-left: 0.6rem; padding-right: 0.6rem; }
+  .event-registration-card { padding: 1.5rem; }
 }
 `;
 
@@ -970,7 +999,7 @@ const TEAM = [
     { initials: "AW", name: "Alex Winner", role: "Pastoral Ministry Contact Person", bio: "First point of contact for the Pastoral Ministry, connecting members to spiritual guidance and discipleship." },
     { initials: "AM", name: "Agostino Muchangi", role: "Care Ministry Contact Person", bio: "First point of contact for the Care Ministry, connecting members to support and practical care." },
     { initials: "DI", name: "Debby Irene", role: "Intercessory Ministry Contact Person", bio: "First point of contact for the Intercessory Ministry, coordinating prayer support for the church family." },
-    { initials: "BK", name: "Brian Kimani", role: "Care Ministry Contact Person", bio: "First point of contact for the Care Ministry, connecting members to support and practical care." },
+    { initials: "BK", name: "Brian Kimani", role: "Creative Generation Ministry Contact Person", bio: "First point of contact for the Creative Generation Ministry, coordinating its creative expression and activities." },
     { initials: "RM", name: "Rozzie Muthoni", role: "Praise and Worship Contact Person", bio: "First point of contact for the Praise & Worship Ministry, coordinating rehearsals and worship needs." },
 ];
 
@@ -981,6 +1010,7 @@ const MINISTRIES = [
     { icon: "🚪", color: "rgba(14,32,68,0.08)", title: "Ushering Ministry", desc: "Warmly welcoming every visitor and member, maintaining order during services, and ensuring worship flows smoothly from start to finish." },
     { icon: "🙏", color: "rgba(201,168,76,0.1)", title: "Intercessory Ministry", desc: "Standing in the gap through dedicated prayer — covering the church, its leadership, and the community in intercession." },
     { icon: "🎨", color: "rgba(224,115,48,0.08)", title: "Creative Ministry", desc: "Expressing faith through art, drama, dance, and design — bringing creativity and beauty into worship and church communication." },
+    { icon: "🛍️", color: "rgba(201,168,76,0.12)", title: "Merchandise Ministry", desc: "Creating and coordinating ministry merchandise that strengthens our shared identity, supports outreach, and helps carry the message beyond our gatherings." },
     { icon: "📖", color: "rgba(14,32,68,0.1)", title: "Pastoral Ministry", desc: "Providing spiritual oversight, discipleship, teaching, and pastoral guidance to nurture the whole church family in Christ." },
 ];
 
@@ -1782,7 +1812,7 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
                     <div className="section-header">
                         <div className="overline">Get Involved</div>
                         <h2 className="section-title">Our Ministries</h2>
-                        <p className="section-desc">Seven vibrant arms of ministry — find where you belong and make your mark for God.</p>
+                        <p className="section-desc">Eight vibrant arms of ministry — find where you belong and make your mark for God.</p>
                         <div className="gold-line" />
                     </div>
                     <div className="grid-3">
@@ -1828,7 +1858,7 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
 function AboutPage({ navigate, dark }) {
     return (
         <>
-            <div style={{ background: "linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 50%, var(--gold-dark) 100%)", padding: "8rem 2rem 4rem", textAlign: "center" }}>
+            <div className="events-hero">
                 <div className="overline" style={{ color: "var(--gold-light)" }}>Our Story</div>
                 <h1 className="section-title white" style={{ fontSize: "3rem", maxWidth: 700, margin: "0 auto 1rem" }}>About ACK St Pauls Youths</h1>
                 <p className="section-desc white" style={{ maxWidth: 600, margin: "0 auto" }}>A legacy of faith, a present of purpose, a future of hope.</p>
@@ -1946,7 +1976,7 @@ function MinistriesPage({ navigate, dark }) {
             <div style={{ background: "linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 50%, var(--gold-dark) 100%)", padding: "8rem 2rem 4rem", textAlign: "center" }}>
                 <div className="overline" style={{ color: "var(--gold-light)" }}>Get Involved</div>
                 <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2.75rem, 5vw, 4.5rem)", fontWeight: 700, lineHeight: 0.95, color: "white", marginBottom: "1rem" }}>Our Ministries</h1>
-                <p style={{ fontSize: "1.1rem", color: "rgba(255,255,255,0.85)", maxWidth: 550, margin: "0 auto" }}>Seven dynamic arms of ministry where every member finds their place, purpose, and calling to serve.</p>
+                <p style={{ fontSize: "1.1rem", color: "rgba(255,255,255,0.85)", maxWidth: 550, margin: "0 auto" }}>Eight dynamic arms of ministry where every member finds their place, purpose, and calling to serve.</p>
             </div>
             <div className="section section-cream">
                 <div className="container">

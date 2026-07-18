@@ -267,7 +267,7 @@ const SECTIONS = [
         ],
         pendingStatus: "new",
         groupByField: "ministryTitle",
-        groupOptions: ["ICT Ministry", "Praise & Worship Ministry", "Care Ministry", "Ushering Ministry", "Intercessory Ministry", "Creative Ministry", "Pastoral Ministry"],
+        groupOptions: ["ICT Ministry", "Praise & Worship Ministry", "Care Ministry", "Ushering Ministry", "Intercessory Ministry", "Creative Ministry", "Merchandise Ministry", "Pastoral Ministry"],
     },
     {
         key: "smallGroupSignups",
