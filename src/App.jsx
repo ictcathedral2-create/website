@@ -2992,7 +2992,7 @@ function BusinessCard({ b }) {
 
 function JobCard({ j }) {
     const [lightbox, setLightbox] = useState(false);
-    const downloadName = `${(j.jobTitle || "job-advert").replace(/[^a-z0-9]+/gi, "-").toLowerCase()}.${j.advertType === "pdf" ? "pdf" : "jpg"}`;
+    const downloadName = `${(j.jobTitle || "job-advert").replace(/[^a-z0-9]+/gi, "-").toLowerCase()}.pdf`;
     return (
         <div className="card" style={{ overflow: "hidden" }}>
             {j.advertType === "image" && j.advertData && (
@@ -3003,17 +3003,6 @@ function JobCard({ j }) {
                     onClick={() => setLightbox(true)}
                 />
             )}
-            {j.advertType === "pdf" && j.advertData && (
-                <a
-                    href={j.advertData}
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{ width: "100%", aspectRatio: "4 / 3", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, background: "var(--gray-100)", textDecoration: "none" }}
-                >
-                    <span style={{ fontSize: "2.5rem" }}>📄</span>
-                    <span style={{ fontSize: "0.8rem", fontWeight: 600, color: "var(--navy)" }}>View PDF Advert</span>
-                </a>
-            )}
             <div style={{ padding: "1.75rem" }}>
                 <div className="blog-cat">{j.jobType}</div>
                 <div className="blog-title" style={{ marginTop: 6 }}>{j.jobTitle}</div>
@@ -3022,14 +3011,16 @@ function JobCard({ j }) {
                 {j.jobUrl && (
                     <a href={normalizeUrl(j.jobUrl)} target="_blank" rel="noreferrer" className="ministry-link">🔗 View Full Listing</a>
                 )}
-                <a
-                    className="btn btn-gold btn-sm"
-                    style={{ marginTop: "1rem", width: "100%", justifyContent: "center" }}
-                    href={j.advertData}
-                    download={downloadName}
-                >
-                    ⬇ Download {j.advertType === "pdf" ? "PDF" : "Poster"}
-                </a>
+                {j.advertType === "pdf" && j.advertData && (
+                    <a
+                        className="btn btn-gold btn-sm"
+                        style={{ marginTop: "1rem", width: "100%", justifyContent: "center" }}
+                        href={j.advertData}
+                        download={downloadName}
+                    >
+                        ⬇ Download PDF
+                    </a>
+                )}
             </div>
             {lightbox && <PosterLightbox src={j.advertData} alt={`${j.jobTitle} advert`} onClose={() => setLightbox(false)} />}
         </div>
