@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /#admin
 
-Sitemap: https://ackstpaulsyouths.vercel.app/sitemap.xml
+Sitemap: https://ackstpaulsyouths.com/sitemap.xml
