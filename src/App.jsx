@@ -47,7 +47,15 @@ body { font-family: var(--font-body); font-size: 1rem; font-weight: 400; line-he
 button, input, select, textarea { font: inherit; }
 .font-display { font-family: var(--font-display); }
 
-.dark-mode { background: #0A0F1E !important; color: #E8E4DC !important; }
+.dark-mode {
+  --gray-100: #1A2540;
+  --gray-200: #26324C;
+  --gray-400: #A0A8B8;
+  --gray-600: #C8C0B4;
+  --gray-800: #E8E4DC;
+  background: #0A0F1E !important;
+  color: #E8E4DC !important;
+}
 .dark-mode nav { background: rgba(10,15,30,0.97) !important; border-bottom: 1px solid rgba(201,168,76,0.2) !important; }
 .dark-mode .nav-link { color: #C8C0B4 !important; }
 .dark-mode .nav-link:hover { color: var(--gold-light) !important; }
@@ -967,8 +975,8 @@ a.footer-contact-row:hover .footer-contact-text { color: var(--gold-light); }
   .footer-grid > div + div { border-left: none; padding-left: 0; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.06); }
   .event-card { flex-direction: column; gap: 1rem; }
   .support-widget { bottom: 1rem; right: 1rem; }
-  .support-toggle { height: 44px; padding: 0 0.9rem 0 1.1rem; }
-  .support-toggle-label { font-size: 0.8rem; }
+  .support-toggle { width: 44px; height: 44px; padding: 0; }
+  .support-toggle-label { display: none; }
   .support-toggle-icon { width: 18px; height: 18px; }
   .support-panel { width: 280px; }
   .featured-sermon-grid .featured-sermon-thumb { min-height: 200px !important; padding: 1.75rem !important; }
@@ -1645,7 +1653,7 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
                         </div>
                         <div className="hero-stats">
                             <div><div className="hero-stat-num">350+</div><div className="hero-stat-label">Active Youth</div></div>
-                            <div><div className="hero-stat-num">7+</div><div className="hero-stat-label">Ministries</div></div>
+                            <div><div className="hero-stat-num">8+</div><div className="hero-stat-label">Ministries</div></div>
                             <div><div className="hero-stat-num">10+</div><div className="hero-stat-label">Years of Faith</div></div>
                         </div>
                     </div>
