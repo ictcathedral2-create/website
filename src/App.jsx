@@ -273,7 +273,7 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 .hero-content {
   position: relative; z-index: 2;
   max-width: 1280px; margin: 0 auto; padding: 8rem 2rem 5rem;
-  display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start;
 }
 
 .hero-badge {
@@ -311,7 +311,8 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 .hero-stat-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.04em; color: rgba(255,255,255,0.65); margin-top: 4px; }
 
 .hero-visual {
-  position: relative; animation: fadeSlideLeft 0.8s 0.2s ease both;
+  position: relative; width: min(100%, 400px); justify-self: end;
+  animation: fadeSlideLeft 0.8s 0.2s ease both;
 }
 
 .service-card {
@@ -943,6 +944,7 @@ a.footer-contact-row:hover .footer-contact-text { color: var(--gold-light); }
 /* ─── RESPONSIVE ─── */
 @media (max-width: 900px) {
   .hero-content { grid-template-columns: 1fr; gap: 2.5rem; }
+  .hero-visual { width: 100%; justify-self: stretch; }
   .about-grid { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr 1fr; row-gap: 2.5rem; }
   .footer-grid > div + div { border-left: none; padding-left: 0; }
