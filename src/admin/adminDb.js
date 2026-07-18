@@ -1,4 +1,4 @@
-import { db, ref, set, push, remove } from "../firebase";
+import { auth, db, ref, set, push, remove } from "../firebase";
 
 // Collections whose approved records get mirrored to a public-readable path,
 // since their `submissions/*` tree is admin-only for reads.
@@ -12,12 +12,16 @@ const PUBLIC_MIRRORS = {
 
 // Updates a submission's status. For mirrored collections, also syncs the
 // public copy (added when approved, removed otherwise).
-export async function updateSubmissionStatus(collection, id, status, record = null) {
-  await set(ref(db, `submissions/${collection}/${id}/status`), status);
+export async function updateSubmissionStatus(collection, id, status) {
+  const token = await auth.currentUser?.getIdToken();
+  const response = await fetch("/api/manage-submission", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token || ""}` },
+    body: JSON.stringify({ collection, id, status }),
+  });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(result.error || "Could not update the submission.");
 
-  if (PUBLIC_MIRRORS[collection]) {
-    await syncPublicMirror(collection, id, status, record);
-  }
 }
 
 // Creates a new submission record (admin-entered).

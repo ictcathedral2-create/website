@@ -77,7 +77,7 @@ function RecordCard({ item, columns, fields, statusOptions, editing, busy, updat
                         {statusOptions.map(s => (
                             <button
                                 key={s}
-                                disabled={updatingId === item.id || item.status === s}
+                                disabled={updatingId === item.id}
                                 onClick={() => onStatusChange(item, s)}
                                 className={`btn btn-sm ${item.status === s ? "btn-gold" : "btn-navy"}`}
                                 style={{ opacity: item.status === s ? 1 : 0.55 }}
@@ -149,11 +149,15 @@ export default function SubmissionSection({ title, path, columns, fields, status
     const [editingId, setEditingId] = useState(null);
     const [creating, setCreating] = useState(false);
     const [busy, setBusy] = useState(false);
+    const [actionError, setActionError] = useState(null);
 
     const handleStatusChange = async (item, status) => {
         setUpdatingId(item.id);
+        setActionError(null);
         try {
-            await updateSubmissionStatus(path, item.id, status, item);
+            await updateSubmissionStatus(path, item.id, status);
+        } catch (err) {
+            setActionError(err.message || "Could not update this submission.");
         } finally {
             setUpdatingId(null);
         }
@@ -249,6 +253,7 @@ export default function SubmissionSection({ title, path, columns, fields, status
 
             {loading && <p style={{ color: "var(--gray-400)" }}>Loading…</p>}
             {!loading && error && <p style={{ color: "var(--orange)" }}>Couldn't load this data. Check Firebase read permissions.</p>}
+            {actionError && <p style={{ color: "var(--orange)", marginBottom: "1rem" }}>{actionError}</p>}
 
             {!loading && !error && groups && (
                 groups.map(group => (
