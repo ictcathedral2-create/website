@@ -273,7 +273,7 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 .hero-content {
   position: relative; z-index: 2;
   max-width: 1280px; margin: 0 auto; padding: 8rem 2rem 5rem;
-  display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start;
+  display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(340px, 0.88fr); gap: clamp(1.5rem, 2.5vw, 2.5rem); align-items: center;
 }
 
 .hero-badge {
@@ -311,7 +311,7 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 .hero-stat-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.04em; color: rgba(255,255,255,0.65); margin-top: 4px; }
 
 .hero-visual {
-  position: relative; width: min(100%, 340px); justify-self: end;
+  position: relative; width: min(100%, 360px); justify-self: start;
   animation: fadeSlideLeft 0.8s 0.2s ease both;
 }
 .hero-visual .service-card { padding: 1.25rem; }
