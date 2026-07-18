@@ -14,10 +14,10 @@ const PUBLIC_MIRRORS = {
 // public copy (added when approved, removed otherwise).
 export async function updateSubmissionStatus(collection, id, status) {
   const token = await auth.currentUser?.getIdToken();
-  const response = await fetch("/api/manage-submission", {
+  const response = await fetch("/api/manage-admin", {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${token || ""}` },
-    body: JSON.stringify({ collection, id, status }),
+    body: JSON.stringify({ action: "updateSubmissionStatus", collection, id, status }),
   });
   const result = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(result.error || "Could not update the submission.");

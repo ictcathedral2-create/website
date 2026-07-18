@@ -2,6 +2,14 @@ import { cert, getApps, getApp, initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getDatabase } from "firebase-admin/database";
 
+const PUBLIC_MIRRORS = {
+  testimonies: "publicTestimonies",
+  businessListings: "publicBusinessListings",
+  jobPostings: "publicJobPostings",
+  jobSeekers: "publicJobSeekers",
+  wantedPosts: "publicWantedPosts",
+};
+
 function initFirebase() {
   if (getApps().length) return getApp();
   const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
@@ -39,6 +47,23 @@ async function requireSuper(auth, db, req) {
   return { uid: decoded.uid };
 }
 
+async function requireAdmin(auth, db, req) {
+  const authHeader = req.headers.authorization || "";
+  const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
+  if (!token) return { error: "Missing auth token.", status: 401 };
+
+  let decoded;
+  try {
+    decoded = await auth.verifyIdToken(token);
+  } catch {
+    return { error: "Invalid or expired session. Please log in again.", status: 401 };
+  }
+
+  const snap = await db.ref(`admins/${decoded.uid}`).once("value");
+  if (!roleOf(snap.val())) return { error: "Admin access is required.", status: 403 };
+  return { uid: decoded.uid };
+}
+
 async function countSupers(db) {
   const snap = await db.ref("admins").once("value");
   const all = snap.val() || {};
@@ -53,20 +78,43 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "Missing FIREBASE_SERVICE_ACCOUNT or FIREBASE_DATABASE_URL env vars." });
   }
 
-  let auth, db, caller;
+  let auth, db;
   try {
     const app = initFirebase();
     auth = getAuth(app);
     db = getDatabase(app);
-    caller = await requireSuper(auth, db, req);
   } catch (err) {
     return res.status(500).json({ error: `Firebase Admin init failed: ${err.message || err}` });
   }
-  if (caller.error) return res.status(caller.status).json({ error: caller.error });
-
   const { action, email, password, role, uid } = req.body || {};
 
+  const caller = action === "updateSubmissionStatus"
+    ? await requireAdmin(auth, db, req)
+    : await requireSuper(auth, db, req);
+  if (caller.error) return res.status(caller.status).json({ error: caller.error });
+
   try {
+    if (action === "updateSubmissionStatus") {
+      const { collection, id, status } = req.body || {};
+      if (!collection || !id || !status) {
+        return res.status(400).json({ error: "Collection, record ID, and status are required." });
+      }
+      const recordRef = db.ref(`submissions/${collection}/${id}`);
+      const snapshot = await recordRef.once("value");
+      const record = snapshot.val();
+      if (!record) return res.status(404).json({ error: "Submission not found." });
+
+      const updates = { [`submissions/${collection}/${id}/status`]: status };
+      const publicPath = PUBLIC_MIRRORS[collection];
+      if (publicPath) {
+        updates[`${publicPath}/${id}`] = status === "approved"
+          ? { ...record, status: "approved" }
+          : null;
+      }
+      await db.ref().update(updates);
+      return res.status(200).json({ ok: true });
+    }
+
     if (action === "create") {
       if (!email || !password || password.length < 6) {
         return res.status(400).json({ error: "Email and a password of at least 6 characters are required." });
