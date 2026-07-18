@@ -67,19 +67,21 @@ function NewRequestForm({ onCreated }) {
     const [error, setError] = useState(null);
     const [submitting, setSubmitting] = useState(false);
 
+    const needsPhone = type === "pastoral";
+
     const handleSubmit = async () => {
         if (!name.trim() || !message.trim()) {
             setError("Please fill in your name and message.");
             return;
         }
-        if (!validatePhone(phone)) {
+        if (needsPhone && !validatePhone(phone)) {
             setError("Enter a valid phone number: 10 digits starting with 01 or 07 (e.g. 0712345678).");
             return;
         }
         setSubmitting(true);
         setError(null);
         try {
-            const id = await createSupportRequest({ type, name: name.trim(), phone, message: message.trim() });
+            const id = await createSupportRequest({ type, name: name.trim(), phone: needsPhone ? phone : "", message: message.trim() });
             addStoredChatId(id);
             onCreated(id);
         } catch {
@@ -93,7 +95,11 @@ function NewRequestForm({ onCreated }) {
         <>
             <div className="form-group">
                 <label className="form-label">What do you need?</label>
-                <select className="form-select" value={type} onChange={e => setType(e.target.value)}>
+                <select
+                    className="form-select"
+                    value={type}
+                    onChange={e => { setType(e.target.value); if (e.target.value !== "pastoral") setPhone(""); }}
+                >
                     {SERVICE_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
                 </select>
             </div>
@@ -101,18 +107,20 @@ function NewRequestForm({ onCreated }) {
                 <label className="form-label">Your Name</label>
                 <input className="form-input" placeholder="Your name" value={name} onChange={e => setName(e.target.value)} />
             </div>
-            <div className="form-group">
-                <label className="form-label">Phone Number</label>
-                <input
-                    className="form-input"
-                    type="tel"
-                    inputMode="numeric"
-                    maxLength={10}
-                    placeholder="07XXXXXXXX or 01XXXXXXXX"
-                    value={phone}
-                    onChange={e => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                />
-            </div>
+            {needsPhone && (
+                <div className="form-group">
+                    <label className="form-label">Phone Number</label>
+                    <input
+                        className="form-input"
+                        type="tel"
+                        inputMode="numeric"
+                        maxLength={10}
+                        placeholder="07XXXXXXXX or 01XXXXXXXX"
+                        value={phone}
+                        onChange={e => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                    />
+                </div>
+            )}
             <div className="form-group">
                 <label className="form-label">Message</label>
                 <textarea

@@ -638,11 +638,6 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 .advert-preview {
   width: 100%; aspect-ratio: 4 / 3; display: block; object-fit: cover; cursor: pointer; border: none; padding: 0;
 }
-.advert-preview-pdf {
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
-  background: var(--gray-100); color: inherit; text-decoration: none; font-family: var(--font-body);
-}
-.dark-mode .advert-preview-pdf { background: #1A2540 !important; }
 .community-card { height: 100%; display: flex; flex-direction: column; }
 .community-card-body { display: flex; flex-direction: column; width: 100%; padding: 1.75rem; min-height: 210px; flex: 1; }
 .community-card-body .btn { margin-top: 1rem; }
@@ -3003,17 +2998,6 @@ function JobCard({ j }) {
                     alt={`${j.jobTitle} advert`}
                     onClick={() => setLightbox(true)}
                 />
-            )}
-            {j.advertType === "pdf" && j.advertData && (
-                <a
-                    className="advert-preview advert-preview-pdf"
-                    href={j.advertData}
-                    target="_blank"
-                    rel="noreferrer"
-                >
-                    <span style={{ fontSize: "2.5rem" }}>📄</span>
-                    <span style={{ fontSize: "0.8rem", fontWeight: 600, color: "var(--navy)" }}>View Full Advert</span>
-                </a>
             )}
             <div className="community-card-body">
                 <div className="blog-cat">{j.jobType}</div>
