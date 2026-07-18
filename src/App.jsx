@@ -958,6 +958,8 @@ a.footer-contact-row:hover .footer-contact-text { color: var(--gold-light); }
   .featured-sermon-grid .featured-sermon-thumb { min-height: 200px !important; padding: 1.75rem !important; }
   .featured-sermon-grid .featured-sermon-info { padding: 1.75rem !important; }
   .featured-sermon-grid .featured-sermon-title { font-size: 1.4rem !important; }
+  .community-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.35rem; }
+  .community-tabs .tab-btn { width: 100%; min-width: 0; padding: 0.7rem 0.4rem; font-size: 0.78rem; line-height: 1.2; }
 }
 `;
 
@@ -3284,12 +3286,12 @@ function CommunityPage({ dark }) {
 
             <div className="section section-cream">
                 <div className="container">
-                    <div className="tab-nav">
+                    <div className="tab-nav community-tabs">
                         {[
                             ["Business", "Business Directory"],
+                            ["Wanted", "Requests"],
                             ["Jobs", "Job Board"],
                             ["JobSeekers", "Job Seekers"],
-                            ["Wanted", "Wanted"],
                         ].map(([key, label]) => (
                             <button key={key} className={`tab-btn${activeTab === key ? " active" : ""}`} onClick={() => setActiveTab(key)}>
                                 {label}
@@ -3358,7 +3360,7 @@ function CommunityPage({ dark }) {
                         <>
                             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem", marginBottom: "2rem" }}>
                                 <div>
-                                    <h2 className="section-title" style={{ fontSize: "1.6rem", marginBottom: "0.25rem" }}>Wanted</h2>
+                                    <h2 className="section-title" style={{ fontSize: "1.6rem", marginBottom: "0.25rem" }}>Requests</h2>
                                     <p style={{ color: "var(--gray-600)", fontSize: "0.9rem" }}>Looking for a specific product or service? Post it here.</p>
                                 </div>
                                 <button className="btn btn-gold" onClick={() => setShowWantedForm(true)}>+ I'm Looking for Something</button>

@@ -170,7 +170,7 @@ const SECTIONS = [
     },
     {
         key: "wantedPosts",
-        label: "Wanted Posts",
+        label: "Requests",
         path: "wantedPosts",
         statusOptions: ["pending", "approved", "rejected"],
         columns: [
