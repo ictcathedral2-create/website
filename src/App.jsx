@@ -275,6 +275,7 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
   max-width: 1280px; margin: 0 auto; padding: 8rem 2rem 5rem;
   display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(340px, 0.88fr); gap: clamp(1.5rem, 2.5vw, 2.5rem); align-items: center;
 }
+.hero-text-col { text-align: center; transform: translateY(-1.5rem); }
 
 .hero-badge {
   display: inline-flex; align-items: center; gap: 8px;
@@ -297,14 +298,14 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 .hero-title span { color: var(--gold); }
 .hero-desc {
   font-size: clamp(1rem, 1.4vw, 1.12rem); line-height: 1.8; color: rgba(255,255,255,0.8);
-  margin-bottom: 2.5rem; max-width: 520px;
+  margin: 0 auto 2.5rem; max-width: 520px;
   animation: fadeSlideUp 0.7s 0.2s ease both;
 }
 
-.hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; animation: fadeSlideUp 0.7s 0.3s ease both; }
+.hero-btns { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; animation: fadeSlideUp 0.7s 0.3s ease both; }
 
 .hero-stats {
-  display: flex; gap: 2.5rem; margin-top: 3rem;
+  display: flex; justify-content: center; gap: 2.5rem; margin-top: 3rem;
   animation: fadeSlideUp 0.7s 0.4s ease both;
 }
 .hero-stat-num { font-family: var(--font-display); font-size: 2.4rem; font-weight: 700; line-height: 0.95; color: var(--gold); }
