@@ -311,9 +311,10 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 .hero-stat-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.04em; color: rgba(255,255,255,0.65); margin-top: 4px; }
 
 .hero-visual {
-  position: relative; width: min(100%, 400px); justify-self: end;
+  position: relative; width: min(100%, 340px); justify-self: end;
   animation: fadeSlideLeft 0.8s 0.2s ease both;
 }
+.hero-visual .service-card { padding: 1.25rem; }
 
 .service-card {
   background: rgba(255,255,255,0.07); backdrop-filter: blur(16px);
@@ -945,6 +946,7 @@ a.footer-contact-row:hover .footer-contact-text { color: var(--gold-light); }
 @media (max-width: 900px) {
   .hero-content { grid-template-columns: 1fr; gap: 2.5rem; }
   .hero-visual { width: 100%; justify-self: stretch; }
+  .hero-visual .service-card { padding: 2rem; }
   .about-grid { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr 1fr; row-gap: 2.5rem; }
   .footer-grid > div + div { border-left: none; padding-left: 0; }
