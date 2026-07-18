@@ -356,12 +356,7 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
   text-align: center; padding: 1.5rem;
 }
 
-/* Keep posters inside a stable desktop frame so portrait uploads cannot stretch the hero. */
-@media (min-width: 641px) {
-  .poster-frame { height: clamp(300px, 31vw, 420px); }
-  .poster-flip, .poster-empty { height: 100%; }
-  .poster-image { width: 100%; height: 100%; object-fit: contain; object-position: center; background: rgba(0,0,0,0.16); }
-}
+/* Posters keep their natural aspect ratio at every breakpoint, matching mobile. */
 
 .poster-viewer-overlay {
   position: fixed; inset: 0; z-index: 3000; padding: 2rem;
