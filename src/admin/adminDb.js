@@ -6,6 +6,8 @@ const PUBLIC_MIRRORS = {
   testimonies: "publicTestimonies",
   businessListings: "publicBusinessListings",
   jobPostings: "publicJobPostings",
+  jobSeekers: "publicJobSeekers",
+  wantedPosts: "publicWantedPosts",
 };
 
 // Updates a submission's status. For mirrored collections, also syncs the

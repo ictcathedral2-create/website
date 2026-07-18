@@ -2661,6 +2661,14 @@ function GivePage({ dark }) {
 const BUSINESS_CATEGORIES = ["Retail & Shops", "Food & Catering", "Services", "Agriculture", "Technology", "Fashion & Beauty", "Transport", "Other"];
 const JOB_TYPES = ["Full-time", "Part-time", "Internship", "Volunteer", "Casual"];
 
+// Builds a wa.me deep link so people can reach a job seeker or wanted-post
+// author directly — no in-site messaging system or user accounts required.
+function whatsappLink(phone, message) {
+    const digits = String(phone || "").replace(/\D/g, "");
+    const normalized = digits.startsWith("0") ? `254${digits.slice(1)}` : digits;
+    return `https://wa.me/${normalized}?text=${encodeURIComponent(message)}`;
+}
+
 // Users often paste links without a scheme (e.g. "facebook.com/mybiz") — treat
 // those as https so the anchor doesn't resolve relative to our own site.
 function normalizeUrl(url) {
@@ -2983,6 +2991,226 @@ function BusinessCard({ b }) {
     );
 }
 
+function JobSeekerModal({ open, onClose }) {
+    const seeker = useFormSubmit(
+        "jobSeekers",
+        { name: "", phone: "", desiredRole: "", bio: "", cvData: "" },
+        ["name", "phone", "desiredRole", "bio"]
+    );
+    const [cvError, setCvError] = useState(null);
+    const [cvBusy, setCvBusy] = useState(false);
+
+    if (!open) return null;
+
+    const handleClose = () => {
+        seeker.reset();
+        setCvError(null);
+        onClose();
+    };
+
+    const handleCvChange = async e => {
+        const file = e.target.files?.[0];
+        e.target.value = "";
+        if (!file) return;
+        setCvBusy(true);
+        setCvError(null);
+        try {
+            if (file.type !== "application/pdf") throw new Error("Please choose a PDF file.");
+            seeker.setField("cvData", await readPdfAsDataUri(file));
+        } catch (err) {
+            setCvError(err.message || "Couldn't process that file.");
+        } finally {
+            setCvBusy(false);
+        }
+    };
+
+    const handleSubmit = () => {
+        if (!seeker.formData.cvData) {
+            setCvError("Upload your CV (PDF) before submitting.");
+            return;
+        }
+        setCvError(null);
+        seeker.handleSubmit({ status: "pending" });
+    };
+
+    return (
+        <div className="modal-overlay" onClick={handleClose}>
+            <div className="modal-card" onClick={e => e.stopPropagation()}>
+                <div className="modal-header">
+                    <button className="modal-close" onClick={handleClose} aria-label="Close">✕</button>
+                    <div style={{ fontFamily: "var(--font-display)", fontSize: "1.7rem", fontWeight: 700, lineHeight: 1 }}>I'm Looking for a Job</div>
+                    <div style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.7)", marginTop: 4 }}>Submissions are reviewed by our team before appearing publicly.</div>
+                </div>
+                <div className="modal-body">
+                    {seeker.submitted ? (
+                        <p style={{ textAlign: "center", color: "var(--navy)", fontWeight: 600, padding: "1rem 0" }}>
+                            ✓ Thanks! Your listing will appear here once approved.
+                        </p>
+                    ) : (
+                        <>
+                            <div className="form-group">
+                                <label className="form-label">Full Name</label>
+                                <input className="form-input" placeholder="Your name" value={seeker.formData.name} onChange={e => seeker.setField("name", e.target.value)} />
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">Phone Number</label>
+                                <input className="form-input" type="tel" inputMode="numeric" maxLength={10} placeholder="07XXXXXXXX or 01XXXXXXXX" value={seeker.formData.phone} onChange={e => seeker.setField("phone", e.target.value.replace(/\D/g, "").slice(0, 10))} />
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">Desired Role / Field</label>
+                                <input className="form-input" placeholder="e.g. Accounting, ICT Support, Any" value={seeker.formData.desiredRole} onChange={e => seeker.setField("desiredRole", e.target.value)} />
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">Bio / Skills</label>
+                                <textarea className="form-textarea" maxLength={400} placeholder="Tell employers about your experience and skills (max 400 characters)" value={seeker.formData.bio} onChange={e => seeker.setField("bio", e.target.value)} />
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">CV (PDF, Required)</label>
+                                <label className="btn btn-navy btn-sm" style={{ cursor: cvBusy ? "not-allowed" : "pointer", opacity: cvBusy ? 0.6 : 1 }}>
+                                    {cvBusy ? "Processing..." : seeker.formData.cvData ? "✓ CV Selected — Change" : "Choose PDF"}
+                                    <input type="file" accept="application/pdf" onChange={handleCvChange} disabled={cvBusy} style={{ display: "none" }} />
+                                </label>
+                            </div>
+                            {(cvError || seeker.error) && <p style={{ color: "var(--orange)", fontSize: "0.8rem", marginBottom: 8 }}>{cvError || seeker.error}</p>}
+                            <button
+                                className="btn btn-gold"
+                                style={{ width: "100%", justifyContent: "center" }}
+                                disabled={seeker.submitting || cvBusy}
+                                onClick={handleSubmit}
+                            >
+                                {seeker.submitting ? "Submitting..." : "Submit for Review →"}
+                            </button>
+                        </>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function WantedModal({ open, onClose }) {
+    const wanted = useFormSubmit(
+        "wantedPosts",
+        { name: "", phone: "", itemWanted: "", description: "" },
+        ["name", "phone", "itemWanted", "description"]
+    );
+
+    if (!open) return null;
+
+    const handleClose = () => {
+        wanted.reset();
+        onClose();
+    };
+
+    return (
+        <div className="modal-overlay" onClick={handleClose}>
+            <div className="modal-card" onClick={e => e.stopPropagation()}>
+                <div className="modal-header">
+                    <button className="modal-close" onClick={handleClose} aria-label="Close">✕</button>
+                    <div style={{ fontFamily: "var(--font-display)", fontSize: "1.7rem", fontWeight: 700, lineHeight: 1 }}>I'm Looking for Something</div>
+                    <div style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.7)", marginTop: 4 }}>Submissions are reviewed by our team before appearing publicly.</div>
+                </div>
+                <div className="modal-body">
+                    {wanted.submitted ? (
+                        <p style={{ textAlign: "center", color: "var(--navy)", fontWeight: 600, padding: "1rem 0" }}>
+                            ✓ Thanks! Your post will appear here once approved.
+                        </p>
+                    ) : (
+                        <>
+                            <div className="form-group">
+                                <label className="form-label">Full Name</label>
+                                <input className="form-input" placeholder="Your name" value={wanted.formData.name} onChange={e => wanted.setField("name", e.target.value)} />
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">Phone Number</label>
+                                <input className="form-input" type="tel" inputMode="numeric" maxLength={10} placeholder="07XXXXXXXX or 01XXXXXXXX" value={wanted.formData.phone} onChange={e => wanted.setField("phone", e.target.value.replace(/\D/g, "").slice(0, 10))} />
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">What Are You Looking For?</label>
+                                <input className="form-input" placeholder="e.g. Second-hand laptop, Graphic designer" value={wanted.formData.itemWanted} onChange={e => wanted.setField("itemWanted", e.target.value)} />
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">Description</label>
+                                <textarea className="form-textarea" maxLength={400} placeholder="Details — condition, budget, timeline, etc. (max 400 characters)" value={wanted.formData.description} onChange={e => wanted.setField("description", e.target.value)} />
+                            </div>
+                            {wanted.error && <p style={{ color: "var(--orange)", fontSize: "0.8rem", marginBottom: 8 }}>{wanted.error}</p>}
+                            <button
+                                className="btn btn-gold"
+                                style={{ width: "100%", justifyContent: "center" }}
+                                disabled={wanted.submitting}
+                                onClick={() => wanted.handleSubmit({ status: "pending" })}
+                            >
+                                {wanted.submitting ? "Submitting..." : "Submit for Review →"}
+                            </button>
+                        </>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function JobSeekerCard({ s }) {
+    const [expanded, setExpanded] = useState(false);
+    const canExpand = (s.bio || "").length > 130;
+
+    return (
+        <div className="card community-card">
+            <div className="community-card-body">
+                <div className="blog-cat">{s.desiredRole}</div>
+                <div className="blog-title" style={{ marginTop: 6 }}>{s.name}</div>
+                <div className={`blog-excerpt${expanded ? "" : " desc-clamp-3"}`} style={{ marginTop: 8 }}>{s.bio}</div>
+                {canExpand && (
+                    <button className="read-more-btn" onClick={() => setExpanded(!expanded)}>
+                        {expanded ? "Show Less" : "Read More"} →
+                    </button>
+                )}
+                {s.cvData && (
+                    <a className="ministry-link" href={s.cvData} download={`${(s.name || "cv").replace(/[^a-z0-9]+/gi, "-").toLowerCase()}.pdf`}>📄 Download CV</a>
+                )}
+                <a
+                    className="btn btn-gold btn-sm"
+                    style={{ width: "100%", justifyContent: "center" }}
+                    href={whatsappLink(s.phone, `Hi ${s.name}, I saw you're looking for work on the ACK St Pauls Youths website and I'd like to connect.`)}
+                    target="_blank"
+                    rel="noreferrer"
+                >
+                    💬 Contact on WhatsApp
+                </a>
+            </div>
+        </div>
+    );
+}
+
+function WantedCard({ w }) {
+    const [expanded, setExpanded] = useState(false);
+    const canExpand = (w.description || "").length > 130;
+
+    return (
+        <div className="card community-card">
+            <div className="community-card-body">
+                <div className="blog-title">{w.itemWanted}</div>
+                <div style={{ fontSize: "0.82rem", color: "var(--gray-400)", marginTop: 2 }}>By {w.name}</div>
+                <div className={`blog-excerpt${expanded ? "" : " desc-clamp-3"}`} style={{ marginTop: 8 }}>{w.description}</div>
+                {canExpand && (
+                    <button className="read-more-btn" onClick={() => setExpanded(!expanded)}>
+                        {expanded ? "Show Less" : "Read More"} →
+                    </button>
+                )}
+                <a
+                    className="btn btn-gold btn-sm"
+                    style={{ width: "100%", justifyContent: "center" }}
+                    href={whatsappLink(w.phone, `Hi ${w.name}, I saw you're looking for "${w.itemWanted}" on the ACK St Pauls Youths website and I'd like to connect.`)}
+                    target="_blank"
+                    rel="noreferrer"
+                >
+                    💬 Contact on WhatsApp
+                </a>
+            </div>
+        </div>
+    );
+}
+
 function JobCard({ j }) {
     const [lightbox, setLightbox] = useState(false);
     const [expanded, setExpanded] = useState(false);
@@ -3032,11 +3260,17 @@ function CommunityPage({ dark }) {
     const [activeTab, setActiveTab] = useState("Business");
     const [showBusinessForm, setShowBusinessForm] = useState(false);
     const [showJobForm, setShowJobForm] = useState(false);
+    const [showJobSeekerForm, setShowJobSeekerForm] = useState(false);
+    const [showWantedForm, setShowWantedForm] = useState(false);
     const { data: businessData, loading: businessLoading } = useFirebaseCollection("publicBusinessListings");
     const { data: jobData, loading: jobLoading } = useFirebaseCollection("publicJobPostings");
+    const { data: jobSeekerData, loading: jobSeekerLoading } = useFirebaseCollection("publicJobSeekers");
+    const { data: wantedData, loading: wantedLoading } = useFirebaseCollection("publicWantedPosts");
 
     const businesses = (businessData || []).slice().sort((a, b) => b.createdAt - a.createdAt);
     const jobs = (jobData || []).slice().sort((a, b) => b.createdAt - a.createdAt);
+    const jobSeekers = (jobSeekerData || []).slice().sort((a, b) => b.createdAt - a.createdAt);
+    const wantedPosts = (wantedData || []).slice().sort((a, b) => b.createdAt - a.createdAt);
 
     return (
         <>
@@ -3051,9 +3285,14 @@ function CommunityPage({ dark }) {
             <div className="section section-cream">
                 <div className="container">
                     <div className="tab-nav">
-                        {["Business", "Jobs"].map(t => (
-                            <button key={t} className={`tab-btn${activeTab === t ? " active" : ""}`} onClick={() => setActiveTab(t)}>
-                                {t === "Business" ? "Business Directory" : "Job Board"}
+                        {[
+                            ["Business", "Business Directory"],
+                            ["Jobs", "Job Board"],
+                            ["JobSeekers", "Job Seekers"],
+                            ["Wanted", "Wanted"],
+                        ].map(([key, label]) => (
+                            <button key={key} className={`tab-btn${activeTab === key ? " active" : ""}`} onClick={() => setActiveTab(key)}>
+                                {label}
                             </button>
                         ))}
                     </div>
@@ -3095,11 +3334,51 @@ function CommunityPage({ dark }) {
                             </div>
                         </>
                     )}
+
+                    {activeTab === "JobSeekers" && (
+                        <>
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem", marginBottom: "2rem" }}>
+                                <div>
+                                    <h2 className="section-title" style={{ fontSize: "1.6rem", marginBottom: "0.25rem" }}>Job Seekers</h2>
+                                    <p style={{ color: "var(--gray-600)", fontSize: "0.9rem" }}>Looking for work? Let employers in our community find you.</p>
+                                </div>
+                                <button className="btn btn-gold" onClick={() => setShowJobSeekerForm(true)}>+ I'm Looking for a Job</button>
+                            </div>
+                            {jobSeekerLoading && <p style={{ color: "var(--gray-400)" }}>Loading…</p>}
+                            {!jobSeekerLoading && jobSeekers.length === 0 && (
+                                <p style={{ textAlign: "center", color: "var(--gray-400)", padding: "2rem 0" }}>No one has posted yet — be the first to let employers know you're available!</p>
+                            )}
+                            <div className="grid-3">
+                                {jobSeekers.map(s => <JobSeekerCard key={s.id} s={s} />)}
+                            </div>
+                        </>
+                    )}
+
+                    {activeTab === "Wanted" && (
+                        <>
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem", marginBottom: "2rem" }}>
+                                <div>
+                                    <h2 className="section-title" style={{ fontSize: "1.6rem", marginBottom: "0.25rem" }}>Wanted</h2>
+                                    <p style={{ color: "var(--gray-600)", fontSize: "0.9rem" }}>Looking for a specific product or service? Post it here.</p>
+                                </div>
+                                <button className="btn btn-gold" onClick={() => setShowWantedForm(true)}>+ I'm Looking for Something</button>
+                            </div>
+                            {wantedLoading && <p style={{ color: "var(--gray-400)" }}>Loading…</p>}
+                            {!wantedLoading && wantedPosts.length === 0 && (
+                                <p style={{ textAlign: "center", color: "var(--gray-400)", padding: "2rem 0" }}>No requests posted yet — be the first to post what you're looking for!</p>
+                            )}
+                            <div className="grid-3">
+                                {wantedPosts.map(w => <WantedCard key={w.id} w={w} />)}
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
 
             <BusinessListingModal open={showBusinessForm} onClose={() => setShowBusinessForm(false)} />
             <JobPostingModal open={showJobForm} onClose={() => setShowJobForm(false)} />
+            <JobSeekerModal open={showJobSeekerForm} onClose={() => setShowJobSeekerForm(false)} />
+            <WantedModal open={showWantedForm} onClose={() => setShowWantedForm(false)} />
         </>
     );
 }
