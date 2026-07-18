@@ -463,7 +463,7 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 .card:hover::after { transform: scaleX(1); }
 
 .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
-.grid-3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem; align-items: stretch; }
 .grid-4 { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem; align-items: stretch; }
 
 /* ─── ABOUT ─── */
@@ -507,13 +507,15 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 .team-name { font-family: var(--font-display); font-size: 1.45rem; font-weight: 700; line-height: 1; color: var(--navy); }
 .team-role { font-size: 0.82rem; color: var(--gold-dark); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; min-height: 2.2em; }
 .team-bio { font-size: 0.9rem; color: var(--gray-600); line-height: 1.7; margin-top: 0.75rem; }
-.team-bio-clamp {
+
+/* ─── SHARED: 3-line clamp + Read More toggle (team bios, event/job/business descriptions) ─── */
+.desc-clamp-3 {
   display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.team-read-more {
+.read-more-btn {
   background: none; border: none; padding: 0; margin-top: 6px; cursor: pointer;
-  font-size: 0.8rem; font-weight: 600; color: var(--gold-dark); align-self: center;
+  font-size: 0.8rem; font-weight: 600; color: var(--gold-dark); align-self: flex-start;
 }
 
 /* ─── MINISTRY CARDS ─── */
@@ -579,14 +581,6 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 .home-events-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); align-items: stretch; }
 .home-event-card { align-items: flex-start; height: 100%; }
 .home-event-body { display: flex; flex-direction: column; width: 100%; min-height: 200px; }
-.home-event-desc-clamp {
-  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.home-event-read-more {
-  background: none; border: none; padding: 0; margin-top: 6px; cursor: pointer;
-  font-size: 0.8rem; font-weight: 600; color: var(--gold-dark); align-self: flex-start;
-}
 .home-event-body .btn { margin-top: auto; align-self: flex-start; }
 
 .event-date-block.urgent { background: var(--orange); animation: urgentGlow 1.4s ease-in-out infinite; }
@@ -639,6 +633,21 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 .blog-title { font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; color: var(--navy); margin-top: 0.5rem; line-height: 1.05; }
 .blog-excerpt { font-size: 0.88rem; color: var(--gray-600); margin-top: 0.5rem; line-height: 1.65; }
 .blog-meta { font-size: 0.78rem; color: var(--gray-400); margin-top: 0.75rem; display: flex; justify-content: space-between; }
+
+/* ─── COMMUNITY BOARD CARDS (Job Board / Business Directory) — uniform size ─── */
+.advert-preview {
+  width: 100%; aspect-ratio: 4 / 3; display: block; object-fit: cover; cursor: pointer; border: none; padding: 0;
+}
+.advert-preview-pdf {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  background: var(--gray-100); color: inherit; text-decoration: none; font-family: var(--font-body);
+}
+.dark-mode .advert-preview-pdf { background: #1A2540 !important; }
+.community-card { height: 100%; display: flex; flex-direction: column; }
+.community-card-body { display: flex; flex-direction: column; width: 100%; padding: 1.75rem; min-height: 210px; flex: 1; }
+.community-card-body .btn { margin-top: 1rem; }
+.community-card-body .btn:last-child { margin-top: auto; }
+.community-card-body .ministry-link { margin-top: 0.5rem; }
 
 /* ─── FORMS ─── */
 .form-group { margin-bottom: 0.9rem; }
@@ -1086,9 +1095,9 @@ function HomeEventCard({ e, navigate }) {
             <div className="home-event-body">
                 <div className="event-title">{e.title}{e.urgent && <span className="event-urgent-badge">Starting Soon</span>}</div>
                 <div className="event-meta">📅 {e.time}</div>
-                <div className={`event-desc${expanded ? "" : " home-event-desc-clamp"}`}>{e.desc}</div>
+                <div className={`event-desc${expanded ? "" : " desc-clamp-3"}`}>{e.desc}</div>
                 {canExpand && (
-                    <button className="home-event-read-more" onClick={() => setExpanded(!expanded)}>
+                    <button className="read-more-btn" onClick={() => setExpanded(!expanded)}>
                         {expanded ? "Show Less" : "Read More"} →
                     </button>
                 )}
@@ -1107,9 +1116,9 @@ function TeamCard({ t }) {
             <div className="team-avatar">{t.initials}</div>
             <div className="team-name">{t.name}</div>
             <div className="team-role">{t.role}</div>
-            <div className={`team-bio${expanded ? "" : " team-bio-clamp"}`}>{t.bio}</div>
+            <div className={`team-bio${expanded ? "" : " desc-clamp-3"}`}>{t.bio}</div>
             {canExpand && (
-                <button className="team-read-more" onClick={() => setExpanded(!expanded)}>
+                <button className="read-more-btn" style={{ alignSelf: "center" }} onClick={() => setExpanded(!expanded)}>
                     {expanded ? "Show Less" : "Read More"} →
                 </button>
             )}
@@ -2657,14 +2666,6 @@ function GivePage({ dark }) {
 const BUSINESS_CATEGORIES = ["Retail & Shops", "Food & Catering", "Services", "Agriculture", "Technology", "Fashion & Beauty", "Transport", "Other"];
 const JOB_TYPES = ["Full-time", "Part-time", "Internship", "Volunteer", "Casual"];
 
-// Builds a wa.me deep link so business/job "chat" happens on WhatsApp directly —
-// no in-site messaging system or user accounts required.
-function whatsappLink(phone, message) {
-    const digits = String(phone || "").replace(/\D/g, "");
-    const normalized = digits.startsWith("0") ? `254${digits.slice(1)}` : digits;
-    return `https://wa.me/${normalized}?text=${encodeURIComponent(message)}`;
-}
-
 // Users often paste links without a scheme (e.g. "facebook.com/mybiz") — treat
 // those as https so the anchor doesn't resolve relative to our own site.
 function normalizeUrl(url) {
@@ -2952,38 +2953,35 @@ function JobPostingModal({ open, onClose }) {
 
 function BusinessCard({ b }) {
     const [lightbox, setLightbox] = useState(false);
+    const [expanded, setExpanded] = useState(false);
+    const canExpand = (b.description || "").length > 130;
+
     return (
-        <div className="card" style={{ overflow: "hidden" }}>
+        <div className="card community-card">
             {b.mediaType === "image" && b.mediaData && (
                 <img
+                    className="advert-preview"
                     src={b.mediaData}
                     alt={b.businessName}
-                    style={{ width: "100%", aspectRatio: "4 / 3", objectFit: "cover", display: "block", cursor: "pointer" }}
                     onClick={() => setLightbox(true)}
                 />
             )}
-            <div style={{ padding: "1.75rem" }}>
+            <div className="community-card-body">
                 <div className="blog-cat">{b.category}</div>
                 <div className="blog-title" style={{ marginTop: 6 }}>{b.businessName}</div>
                 <div style={{ fontSize: "0.82rem", color: "var(--gray-400)", marginTop: 2 }}>By {b.ownerName}</div>
-                <div className="blog-excerpt" style={{ marginTop: 8 }}>{b.description}</div>
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 2 }}>
-                    {b.mediaType === "video" && b.mediaUrl && (
-                        <a href={b.mediaUrl} target="_blank" rel="noreferrer" className="ministry-link">▶ Watch Video</a>
-                    )}
-                    {b.websiteUrl && (
-                        <a href={normalizeUrl(b.websiteUrl)} target="_blank" rel="noreferrer" className="ministry-link">🔗 Visit Website</a>
-                    )}
-                </div>
-                <a
-                    className="btn btn-gold btn-sm"
-                    style={{ marginTop: "1rem", width: "100%", justifyContent: "center" }}
-                    href={whatsappLink(b.phone, `Hi ${b.businessName}, I found your business on the ACK St Pauls Youths website and I'd like to connect.`)}
-                    target="_blank"
-                    rel="noreferrer"
-                >
-                    💬 Chat on WhatsApp
-                </a>
+                <div className={`blog-excerpt${expanded ? "" : " desc-clamp-3"}`} style={{ marginTop: 8 }}>{b.description}</div>
+                {canExpand && (
+                    <button className="read-more-btn" onClick={() => setExpanded(!expanded)}>
+                        {expanded ? "Show Less" : "Read More"} →
+                    </button>
+                )}
+                {b.mediaType === "video" && b.mediaUrl && (
+                    <a href={b.mediaUrl} target="_blank" rel="noreferrer" className="ministry-link">▶ Watch Video</a>
+                )}
+                {b.websiteUrl && (
+                    <a href={normalizeUrl(b.websiteUrl)} target="_blank" rel="noreferrer" className="ministry-link">🔗 Visit Website</a>
+                )}
             </div>
             {lightbox && <PosterLightbox src={b.mediaData} alt={b.businessName} onClose={() => setLightbox(false)} />}
         </div>
@@ -2992,29 +2990,48 @@ function BusinessCard({ b }) {
 
 function JobCard({ j }) {
     const [lightbox, setLightbox] = useState(false);
+    const [expanded, setExpanded] = useState(false);
+    const canExpand = (j.description || "").length > 130;
     const downloadName = `${(j.jobTitle || "job-advert").replace(/[^a-z0-9]+/gi, "-").toLowerCase()}.pdf`;
+
     return (
-        <div className="card" style={{ overflow: "hidden" }}>
+        <div className="card community-card">
             {j.advertType === "image" && j.advertData && (
                 <img
+                    className="advert-preview"
                     src={j.advertData}
                     alt={`${j.jobTitle} advert`}
-                    style={{ width: "100%", aspectRatio: "4 / 3", objectFit: "cover", display: "block", cursor: "pointer" }}
                     onClick={() => setLightbox(true)}
                 />
             )}
-            <div style={{ padding: "1.75rem" }}>
+            {j.advertType === "pdf" && j.advertData && (
+                <a
+                    className="advert-preview advert-preview-pdf"
+                    href={j.advertData}
+                    target="_blank"
+                    rel="noreferrer"
+                >
+                    <span style={{ fontSize: "2.5rem" }}>📄</span>
+                    <span style={{ fontSize: "0.8rem", fontWeight: 600, color: "var(--navy)" }}>View Full Advert</span>
+                </a>
+            )}
+            <div className="community-card-body">
                 <div className="blog-cat">{j.jobType}</div>
                 <div className="blog-title" style={{ marginTop: 6 }}>{j.jobTitle}</div>
                 <div style={{ fontSize: "0.82rem", color: "var(--gray-400)", marginTop: 2 }}>{j.company}</div>
-                <div className="blog-excerpt" style={{ marginTop: 8 }}>{j.description}</div>
+                <div className={`blog-excerpt${expanded ? "" : " desc-clamp-3"}`} style={{ marginTop: 8 }}>{j.description}</div>
+                {canExpand && (
+                    <button className="read-more-btn" onClick={() => setExpanded(!expanded)}>
+                        {expanded ? "Show Less" : "Read More"} →
+                    </button>
+                )}
                 {j.jobUrl && (
                     <a href={normalizeUrl(j.jobUrl)} target="_blank" rel="noreferrer" className="ministry-link">🔗 View Full Listing</a>
                 )}
                 {j.advertType === "pdf" && j.advertData && (
                     <a
                         className="btn btn-gold btn-sm"
-                        style={{ marginTop: "1rem", width: "100%", justifyContent: "center" }}
+                        style={{ width: "100%", justifyContent: "center" }}
                         href={j.advertData}
                         download={downloadName}
                     >
@@ -3062,7 +3079,7 @@ function CommunityPage({ dark }) {
                             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem", marginBottom: "2rem" }}>
                                 <div>
                                     <h2 className="section-title" style={{ fontSize: "1.6rem", marginBottom: "0.25rem" }}>Business Directory</h2>
-                                    <p style={{ color: "var(--gray-600)", fontSize: "0.9rem" }}>Support youth-run businesses and connect directly on WhatsApp.</p>
+                                    <p style={{ color: "var(--gray-600)", fontSize: "0.9rem" }}>Discover and support youth-run businesses in our community.</p>
                                 </div>
                                 <button className="btn btn-gold" onClick={() => setShowBusinessForm(true)}>+ List Your Business</button>
                             </div>
