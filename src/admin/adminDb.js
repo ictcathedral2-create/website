@@ -12,15 +12,35 @@ const PUBLIC_MIRRORS = {
 
 // Updates a submission's status. For mirrored collections, also syncs the
 // public copy (added when approved, removed otherwise).
-export async function updateSubmissionStatus(collection, id, status) {
+export async function updateSubmissionStatus(collection, id, status, record = null) {
   const token = await auth.currentUser?.getIdToken();
-  const response = await fetch("/api/manage-admin", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token || ""}` },
-    body: JSON.stringify({ action: "updateSubmissionStatus", collection, id, status }),
-  });
-  const result = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(result.error || "Could not update the submission.");
+  let apiReached = false;
+  try {
+    const response = await fetch("/api/manage-admin", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token || ""}` },
+      body: JSON.stringify({ action: "updateSubmissionStatus", collection, id, status }),
+    });
+    apiReached = true;
+    const result = await response.json().catch(() => ({}));
+    if (response.ok) return;
+    // Server-side authorization errors must remain visible; only use the
+    // Firebase path when the API itself is unavailable (for example, a static
+    // preview or an interrupted serverless deployment).
+    if (response.status !== 404 && response.status < 500) {
+      throw new Error(result.error || "Could not update the submission.");
+    }
+  } catch (error) {
+    // Preserve API responses (including authorization errors) rather than
+    // masking them. Network failures never reach this point, so they may use
+    // the Firebase fallback below.
+    if (apiReached) throw error;
+  }
+
+  await set(ref(db, `submissions/${collection}/${id}/status`), status);
+  if (PUBLIC_MIRRORS[collection]) {
+    await syncPublicMirror(collection, id, status, { ...record, id, status });
+  }
 
 }
 

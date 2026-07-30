@@ -155,7 +155,7 @@ export default function SubmissionSection({ title, path, columns, fields, status
         setUpdatingId(item.id);
         setActionError(null);
         try {
-            await updateSubmissionStatus(path, item.id, status);
+            await updateSubmissionStatus(path, item.id, status, item);
         } catch (err) {
             setActionError(err.message || "Could not update this submission.");
         } finally {
