@@ -1070,7 +1070,12 @@ const MINISTRIES = [
 function resolveEventDate(day, monthAbbr) {
     const now = new Date();
     const monthIndex = new Date(`${monthAbbr} 1, 2000`).getMonth();
-    let candidate = new Date(now.getFullYear(), monthIndex, Number(day), 23, 59, 59);
+    const dayNumber = Number(day);
+    if (!Number.isInteger(dayNumber) || dayNumber < 1 || dayNumber > 31 || Number.isNaN(monthIndex)) return null;
+    let candidate = new Date(now.getFullYear(), monthIndex, dayNumber, 23, 59, 59);
+    // JavaScript rolls invalid dates (for example, 31 February) into the next
+    // month. Reject those records instead of showing an event on the wrong day.
+    if (candidate.getMonth() !== monthIndex || candidate.getDate() !== dayNumber) return null;
     if (candidate < now) candidate = new Date(now.getFullYear() + 1, monthIndex, Number(day), 23, 59, 59);
     return candidate;
 }
@@ -1086,9 +1091,11 @@ function useEvents() {
         return list
             .map(e => {
                 const date = resolveEventDate(e.day, e.month);
+                if (!date) return null;
                 const daysUntil = Math.ceil((date - new Date()) / 86400000);
                 return { ...e, date, urgent: daysUntil >= 0 && daysUntil <= URGENT_THRESHOLD_DAYS };
             })
+            .filter(Boolean)
             .sort((a, b) => a.date - b.date);
     }, [data]);
 }
@@ -1670,7 +1677,7 @@ function PosterCarousel() {
     );
 }
 
-function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef, stat1, stat2, stat3, stat4, dark, onJoinUs }) {
+function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef, stat1, stat2, stat3, stat4, onJoinUs }) {
     const newsletter = useFormSubmit("newsletterSignups", { email: "" }, ["email"]);
     const { videos, loading: videosLoading } = useYouTubeVideos();
     const [activeVideo, setActiveVideo] = useState(null);
@@ -1916,7 +1923,7 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
     );
 }
 
-function AboutPage({ navigate, dark }) {
+function AboutPage() {
     return (
         <>
             <div className="events-hero">
@@ -2029,7 +2036,7 @@ function AboutPage({ navigate, dark }) {
     );
 }
 
-function MinistriesPage({ navigate, dark }) {
+function MinistriesPage({ navigate }) {
     const [joiningMinistry, setJoiningMinistry] = useState(null);
 
     return (
@@ -2114,7 +2121,7 @@ function WrittenSermonModal({ sermon, onClose }) {
     );
 }
 
-function SermonsPage({ navigate, dark, activeTab, setActiveTab }) {
+function SermonsPage({ activeTab, setActiveTab }) {
     const { videos: videosOldestFirst, loading, error } = useYouTubeVideos();
     const videos = [...videosOldestFirst].reverse();
     const [activeVideo, setActiveVideo] = useState(null);
@@ -2264,7 +2271,7 @@ function SermonsPage({ navigate, dark, activeTab, setActiveTab }) {
     );
 }
 
-function EventsPage({ events, navigate, dark }) {
+function EventsPage({ events }) {
     const [detailsEvent, setDetailsEvent] = useState(null);
     const registration = useFormSubmit(
         "eventRegistrations",
@@ -2396,7 +2403,7 @@ function EventsPage({ events, navigate, dark }) {
     );
 }
 
-function ConnectPage({ navigate, dark }) {
+function ConnectPage() {
     const contact = useFormSubmit(
         "contactMessages",
         { firstName: "", lastName: "", email: "", phone: "", helpType: "I'm new and want to know more", message: "" },
@@ -2570,7 +2577,7 @@ function ConnectPage({ navigate, dark }) {
     );
 }
 
-function GivePage({ dark }) {
+function GivePage() {
     const [copied, setCopied] = useState("");
     const [stkForm, setStkForm] = useState({ accountType: "Offering", amount: "", phone: "" });
     const [stkState, setStkState] = useState("idle"); // idle | sending | awaiting | success | error
@@ -3344,7 +3351,7 @@ function JobCard({ j }) {
     );
 }
 
-function CommunityPage({ dark }) {
+function CommunityPage() {
     const [activeTab, setActiveTab] = useState("Business");
     const [showBusinessForm, setShowBusinessForm] = useState(false);
     const [showJobForm, setShowJobForm] = useState(false);
@@ -3500,7 +3507,7 @@ function TestimonyCard({ t }) {
     );
 }
 
-function TestimoniesPage({ navigate, dark }) {
+function TestimoniesPage() {
     const { data: testimonies, loading, error } = useFirebaseCollection("publicTestimonies");
     const testimony = useFormSubmit(
         "testimonies",

@@ -40,7 +40,7 @@ export function useFormSubmit(collection, initialData, requiredFields = []) {
       setSubmitted(true);
       setFormData(initialData);
       return true;
-    } catch (err) {
+    } catch {
       setError("Something went wrong. Please try again.");
       return false;
     } finally {

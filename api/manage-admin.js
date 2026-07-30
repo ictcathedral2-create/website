@@ -10,6 +10,23 @@ const PUBLIC_MIRRORS = {
   wantedPosts: "publicWantedPosts",
 };
 
+const SUBMISSION_STATUSES = {
+  joinUsRegistrations: ["new", "contacted", "archived"],
+  testimonies: ["pending", "approved", "rejected"],
+  businessListings: ["pending", "approved", "rejected"],
+  jobPostings: ["pending", "approved", "rejected"],
+  jobSeekers: ["pending", "approved", "rejected"],
+  wantedPosts: ["pending", "approved", "rejected"],
+  prayerRequests: ["new", "prayed", "archived"],
+  contactMessages: ["new", "responded", "archived"],
+  eventRegistrations: ["registered", "confirmed", "cancelled"],
+  ministryRegistrations: ["new", "contacted", "archived"],
+  smallGroupSignups: ["new", "assigned"],
+  newsletterSignups: ["new", "archived"],
+  givingRecords: ["new", "received"],
+  mpesaTransactions: ["pending", "completed", "failed"],
+};
+
 function initFirebase() {
   if (getApps().length) return getApp();
   const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
@@ -98,6 +115,9 @@ export default async function handler(req, res) {
       const { collection, id, status } = req.body || {};
       if (!collection || !id || !status) {
         return res.status(400).json({ error: "Collection, record ID, and status are required." });
+      }
+      if (!SUBMISSION_STATUSES[collection] || !SUBMISSION_STATUSES[collection].includes(status)) {
+        return res.status(400).json({ error: "Invalid submission collection or status." });
       }
       const recordRef = db.ref(`submissions/${collection}/${id}`);
       const snapshot = await recordRef.once("value");

@@ -15,11 +15,13 @@ export function useAdminRole(uid) {
   const [role, setRole] = useState(undefined);
 
   useEffect(() => {
-    if (!uid) return;
+    if (!uid) return undefined;
     const dbRef = ref(db, `admins/${uid}`);
-    const unsubscribe = onValue(dbRef, snapshot => {
-      setRole(roleOf(snapshot.val()));
-    });
+    const unsubscribe = onValue(
+      dbRef,
+      snapshot => setRole(roleOf(snapshot.val())),
+      () => setRole(null)
+    );
     return () => unsubscribe();
   }, [uid]);
 
