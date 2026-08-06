@@ -2273,24 +2273,26 @@ function SermonsPage({ activeTab, setActiveTab }) {
 
 function EventsPage({ events }) {
     const [detailsEvent, setDetailsEvent] = useState(null);
+    const [registrationEvent, setRegistrationEvent] = useState(null);
     const registration = useFormSubmit(
         "eventRegistrations",
         { firstName: "", lastName: "", phone: "", eventTitle: "", specialRequirements: "" },
         ["firstName", "lastName", "phone"]
     );
 
-    useEffect(() => {
-        if (!registration.formData.eventTitle && events.length) registration.setField("eventTitle", events[0].title);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [events]);
-
-    const handleRegisterClick = (eventTitle) => {
-        registration.setField("eventTitle", eventTitle);
-        document.getElementById("event-registration-form")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    const handleRegisterClick = (event) => {
+        registration.reset();
+        registration.setField("eventTitle", event.title);
+        setRegistrationEvent(event);
     };
 
     const handleRegistrationSubmit = () => {
         registration.handleSubmit();
+    };
+
+    const closeRegistration = () => {
+        setRegistrationEvent(null);
+        registration.reset();
     };
 
     return (
@@ -2321,7 +2323,7 @@ function EventsPage({ events }) {
                                     <div className="event-desc">{e.desc}</div>
                                 </div>
                                 <div className="event-actions">
-                                    <button className="btn btn-gold btn-sm" onClick={() => handleRegisterClick(e.title)}>Register →</button>
+                                    <button className="btn btn-gold btn-sm" onClick={() => handleRegisterClick(e)}>Register →</button>
                                     <button className="btn btn-ghost-navy btn-sm" onClick={() => setDetailsEvent(e)}>View Details</button>
                                 </div>
                             </div>
@@ -2345,7 +2347,7 @@ function EventsPage({ events }) {
                                     <button
                                         className="btn btn-gold"
                                         style={{ width: "100%", justifyContent: "center", marginTop: "1.5rem" }}
-                                        onClick={() => { handleRegisterClick(detailsEvent.title); setDetailsEvent(null); }}
+                                        onClick={() => { handleRegisterClick(detailsEvent); setDetailsEvent(null); }}
                                     >
                                         Register for This Event →
                                     </button>
@@ -2354,15 +2356,19 @@ function EventsPage({ events }) {
                         </div>
                     )}
 
-                    <div className="section-header" style={{ marginTop: "4rem" }} id="event-registration-form">
-                        <div className="overline">Register Today</div>
-                        <h2 className="section-title">Event Registration</h2>
-                        <div className="gold-line" />
-                    </div>
-                    <div className="card" style={{ padding: "2.5rem", maxWidth: 600, margin: "0 auto" }}>
+                    {registrationEvent && (
+                        <div className="modal-overlay" onClick={closeRegistration}>
+                            <div className="modal-card" style={{ maxWidth: 600 }} onClick={ev => ev.stopPropagation()}>
+                                <div className="modal-header">
+                                    <button className="modal-close" onClick={closeRegistration} aria-label="Close registration form">×</button>
+                                    <div className="overline" style={{ color: "var(--gold-light)", marginBottom: "0.4rem" }}>Register Today</div>
+                                    <div style={{ fontFamily: "var(--font-display)", fontSize: "1.7rem", fontWeight: 700, lineHeight: 1.05 }}>Register for {registrationEvent.title}</div>
+                                    <div style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.7)", marginTop: 8 }}>📅 {registrationEvent.day} {registrationEvent.month} · {registrationEvent.time}</div>
+                                </div>
+                                <div className="modal-body">
                         {registration.submitted ? (
                             <p style={{ textAlign: "center", color: "var(--navy)", fontWeight: 600, padding: "1rem 0" }}>
-                                ✓ You're registered for {registration.formData.eventTitle || "the event"}! We'll be in touch with details.
+                                ✓ You're registered for {registrationEvent.title}! We'll be in touch with details.
                             </p>
                         ) : (
                             <>
@@ -2381,12 +2387,6 @@ function EventsPage({ events }) {
                                     <input className="form-input" type="tel" inputMode="numeric" maxLength={10} placeholder="07XXXXXXXX or 01XXXXXXXX" value={registration.formData.phone} onChange={e => registration.setField("phone", e.target.value.replace(/\D/g, "").slice(0, 10))} />
                                 </div>
                                 <div className="form-group">
-                                    <label className="form-label event-form-label">Select Event</label>
-                                    <select className="form-select" value={registration.formData.eventTitle} onChange={e => registration.setField("eventTitle", e.target.value)}>
-                                        {events.map((e, i) => <option key={i}>{e.title}</option>)}
-                                    </select>
-                                </div>
-                                <div className="form-group">
                                     <label className="form-label event-form-label">Special Requirements or Questions</label>
                                     <textarea className="form-textarea" placeholder="Dietary needs, mobility requirements, questions..." value={registration.formData.specialRequirements} onChange={e => registration.setField("specialRequirements", e.target.value)} />
                                 </div>
@@ -2396,7 +2396,10 @@ function EventsPage({ events }) {
                                 </button>
                             </>
                         )}
-                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </>
