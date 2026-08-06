@@ -55,7 +55,13 @@ const slugify = str => str.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^
 const pageToPath = page => page === "Home" ? "/" : `/${slugify(page)}`;
 const pageFromPath = pathname => {
     const slug = pathname.replace(/^\/+|\/+$/g, "").toLowerCase();
+    if (slug.startsWith("events/")) return "Events";
     return NAV_LINKS.find(p => slugify(p) === slug) || "Home";
+};
+const eventRegistrationPath = event => `/events/${slugify(event.title)}/register`;
+const eventRegistrationSlug = pathname => {
+    const match = pathname.match(/^\/events\/([^/]+)\/register\/?$/i);
+    return match ? decodeURIComponent(match[1]).toLowerCase() : null;
 };
 
 export const styles = `
@@ -2280,7 +2286,33 @@ function EventsPage({ events }) {
         ["firstName", "lastName", "phone"]
     );
 
+    const openRegistrationFromUrl = () => {
+        const eventSlug = eventRegistrationSlug(window.location.pathname);
+        const event = events.find(item => slugify(item.title) === eventSlug);
+        if (!event) return false;
+        registration.reset();
+        registration.setField("eventTitle", event.title);
+        setRegistrationEvent(event);
+        return true;
+    };
+
+    useEffect(() => {
+        openRegistrationFromUrl();
+        const onPopState = () => {
+            if (!openRegistrationFromUrl()) {
+                setRegistrationEvent(null);
+                registration.reset();
+            }
+        };
+        window.addEventListener("popstate", onPopState);
+        return () => window.removeEventListener("popstate", onPopState);
+        // Event data is loaded asynchronously; re-check the URL when it arrives.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [events]);
+
     const handleRegisterClick = (event) => {
+        const path = eventRegistrationPath(event);
+        if (window.location.pathname !== path) window.history.pushState({}, "", path);
         registration.reset();
         registration.setField("eventTitle", event.title);
         setRegistrationEvent(event);
@@ -2291,6 +2323,7 @@ function EventsPage({ events }) {
     };
 
     const closeRegistration = () => {
+        if (eventRegistrationSlug(window.location.pathname)) window.history.pushState({}, "", pageToPath("Events"));
         setRegistrationEvent(null);
         registration.reset();
     };
