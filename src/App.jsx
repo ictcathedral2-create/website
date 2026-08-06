@@ -2387,7 +2387,7 @@ function EventsPage({ events }) {
                                     <input className="form-input" type="tel" inputMode="numeric" maxLength={10} placeholder="07XXXXXXXX or 01XXXXXXXX" value={registration.formData.phone} onChange={e => registration.setField("phone", e.target.value.replace(/\D/g, "").slice(0, 10))} />
                                 </div>
                                 <div className="form-group">
-                                    <label className="form-label event-form-label">Special Requirements or Questions</label>
+                                    <label className="form-label event-form-label">Special Requirements or Questions (Optional)</label>
                                     <textarea className="form-textarea" placeholder="Dietary needs, mobility requirements, questions..." value={registration.formData.specialRequirements} onChange={e => registration.setField("specialRequirements", e.target.value)} />
                                 </div>
                                 {registration.error && <p style={{ color: "var(--orange)", fontSize: "0.8rem", marginBottom: 8 }}>{registration.error}</p>}
