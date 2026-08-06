@@ -2287,7 +2287,7 @@ function EventsPage({ events }) {
     };
 
     const handleRegistrationSubmit = () => {
-        registration.handleSubmit();
+        registration.handleSubmit({ status: "registered" });
     };
 
     const closeRegistration = () => {

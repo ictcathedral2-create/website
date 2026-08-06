@@ -230,11 +230,9 @@ export default function SubmissionSection({ title, path, columns, fields, status
                     {title} <span style={{ color: "var(--gray-400)", fontWeight: 500, fontSize: "1rem" }}>({sorted.length})</span>
                 </h2>
                 <div style={{ display: "flex", gap: "0.6rem" }}>
-                    {!groupByField && (
-                        <button className="btn btn-navy btn-sm" onClick={() => downloadGroup("all", sorted)} disabled={sorted.length === 0}>
-                            Download CSV
-                        </button>
-                    )}
+                    <button className="btn btn-navy btn-sm" onClick={() => downloadGroup("all", sorted)} disabled={sorted.length === 0}>
+                        {groupByField ? "Download All CSV" : "Download CSV"}
+                    </button>
                     <button className="btn btn-gold btn-sm" onClick={() => { setCreating(!creating); setEditingId(null); }}>
                         {creating ? "Cancel" : "+ Add New"}
                     </button>
