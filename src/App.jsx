@@ -56,9 +56,23 @@ const pageToPath = page => page === "Home" ? "/" : `/${slugify(page)}`;
 const pageFromPath = pathname => {
     const slug = pathname.replace(/^\/+|\/+$/g, "").toLowerCase();
     if (slug.startsWith("events/")) return "Events";
+    if (slug.startsWith("ministries/")) return "Ministries";
+    if (slug.startsWith("community/")) return "Community";
+    if (slug === "join-us/register") return "Home";
     return NAV_LINKS.find(p => slugify(p) === slug) || "Home";
 };
 const eventRegistrationPath = event => `/events/${slugify(event.title)}/register`;
+const joinUsRegistrationPath = "/join-us/register";
+const ministryRegistrationPath = ministryTitle => `/ministries/${slugify(ministryTitle)}/join`;
+const ministryRegistrationSlug = pathname => {
+    const match = pathname.match(/^\/ministries\/([^/]+)\/join\/?$/i);
+    return match ? decodeURIComponent(match[1]).toLowerCase() : null;
+};
+const communityFormPath = form => `/community/${form}/submit`;
+const communityFormFromPath = pathname => {
+    const match = pathname.match(/^\/community\/(business|job|job-seeker|request)\/submit\/?$/i);
+    return match ? match[1].toLowerCase() : null;
+};
 const eventRegistrationSlug = pathname => {
     const match = pathname.match(/^\/events\/([^/]+)\/register\/?$/i);
     return match ? decodeURIComponent(match[1]).toLowerCase() : null;
@@ -708,13 +722,15 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 
 /* ─── COMMUNITY BOARD CARDS (Job Board / Business Directory) — uniform size ─── */
 .advert-preview {
-  width: 100%; aspect-ratio: 4 / 3; display: block; object-fit: cover; cursor: pointer; border: none; padding: 0;
+  width: 100%; max-height: 520px; display: block; object-fit: contain; cursor: pointer; border: none; padding: 0; background: var(--gray-100);
 }
 .community-card { height: 100%; display: flex; flex-direction: column; }
-.community-card-body { display: flex; flex-direction: column; width: 100%; padding: 1.75rem; min-height: 210px; flex: 1; }
+.community-card-body { display: flex; flex-direction: column; width: 100%; padding: 1.5rem; flex: 1; }
 .community-card-body .btn { margin-top: 1rem; }
 .community-card-body .btn:last-child { margin-top: auto; }
 .community-card-body .ministry-link { margin-top: 0.5rem; }
+.community-contact { display: inline-flex; align-self: flex-start; margin-top: 0.85rem; color: var(--navy); font-size: 0.88rem; font-weight: 700; text-decoration: none; }
+.community-contact:hover { color: var(--gold-dark); }
 
 /* ─── FORMS ─── */
 .form-group { margin-bottom: 0.9rem; }
@@ -1218,7 +1234,7 @@ export default function App() {
     const [dark, setDark] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [mobileSubmenuOpen, setMobileSubmenuOpen] = useState(null);
-    const [joinUsOpen, setJoinUsOpen] = useState(false);
+    const [joinUsOpen, setJoinUsOpen] = useState(() => window.location.pathname === joinUsRegistrationPath);
     const [statsVisible, setStatsVisible] = useState(false);
     const [activeTab, setActiveTab] = useState("Video");
     const [scrolled, setScrolled] = useState(false);
@@ -1282,9 +1298,24 @@ export default function App() {
         setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
     };
 
+    const openJoinUs = () => {
+        if (window.location.pathname !== joinUsRegistrationPath) window.history.pushState({}, "", joinUsRegistrationPath);
+        setActivePage("Home");
+        setJoinUsOpen(true);
+        setMobileMenuOpen(false);
+    };
+
+    const closeJoinUs = () => {
+        if (window.location.pathname === joinUsRegistrationPath) window.history.pushState({}, "", pageToPath("Home"));
+        setJoinUsOpen(false);
+    };
+
     // Keeps activePage in sync with the browser's back/forward buttons.
     useEffect(() => {
-        const onPopState = () => setActivePage(pageFromPath(window.location.pathname));
+        const onPopState = () => {
+            setActivePage(pageFromPath(window.location.pathname));
+            setJoinUsOpen(window.location.pathname === joinUsRegistrationPath);
+        };
         window.addEventListener("popstate", onPopState);
         return () => window.removeEventListener("popstate", onPopState);
     }, []);
@@ -1353,7 +1384,7 @@ export default function App() {
                                 >
                                     <div className="toggle-thumb" />
                                 </button>
-                                <button className="nav-cta" onClick={() => setJoinUsOpen(true)}>Join Us</button>
+                                <button className="nav-cta" onClick={openJoinUs}>Join Us</button>
                             </div>
                         </div>
                         <div className="mobile-menu-btn">
@@ -1393,11 +1424,11 @@ export default function App() {
                         }
                         return <button key={p} className={`nav-link${activePage === p ? " active" : ""}`} onClick={() => navigate(p)}>{p}</button>;
                     })}
-                    <button className="btn btn-gold" style={{ marginTop: "1rem" }} onClick={() => { setMobileMenuOpen(false); setJoinUsOpen(true); }}>Join Us</button>
+                    <button className="btn btn-gold" style={{ marginTop: "1rem" }} onClick={openJoinUs}>Join Us</button>
                 </div>
 
                 {/* ─── PAGES ─── */}
-                {activePage === "Home" && <HomePage countdown={countdown} nextEvent={nextEvent} eventPhase={eventPhase} events={events} navigate={navigate} statsRef={statsRef} stat1={stat1} stat2={stat2} stat3={stat3} stat4={stat4} dark={dark} onJoinUs={() => setJoinUsOpen(true)} />}
+                {activePage === "Home" && <HomePage countdown={countdown} nextEvent={nextEvent} eventPhase={eventPhase} events={events} navigate={navigate} statsRef={statsRef} stat1={stat1} stat2={stat2} stat3={stat3} stat4={stat4} dark={dark} onJoinUs={openJoinUs} />}
                 {activePage === "About" && <AboutPage navigate={navigate} dark={dark} />}
                 {activePage === "Ministries" && <MinistriesPage navigate={navigate} dark={dark} />}
                 {activePage === "Sermons" && <SermonsPage navigate={navigate} dark={dark} activeTab={activeTab} setActiveTab={setActiveTab} />}
@@ -1457,7 +1488,7 @@ export default function App() {
 
                 <SupportWidget />
 
-                <JoinUsModal open={joinUsOpen} onClose={() => setJoinUsOpen(false)} />
+                <JoinUsModal open={joinUsOpen} onClose={closeJoinUs} />
             </div>
         </>
     );
@@ -2043,7 +2074,30 @@ function AboutPage() {
 }
 
 function MinistriesPage({ navigate }) {
-    const [joiningMinistry, setJoiningMinistry] = useState(null);
+    const [joiningMinistry, setJoiningMinistry] = useState(() => {
+        const slug = ministryRegistrationSlug(window.location.pathname);
+        return MINISTRIES.find(ministry => slugify(ministry.title) === slug)?.title || null;
+    });
+
+    useEffect(() => {
+        const onPopState = () => {
+            const slug = ministryRegistrationSlug(window.location.pathname);
+            setJoiningMinistry(MINISTRIES.find(ministry => slugify(ministry.title) === slug)?.title || null);
+        };
+        window.addEventListener("popstate", onPopState);
+        return () => window.removeEventListener("popstate", onPopState);
+    }, []);
+
+    const openMinistryRegistration = title => {
+        const path = ministryRegistrationPath(title);
+        if (window.location.pathname !== path) window.history.pushState({}, "", path);
+        setJoiningMinistry(title);
+    };
+
+    const closeMinistryRegistration = () => {
+        if (ministryRegistrationSlug(window.location.pathname)) window.history.pushState({}, "", pageToPath("Ministries"));
+        setJoiningMinistry(null);
+    };
 
     return (
         <>
@@ -2059,7 +2113,7 @@ function MinistriesPage({ navigate }) {
                             <div key={i} id={slugify(m.title)} className="card ministry-card-full">
                                 <div className="ministry-title" style={{ fontSize: "1.2rem", textAlign: "center" }}>{m.title}</div>
                                 <div className="ministry-desc" style={{ marginTop: "0.6rem", textAlign: "center" }}>{m.desc}</div>
-                                <button className="btn btn-gold btn-sm" style={{ marginTop: "1.5rem", width: "100%", justifyContent: "center" }} onClick={() => setJoiningMinistry(m.title)}>
+                                <button className="btn btn-gold btn-sm" style={{ marginTop: "1.5rem", width: "100%", justifyContent: "center" }} onClick={() => openMinistryRegistration(m.title)}>
                                     Join This Ministry →
                                 </button>
                             </div>
@@ -2073,7 +2127,7 @@ function MinistriesPage({ navigate }) {
                 <button className="btn btn-gold" onClick={() => navigate("Connect")}>Get Connected Today →</button>
             </div>
 
-            {joiningMinistry && <MinistryJoinModal ministryTitle={joiningMinistry} onClose={() => setJoiningMinistry(null)} />}
+            {joiningMinistry && <MinistryJoinModal ministryTitle={joiningMinistry} onClose={closeMinistryRegistration} />}
         </>
     );
 }
@@ -2820,7 +2874,7 @@ function PosterLightbox({ src, alt, onClose }) {
 function BusinessListingModal({ open, onClose }) {
     const listing = useFormSubmit(
         "businessListings",
-        { businessName: "", ownerName: "", phone: "", category: BUSINESS_CATEGORIES[0], description: "", websiteUrl: "", mediaType: "none", mediaData: "", mediaUrl: "" },
+        { businessName: "", ownerName: "", phone: "", showPhone: false, category: BUSINESS_CATEGORIES[0], description: "", websiteUrl: "", mediaType: "none", mediaData: "", mediaUrl: "" },
         ["businessName", "ownerName", "phone", "description"]
     );
     const [mediaError, setMediaError] = useState(null);
@@ -2905,6 +2959,10 @@ function BusinessListingModal({ open, onClose }) {
                                     {BUSINESS_CATEGORIES.map(c => <option key={c}>{c}</option>)}
                                 </select>
                             </div>
+                            <label style={{ display: "flex", alignItems: "center", gap: "0.55rem", marginBottom: "0.9rem", fontSize: "0.85rem", color: "var(--gray-600)", cursor: "pointer" }}>
+                                <input type="checkbox" checked={listing.formData.showPhone} onChange={e => listing.setField("showPhone", e.target.checked)} />
+                                Display my phone number publicly on this business listing
+                            </label>
                             <div className="form-group">
                                 <label className="form-label">Description</label>
                                 <textarea className="form-textarea" maxLength={400} placeholder="What does your business offer? (max 400 characters)" value={listing.formData.description} onChange={e => listing.setField("description", e.target.value)} />
@@ -2955,7 +3013,7 @@ function BusinessListingModal({ open, onClose }) {
 function JobPostingModal({ open, onClose }) {
     const posting = useFormSubmit(
         "jobPostings",
-        { jobTitle: "", company: "", contactPhone: "", jobType: JOB_TYPES[0], description: "", jobUrl: "", advertType: "image", advertData: "" },
+        { jobTitle: "", company: "", contactPhone: "", showContactPhone: false, jobType: JOB_TYPES[0], description: "", jobUrl: "", advertType: "image", advertData: "" },
         ["jobTitle", "company", "contactPhone", "description"]
     );
     const [advertError, setAdvertError] = useState(null);
@@ -3035,12 +3093,16 @@ function JobPostingModal({ open, onClose }) {
                                     <label className="form-label">Contact Phone</label>
                                     <input className="form-input" type="tel" inputMode="numeric" maxLength={10} placeholder="07XXXXXXXX or 01XXXXXXXX" value={posting.formData.contactPhone} onChange={e => posting.setField("contactPhone", e.target.value.replace(/\D/g, "").slice(0, 10))} />
                                 </div>
-                                <div className="form-group">
-                                    <label className="form-label">Job Type</label>
-                                    <select className="form-select" value={posting.formData.jobType} onChange={e => posting.setField("jobType", e.target.value)}>
-                                        {JOB_TYPES.map(t => <option key={t}>{t}</option>)}
-                                    </select>
-                                </div>
+                            <div className="form-group">
+                                <label className="form-label">Job Type</label>
+                                <select className="form-select" value={posting.formData.jobType} onChange={e => posting.setField("jobType", e.target.value)}>
+                                    {JOB_TYPES.map(t => <option key={t}>{t}</option>)}
+                                </select>
+                            </div>
+                            <label style={{ display: "flex", alignItems: "center", gap: "0.55rem", marginBottom: "0.9rem", fontSize: "0.85rem", color: "var(--gray-600)", cursor: "pointer" }}>
+                                <input type="checkbox" checked={posting.formData.showContactPhone} onChange={e => posting.setField("showContactPhone", e.target.checked)} />
+                                Display the contact phone number publicly on this job post
+                            </label>
                             </div>
                             <div className="form-group">
                                 <label className="form-label">Description</label>
@@ -3087,8 +3149,6 @@ function JobPostingModal({ open, onClose }) {
 
 function BusinessCard({ b }) {
     const [lightbox, setLightbox] = useState(false);
-    const [expanded, setExpanded] = useState(false);
-    const canExpand = (b.description || "").length > 130;
 
     return (
         <div className="card community-card">
@@ -3104,17 +3164,13 @@ function BusinessCard({ b }) {
                 <div className="blog-cat">{b.category}</div>
                 <div className="blog-title" style={{ marginTop: 6 }}>{b.businessName}</div>
                 <div style={{ fontSize: "0.82rem", color: "var(--gray-400)", marginTop: 2 }}>By {b.ownerName}</div>
-                <div className={`blog-excerpt${expanded ? "" : " desc-clamp-3"}`} style={{ marginTop: 8 }}>{b.description}</div>
-                {canExpand && (
-                    <button className="read-more-btn" onClick={() => setExpanded(!expanded)}>
-                        {expanded ? "Show Less" : "Read More"} →
-                    </button>
-                )}
+                <div className="blog-excerpt" style={{ marginTop: 8 }}>{b.description}</div>
+                {b.showPhone && b.phone && <a href={`tel:${b.phone}`} className="community-contact">📞 {b.phone}</a>}
                 {b.mediaType === "video" && b.mediaUrl && (
-                    <a href={b.mediaUrl} target="_blank" rel="noreferrer" className="ministry-link">▶ Watch Video</a>
+                    <a href={normalizeUrl(b.mediaUrl)} target="_blank" rel="noreferrer" className="ministry-link">▶ Watch Video</a>
                 )}
                 {b.websiteUrl && (
-                    <a href={normalizeUrl(b.websiteUrl)} target="_blank" rel="noreferrer" className="ministry-link">🔗 Visit Website</a>
+                    <a href={normalizeUrl(b.websiteUrl)} target="_blank" rel="noreferrer" className="ministry-link">Visit Website</a>
                 )}
             </div>
             {lightbox && <PosterLightbox src={b.mediaData} alt={b.businessName} onClose={() => setLightbox(false)} />}
@@ -3344,8 +3400,6 @@ function WantedCard({ w }) {
 
 function JobCard({ j }) {
     const [lightbox, setLightbox] = useState(false);
-    const [expanded, setExpanded] = useState(false);
-    const canExpand = (j.description || "").length > 130;
     const downloadName = `${(j.jobTitle || "job-advert").replace(/[^a-z0-9]+/gi, "-").toLowerCase()}.pdf`;
 
     return (
@@ -3362,12 +3416,8 @@ function JobCard({ j }) {
                 <div className="blog-cat">{j.jobType}</div>
                 <div className="blog-title" style={{ marginTop: 6 }}>{j.jobTitle}</div>
                 <div style={{ fontSize: "0.82rem", color: "var(--gray-400)", marginTop: 2 }}>{j.company}</div>
-                <div className={`blog-excerpt${expanded ? "" : " desc-clamp-3"}`} style={{ marginTop: 8 }}>{j.description}</div>
-                {canExpand && (
-                    <button className="read-more-btn" onClick={() => setExpanded(!expanded)}>
-                        {expanded ? "Show Less" : "Read More"} →
-                    </button>
-                )}
+                <div className="blog-excerpt" style={{ marginTop: 8 }}>{j.description}</div>
+                {j.showContactPhone && j.contactPhone && <a href={`tel:${j.contactPhone}`} className="community-contact">📞 {j.contactPhone}</a>}
                 {j.jobUrl && (
                     <a href={normalizeUrl(j.jobUrl)} target="_blank" rel="noreferrer" className="ministry-link">🔗 View Full Listing</a>
                 )}
@@ -3388,11 +3438,9 @@ function JobCard({ j }) {
 }
 
 function CommunityPage() {
-    const [activeTab, setActiveTab] = useState("Business");
-    const [showBusinessForm, setShowBusinessForm] = useState(false);
-    const [showJobForm, setShowJobForm] = useState(false);
-    const [showJobSeekerForm, setShowJobSeekerForm] = useState(false);
-    const [showWantedForm, setShowWantedForm] = useState(false);
+    const initialForm = communityFormFromPath(window.location.pathname);
+    const [activeTab, setActiveTab] = useState(() => ({ business: "Business", job: "Jobs", "job-seeker": "JobSeekers", request: "Wanted" }[initialForm] || "Business"));
+    const [activeForm, setActiveForm] = useState(initialForm);
     const { data: businessData, loading: businessLoading } = useFirebaseCollection("publicBusinessListings");
     const { data: jobData, loading: jobLoading } = useFirebaseCollection("publicJobPostings");
     const { data: jobSeekerData, loading: jobSeekerLoading } = useFirebaseCollection("publicJobSeekers");
@@ -3402,6 +3450,28 @@ function CommunityPage() {
     const jobs = (jobData || []).slice().sort((a, b) => b.createdAt - a.createdAt);
     const jobSeekers = (jobSeekerData || []).slice().sort((a, b) => b.createdAt - a.createdAt);
     const wantedPosts = (wantedData || []).slice().sort((a, b) => b.createdAt - a.createdAt);
+
+    useEffect(() => {
+        const onPopState = () => {
+            const form = communityFormFromPath(window.location.pathname);
+            setActiveForm(form);
+            if (form) setActiveTab({ business: "Business", job: "Jobs", "job-seeker": "JobSeekers", request: "Wanted" }[form]);
+        };
+        window.addEventListener("popstate", onPopState);
+        return () => window.removeEventListener("popstate", onPopState);
+    }, []);
+
+    const openCommunityForm = form => {
+        const path = communityFormPath(form);
+        if (window.location.pathname !== path) window.history.pushState({}, "", path);
+        setActiveForm(form);
+        setActiveTab({ business: "Business", job: "Jobs", "job-seeker": "JobSeekers", request: "Wanted" }[form]);
+    };
+
+    const closeCommunityForm = () => {
+        if (communityFormFromPath(window.location.pathname)) window.history.pushState({}, "", pageToPath("Community"));
+        setActiveForm(null);
+    };
 
     return (
         <>
@@ -3435,7 +3505,7 @@ function CommunityPage() {
                                     <h2 className="section-title" style={{ fontSize: "1.6rem", marginBottom: "0.25rem" }}>Business Directory</h2>
                                     <p style={{ color: "var(--gray-600)", fontSize: "0.9rem" }}>Discover and support youth-run businesses in our community.</p>
                                 </div>
-                                <button className="btn btn-gold" onClick={() => setShowBusinessForm(true)}>+ List Your Business</button>
+                                <button className="btn btn-gold" onClick={() => openCommunityForm("business")}>+ List Your Business</button>
                             </div>
                             {businessLoading && <p style={{ color: "var(--gray-400)" }}>Loading…</p>}
                             {!businessLoading && businesses.length === 0 && (
@@ -3454,7 +3524,7 @@ function CommunityPage() {
                                     <h2 className="section-title" style={{ fontSize: "1.6rem", marginBottom: "0.25rem" }}>Job Board</h2>
                                     <p style={{ color: "var(--gray-600)", fontSize: "0.9rem" }}>Opportunities shared by our community — view or download each advert.</p>
                                 </div>
-                                <button className="btn btn-gold" onClick={() => setShowJobForm(true)}>+ Post a Job</button>
+                                <button className="btn btn-gold" onClick={() => openCommunityForm("job")}>+ Post a Job</button>
                             </div>
                             {jobLoading && <p style={{ color: "var(--gray-400)" }}>Loading…</p>}
                             {!jobLoading && jobs.length === 0 && (
@@ -3473,7 +3543,7 @@ function CommunityPage() {
                                     <h2 className="section-title" style={{ fontSize: "1.6rem", marginBottom: "0.25rem" }}>Job Seekers</h2>
                                     <p style={{ color: "var(--gray-600)", fontSize: "0.9rem" }}>Looking for work? Let employers in our community find you.</p>
                                 </div>
-                                <button className="btn btn-gold" onClick={() => setShowJobSeekerForm(true)}>+ I'm Looking for a Job</button>
+                                <button className="btn btn-gold" onClick={() => openCommunityForm("job-seeker")}>+ I'm Looking for a Job</button>
                             </div>
                             {jobSeekerLoading && <p style={{ color: "var(--gray-400)" }}>Loading…</p>}
                             {!jobSeekerLoading && jobSeekers.length === 0 && (
@@ -3492,7 +3562,7 @@ function CommunityPage() {
                                     <h2 className="section-title" style={{ fontSize: "1.6rem", marginBottom: "0.25rem" }}>Requests</h2>
                                     <p style={{ color: "var(--gray-600)", fontSize: "0.9rem" }}>Looking for a specific product or service? Post it here.</p>
                                 </div>
-                                <button className="btn btn-gold" onClick={() => setShowWantedForm(true)}>+ I'm Looking for Something</button>
+                                <button className="btn btn-gold" onClick={() => openCommunityForm("request")}>+ I'm Looking for Something</button>
                             </div>
                             {wantedLoading && <p style={{ color: "var(--gray-400)" }}>Loading…</p>}
                             {!wantedLoading && wantedPosts.length === 0 && (
@@ -3506,10 +3576,10 @@ function CommunityPage() {
                 </div>
             </div>
 
-            <BusinessListingModal open={showBusinessForm} onClose={() => setShowBusinessForm(false)} />
-            <JobPostingModal open={showJobForm} onClose={() => setShowJobForm(false)} />
-            <JobSeekerModal open={showJobSeekerForm} onClose={() => setShowJobSeekerForm(false)} />
-            <WantedModal open={showWantedForm} onClose={() => setShowWantedForm(false)} />
+            <BusinessListingModal open={activeForm === "business"} onClose={closeCommunityForm} />
+            <JobPostingModal open={activeForm === "job"} onClose={closeCommunityForm} />
+            <JobSeekerModal open={activeForm === "job-seeker"} onClose={closeCommunityForm} />
+            <WantedModal open={activeForm === "request"} onClose={closeCommunityForm} />
         </>
     );
 }

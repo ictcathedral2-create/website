@@ -5,7 +5,7 @@ import { downloadCsv } from "./csvExport";
 
 function emptyFormData(fields) {
     const data = {};
-    fields.forEach(f => { data[f.key] = f.type === "select" && f.options?.length ? f.options[0] : ""; });
+    fields.forEach(f => { data[f.key] = f.type === "checkbox" ? false : (f.type === "select" && f.options?.length ? f.options[0] : ""); });
     return data;
 }
 
@@ -21,6 +21,11 @@ function RecordForm({ fields, initial, onCancel, onSave, saving }) {
                         <label className="form-label">{f.label}</label>
                         {f.type === "textarea" ? (
                             <textarea className="form-textarea" value={formData[f.key] ?? ""} onChange={e => setField(f.key, e.target.value)} />
+                        ) : f.type === "checkbox" ? (
+                            <label style={{ display: "flex", alignItems: "center", gap: "0.55rem", fontSize: "0.88rem", color: "var(--gray-600)", textTransform: "none", letterSpacing: 0, fontWeight: 500 }}>
+                                <input type="checkbox" checked={Boolean(formData[f.key])} onChange={e => setField(f.key, e.target.checked)} />
+                                {f.helpText || "Enabled"}
+                            </label>
                         ) : f.type === "select" ? (
                             <select className="form-select" value={formData[f.key] ?? ""} onChange={e => setField(f.key, e.target.value)}>
                                 {f.options.map(opt => <option key={opt}>{opt}</option>)}
