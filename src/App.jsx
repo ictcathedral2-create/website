@@ -1378,7 +1378,7 @@ export default function App() {
                             })}
                             <a
                                 className="nav-link"
-                                href="https://sites.google.com/view/cathedralyouths/home"
+                                href="https://sites.google.com/view/cathedralyouths/liturgy"
                                 target="_blank"
                                 rel="noreferrer"
                             >
@@ -1435,7 +1435,7 @@ export default function App() {
                     })}
                     <a
                         className="nav-link"
-                        href="https://sites.google.com/view/cathedralyouths/home"
+                        href="https://sites.google.com/view/cathedralyouths/liturgy"
                         target="_blank"
                         rel="noreferrer"
                         onClick={() => setMobileMenuOpen(false)}
