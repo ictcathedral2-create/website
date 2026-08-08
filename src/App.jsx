@@ -7,15 +7,15 @@ import { compressImage, readPdfAsDataUri } from "./utils/fileToDataUri";
 import SupportWidget from "./components/SupportWidget";
 import logo from "./assets/logo.png";
 
-const NAV_LINKS = ["Home", "Ministries", "Sermons", "Events", "Connect", "Give", "Community", "Testimonies", "About"];
+const NAV_LINKS = ["Home", "Ministries", "Sermons", "Recorded Sermons", "Written Sermons", "Gallery", "Events", "Connect", "Give", "Community", "Business Directory", "Requests", "Job Board", "Job Seekers", "Testimonies", "About"];
 const NAV_MENU = [
     { label: "Home", page: "Home" },
     { label: "About", page: "About" },
     { label: "Ministries", page: "Ministries" },
     { label: "Activities", page: "Events" },
-    { label: "Resources", activePages: ["Sermons"] },
+    { label: "Resources", activePages: ["Sermons", "Recorded Sermons", "Written Sermons", "Gallery"] },
     { label: "Get Involved", activePages: ["Give", "Ministries", "Testimonies"] },
-    { label: "Opportunities", page: "Community" },
+    { label: "Opportunities", page: "Community", activePages: ["Community", "Business Directory", "Requests", "Job Board", "Job Seekers"] },
 ];
 const SITE_URL = "https://ackstpaulsyouths.vercel.app";
 const PAGE_SEO = {
@@ -61,13 +61,24 @@ const slugify = str => str.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^
 
 // Maps a page name to its URL path (e.g. "Home" -> "/home") and back, so every
 // page has a real, shareable, bookmarkable, refreshable URL instead of hidden state.
-const pageToPath = page => page === "Home" ? "/" : `/${slugify(page)}`;
+const PAGE_PATHS = {
+    "Recorded Sermons": "/resources/recorded-sermons",
+    "Written Sermons": "/resources/written-sermons",
+    Gallery: "/resources/gallery",
+    "Business Directory": "/opportunities/business-directory",
+    Requests: "/opportunities/requests",
+    "Job Board": "/opportunities/job-board",
+    "Job Seekers": "/opportunities/job-seekers",
+};
+const pageToPath = page => page === "Home" ? "/" : PAGE_PATHS[page] || `/${slugify(page)}`;
 const pageFromPath = pathname => {
     const slug = pathname.replace(/^\/+|\/+$/g, "").toLowerCase();
     if (slug.startsWith("events/")) return "Events";
     if (slug.startsWith("ministries/")) return "Ministries";
     if (slug.startsWith("community/")) return "Community";
     if (slug === "join-us/register") return "Home";
+    const matchedPage = Object.entries(PAGE_PATHS).find(([, path]) => path.slice(1) === slug);
+    if (matchedPage) return matchedPage[0];
     return NAV_LINKS.find(p => slugify(p) === slug) || "Home";
 };
 const eventRegistrationPath = event => `/events/${slugify(event.title)}/register`;
@@ -163,9 +174,9 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(14,32,68,0.08); border-bottom-color: 
 .dark-mode nav.scrolled { box-shadow: 0 6px 24px rgba(0,0,0,0.35) !important; }
 
 .nav-inner {
-  max-width: 1280px; margin: 0 auto;
+  max-width: 1440px; margin: 0 auto;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 2rem; height: 70px;
+  padding: 0 1.5rem; height: 78px; gap: 1.25rem;
 }
 
 .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; transition: opacity 0.2s ease; }
@@ -184,12 +195,12 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(14,32,68,0.08); border-bottom-color: 
 .logo-text { font-family: var(--font-display); font-size: 1.14rem; font-weight: 700; color: var(--navy); line-height: 0.95; letter-spacing: 0.01em; }
 .logo-sub { font-family: var(--font-body); font-size: 0.64rem; font-weight: 700; color: var(--gold); letter-spacing: 0.1em; text-transform: uppercase; }
 
-.nav-links { display: flex; gap: 0.25rem; align-items: center; }
+.nav-links { display: flex; gap: 0.1rem; align-items: center; justify-content: flex-end; flex: 1; }
 .nav-link {
   position: relative;
-  padding: 0.5rem 0.8rem; border-radius: 7px;
-  font-size: 0.8rem; font-weight: 600; letter-spacing: 0.01em; color: var(--navy);
-  text-decoration: none; transition: color 0.2s ease;
+  padding: 0.68rem 0.78rem; border-radius: 8px;
+  font-family: var(--font-display); font-size: clamp(0.95rem, 1.05vw, 1.08rem); font-weight: 700; line-height: 1; letter-spacing: 0.055em; text-transform: uppercase; color: var(--navy);
+  text-decoration: none; transition: color 0.2s ease, background 0.2s ease, transform 0.2s ease;
   cursor: pointer; background: none; border: none;
   display: inline-flex; align-items: center;
 }
@@ -200,13 +211,13 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(14,32,68,0.08); border-bottom-color: 
   transform: scaleX(0); transform-origin: center;
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.nav-link:hover { color: var(--gold-dark); }
+.nav-link:hover { color: var(--gold-dark); background: rgba(201,168,76,0.1); transform: translateY(-1px); }
 .nav-links .nav-link:hover::after { transform: scaleX(0.55); }
-.nav-link.active { color: var(--gold-dark); font-weight: 600; }
+.nav-link.active { color: var(--gold-dark); font-weight: 700; }
 .nav-links .nav-link.active::after { transform: scaleX(1); }
 
 .nav-item { position: relative; display: inline-flex; }
-.nav-caret { display: inline-block; font-size: 0.6rem; margin-left: 4px; opacity: 0.55; transition: transform 0.25s ease, opacity 0.2s ease; }
+.nav-caret { display: inline-block; font-size: 0.68rem; margin-left: 6px; opacity: 0.6; transition: transform 0.25s ease, opacity 0.2s ease; }
 .nav-item:hover .nav-caret { transform: rotate(180deg); opacity: 1; }
 .nav-dropdown {
   position: absolute; top: 100%; left: 0; padding-top: 10px;
@@ -268,14 +279,14 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(14,32,68,0.08); border-bottom-color: 
 .hamburger::after { top: 7px; }
 
 .mobile-drawer {
-  display: none; position: fixed; top: 70px; left: 0; right: 0; bottom: 0;
+  display: none; position: fixed; top: 78px; left: 0; right: 0; bottom: 0;
   background: rgba(255,255,255,0.98); backdrop-filter: blur(16px);
   z-index: 999; flex-direction: column; padding: 1.5rem 2rem;
   animation: fadeSlideUp 0.25s ease both;
 }
 .mobile-drawer.open { display: flex; }
 .mobile-drawer .nav-link {
-  padding: 1rem 0; font-size: 1rem; font-weight: 700; border-bottom: 1px solid var(--gray-200);
+  padding: 1rem 0; font-size: 1.15rem; font-weight: 700; border-bottom: 1px solid var(--gray-200);
   width: 100%; text-align: left;
 }
 .dark-mode .mobile-drawer { background: rgba(10,15,30,0.98) !important; }
@@ -1027,9 +1038,12 @@ a.footer-contact-row:hover .footer-contact-text { color: var(--gold-light); }
   .gallery-item:nth-child(1) { grid-row: span 1; }
   .featured-sermon-grid { grid-template-columns: 1fr !important; }
 }
-@media (max-width: 640px) {
+@media (max-width: 1100px) {
   .nav-links { display: none; }
   .mobile-menu-btn { display: flex; align-items: center; gap: 0.75rem; }
+  .nav-inner { padding: 0 1.25rem; }
+}
+@media (max-width: 640px) {
   .nav-cta { display: none; }
   .section { padding: 3.5rem 1.25rem; }
   .hero-content { padding: 5.5rem 1.25rem 2rem; gap: 0; }
@@ -1352,10 +1366,10 @@ export default function App() {
         },
         Resources: {
             items: [
-                { label: "Recorded Sermons", onClick: () => { setActiveTab("Video"); navigate("Sermons"); } },
-                { label: "Written Sermons", onClick: () => { setActiveTab("Written"); navigate("Sermons"); } },
+                { label: "Recorded Sermons", onClick: () => navigate("Recorded Sermons") },
+                { label: "Written Sermons", onClick: () => navigate("Written Sermons") },
                 { label: "Liturgy", href: "https://sites.google.com/view/cathedralyouths/liturgy" },
-                { label: "Gallery", onClick: () => { setActiveTab("Gallery"); navigate("Sermons"); } },
+                { label: "Gallery", onClick: () => navigate("Gallery") },
             ],
         },
         "Get Involved": {
@@ -1364,6 +1378,15 @@ export default function App() {
                 { label: "Become a Member", onClick: openJoinUs },
                 { label: "Join a Ministry", onClick: () => navigate("Ministries") },
                 { label: "Give a Testimony", onClick: () => navigate("Testimonies") },
+            ],
+        },
+        Opportunities: {
+            page: "Community",
+            items: [
+                { label: "Business Directory", onClick: () => navigate("Business Directory") },
+                { label: "Requests", onClick: () => navigate("Requests") },
+                { label: "Job Board", onClick: () => navigate("Job Board") },
+                { label: "Job Seekers", onClick: () => navigate("Job Seekers") },
             ],
         },
     };
@@ -1463,10 +1486,17 @@ export default function App() {
                 {activePage === "About" && <AboutPage navigate={navigate} dark={dark} />}
                 {activePage === "Ministries" && <MinistriesPage navigate={navigate} dark={dark} />}
                 {activePage === "Sermons" && <SermonsPage navigate={navigate} dark={dark} activeTab={activeTab} setActiveTab={setActiveTab} />}
+                {activePage === "Recorded Sermons" && <SermonsPage activeTab="Video" setActiveTab={() => {}} showTabs={false} />}
+                {activePage === "Written Sermons" && <SermonsPage activeTab="Written" setActiveTab={() => {}} showTabs={false} />}
+                {activePage === "Gallery" && <SermonsPage activeTab="Gallery" setActiveTab={() => {}} showTabs={false} />}
                 {activePage === "Events" && <EventsPage events={events} navigate={navigate} dark={dark} />}
                 {activePage === "Connect" && <ConnectPage navigate={navigate} dark={dark} />}
                 {activePage === "Give" && <GivePage dark={dark} />}
                 {activePage === "Community" && <CommunityPage dark={dark} />}
+                {activePage === "Business Directory" && <CommunityPage initialTab="Business" showTabs={false} />}
+                {activePage === "Requests" && <CommunityPage initialTab="Wanted" showTabs={false} />}
+                {activePage === "Job Board" && <CommunityPage initialTab="Jobs" showTabs={false} />}
+                {activePage === "Job Seekers" && <CommunityPage initialTab="JobSeekers" showTabs={false} />}
                 {activePage === "Testimonies" && <TestimoniesPage navigate={navigate} dark={dark} />}
 
                 {/* ─── FOOTER ─── */}
@@ -2212,7 +2242,7 @@ function WrittenSermonModal({ sermon, onClose }) {
     );
 }
 
-function SermonsPage({ activeTab, setActiveTab }) {
+function SermonsPage({ activeTab, setActiveTab, showTabs = true }) {
     const { videos: videosOldestFirst, loading, error } = useYouTubeVideos();
     const videos = [...videosOldestFirst].reverse();
     const [activeVideo, setActiveVideo] = useState(null);
@@ -2232,11 +2262,11 @@ function SermonsPage({ activeTab, setActiveTab }) {
             </div>
             <div className="section section-cream">
                 <div className="container">
-                    <div className="tab-nav">
+                    {showTabs && <div className="tab-nav">
                         {["Video", "Written", "Gallery"].map(t => (
                             <button key={t} className={`tab-btn${activeTab === t ? " active" : ""}`} onClick={() => setActiveTab(t)}>{t}</button>
                         ))}
-                    </div>
+                    </div>}
 
                     {activeTab === "Video" && (
                         <>
@@ -3470,9 +3500,9 @@ function JobCard({ j }) {
     );
 }
 
-function CommunityPage() {
+function CommunityPage({ initialTab, showTabs = true }) {
     const initialForm = communityFormFromPath(window.location.pathname);
-    const [activeTab, setActiveTab] = useState(() => ({ business: "Business", job: "Jobs", "job-seeker": "JobSeekers", request: "Wanted" }[initialForm] || "Business"));
+    const [activeTab, setActiveTab] = useState(() => ({ business: "Business", job: "Jobs", "job-seeker": "JobSeekers", request: "Wanted" }[initialForm] || initialTab || "Business"));
     const [activeForm, setActiveForm] = useState(initialForm);
     const { data: businessData, loading: businessLoading } = useFirebaseCollection("publicBusinessListings");
     const { data: jobData, loading: jobLoading } = useFirebaseCollection("publicJobPostings");
@@ -3518,7 +3548,7 @@ function CommunityPage() {
 
             <div className="section section-cream">
                 <div className="container">
-                    <div className="tab-nav community-tabs">
+                    {showTabs && <div className="tab-nav community-tabs">
                         {[
                             ["Business", "Business Directory"],
                             ["Wanted", "Requests"],
@@ -3529,7 +3559,7 @@ function CommunityPage() {
                                 {label}
                             </button>
                         ))}
-                    </div>
+                    </div>}
 
                     {activeTab === "Business" && (
                         <>
