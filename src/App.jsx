@@ -10,6 +10,7 @@ import logo from "./assets/logo.png";
 const NAV_LINKS = ["Home", "Ministries", "Sermons", "Events", "Connect", "Give", "Community", "Testimonies", "About"];
 const NAV_MENU = [
     { label: "Home", page: "Home" },
+    { label: "About", page: "About" },
     { label: "Ministries", page: "Ministries" },
     { label: "Activities", page: "Events" },
     { label: "Resources", activePages: ["Sermons"] },
