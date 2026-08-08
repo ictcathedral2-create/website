@@ -273,6 +273,12 @@ export default function SupportWidget() {
         setTab("mine");
     };
 
+    const openSupportTab = nextTab => {
+        setTab(nextTab);
+        if (nextTab === "new") setActiveChatId(null);
+        setOpen(true);
+    };
+
     return (
         <div className="support-widget">
             {chatIds.map(id => (
@@ -315,16 +321,29 @@ export default function SupportWidget() {
                     )}
                 </div>
             </div>
-            <button className="support-toggle" onClick={() => setOpen(!open)} aria-label="Help">
-                <span className="support-toggle-label">Help</span>
-                <svg className="support-toggle-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <path d="M12 2C6.48 2 2 5.94 2 10.8c0 2.77 1.46 5.24 3.75 6.86-.14 1.13-.5 2.63-1.36 3.96a.5.5 0 0 0 .58.75c2.05-.6 3.6-1.63 4.6-2.44.76.15 1.56.23 2.43.23 5.52 0 10-3.94 10-8.8S17.52 2 12 2Z" />
-                    <circle cx="8" cy="10.8" r="1.15" fill="white" />
-                    <circle cx="12" cy="10.8" r="1.15" fill="white" />
-                    <circle cx="16" cy="10.8" r="1.15" fill="white" />
-                </svg>
-                {totalUnread > 0 && <span className="support-badge">{totalUnread > 9 ? "9+" : totalUnread}</span>}
-            </button>
+            <div className="support-launcher" aria-label="Support options">
+                <button className={`support-launcher-item${open && tab === "new" ? " active" : ""}`} onClick={() => openSupportTab("new")} aria-label="Home: New Request">
+                    <svg className="support-launcher-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                        <path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V10Z" /><path d="M9 21v-6h6v6" />
+                    </svg>
+                    <span>Home</span>
+                </button>
+                <button className={`support-launcher-item${open && tab === "mine" ? " active" : ""}`} onClick={() => openSupportTab("mine")} aria-label="Messages: My Requests">
+                    <span className="support-launcher-icon-wrap">
+                        <svg className="support-launcher-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                            <path d="M20 15a3 3 0 0 1-3 3H8l-5 3V6a3 3 0 0 1 3-3h11a3 3 0 0 1 3 3v9Z" /><path d="M7 9h9M7 13h6" />
+                        </svg>
+                        {totalUnread > 0 && <span className="support-badge">{totalUnread > 9 ? "9+" : totalUnread}</span>}
+                    </span>
+                    <span>Messages</span>
+                </button>
+                <button className={`support-launcher-item${open && tab === "whatsapp" ? " active" : ""}`} onClick={() => openSupportTab("whatsapp")} aria-label="Help: WhatsApp">
+                    <svg className="support-launcher-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                        <circle cx="12" cy="12" r="9" /><path d="M9.5 9a2.5 2.5 0 1 1 4.3 1.7c-1.3 1.2-1.8 1.6-1.8 3.3M12 17.5h.01" />
+                    </svg>
+                    <span>Help</span>
+                </button>
+            </div>
         </div>
     );
 }
