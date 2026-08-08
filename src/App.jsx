@@ -847,13 +847,13 @@ a.footer-contact-row:hover .footer-contact-text { color: var(--gold-light); }
   position: fixed; bottom: 2rem; right: 2rem; z-index: 900;
 }
 .support-toggle {
-  height: 48px; padding: 0 1.1rem 0 1.3rem; border-radius: 50px;
+  width: 48px; height: 48px; padding: 0; border-radius: 50%; justify-content: center;
   background: linear-gradient(135deg, var(--gold), var(--gold-dark)); border: none; cursor: pointer;
   box-shadow: 0 4px 25px rgba(201,168,76,0.6); color: white; position: relative;
   transition: transform 0.25s ease, box-shadow 0.25s ease; display: flex; align-items: center; gap: 8px;
 }
 .support-toggle:hover { transform: scale(1.05); box-shadow: 0 7px 30px rgba(201,168,76,0.7); }
-.support-toggle-label { font-size: 0.85rem; font-weight: 700; white-space: nowrap; }
+.support-toggle-label { display: none; }
 .support-toggle-icon { width: 20px; height: 20px; flex-shrink: 0; }
 .support-launcher {
   width: 272px; padding: 0.5rem 0.35rem; border-radius: 18px;
