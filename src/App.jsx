@@ -433,6 +433,7 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
   display: grid; place-items: center; background: rgba(5,10,20,0.9); backdrop-filter: blur(8px);
   animation: fadeSlideUp 0.2s ease both;
 }
+.community-poster-viewer { animation: none; }
 .poster-viewer { position: relative; width: fit-content; max-width: 100%; max-height: 100%; }
 .poster-viewer-image { display: block; max-width: 100%; max-height: calc(100vh - 4rem); object-fit: contain; border-radius: 16px; background: #050A14; box-shadow: 0 24px 80px rgba(0,0,0,0.45); }
 .poster-viewer-caption { color: white; text-align: center; font-size: 0.85rem; line-height: 1.5; margin-top: 0.8rem; }
@@ -1375,6 +1376,14 @@ export default function App() {
                                 }
                                 return <button key={p} className={`nav-link${activePage === p ? " active" : ""}`} onClick={() => navigate(p)}>{p}</button>;
                             })}
+                            <a
+                                className="nav-link"
+                                href="https://sites.google.com/view/cathedralyouths/home"
+                                target="_blank"
+                                rel="noreferrer"
+                            >
+                                Liturgy
+                            </a>
                             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginLeft: "0.5rem" }}>
                                 <button
                                     className={`theme-toggle${dark ? " dark" : ""}`}
@@ -1424,6 +1433,15 @@ export default function App() {
                         }
                         return <button key={p} className={`nav-link${activePage === p ? " active" : ""}`} onClick={() => navigate(p)}>{p}</button>;
                     })}
+                    <a
+                        className="nav-link"
+                        href="https://sites.google.com/view/cathedralyouths/home"
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={() => setMobileMenuOpen(false)}
+                    >
+                        Liturgy
+                    </a>
                     <button className="btn btn-gold" style={{ marginTop: "1rem" }} onClick={openJoinUs}>Join Us</button>
                 </div>
 
@@ -2864,9 +2882,11 @@ function normalizeUrl(url) {
 
 function PosterLightbox({ src, alt, onClose }) {
     return (
-        <div className="modal-overlay" onClick={onClose}>
-            <img src={src} alt={alt} className="lightbox-img" onClick={e => e.stopPropagation()} />
-            <button className="modal-close lightbox-close" onClick={onClose} aria-label="Close">✕</button>
+        <div className="poster-viewer-overlay community-poster-viewer" role="presentation" onClick={onClose}>
+            <div className="poster-viewer" role="dialog" aria-modal="true" aria-label={alt} onClick={e => e.stopPropagation()}>
+                <img src={src} alt={alt} className="poster-viewer-image" loading="eager" decoding="sync" />
+                <button className="poster-viewer-close" onClick={onClose} aria-label="Close poster">×</button>
+            </div>
         </div>
     );
 }
