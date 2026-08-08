@@ -844,7 +844,7 @@ a.footer-contact-row:hover .footer-contact-text { color: var(--gold-light); }
 
 /* ─── SUPPORT WIDGET ─── */
 .support-widget {
-  position: fixed; bottom: 2rem; right: 2rem; z-index: 900;
+  position: fixed; bottom: 2rem; right: 2rem; z-index: 1100;
 }
 .support-toggle {
   width: 48px; height: 48px; padding: 0; border-radius: 50%; justify-content: center;
@@ -889,7 +889,7 @@ a.footer-contact-row:hover .footer-contact-text { color: var(--gold-light); }
 }
 .support-panel {
   position: absolute; bottom: 70px; right: 0;
-  width: 320px; max-height: min(520px, 80vh); display: flex; flex-direction: column;
+  width: 320px; max-height: min(520px, calc(100vh - 190px)); display: flex; flex-direction: column;
   background: white; border-radius: 16px;
   box-shadow: 0 20px 60px rgba(0,0,0,0.2);
   border: 1px solid rgba(201,168,76,0.2);
