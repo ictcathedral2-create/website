@@ -901,7 +901,7 @@ a.footer-contact-row:hover .footer-contact-text { color: var(--gold-light); }
 .support-header { background: linear-gradient(135deg, var(--navy), var(--navy-mid)); padding: 1.1rem 1.25rem; color: white; flex-shrink: 0; }
 .support-title { font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; line-height: 1; }
 .support-subtitle { font-size: 0.76rem; opacity: 0.7; margin-top: 2px; }
-.support-tab-nav { display: flex; border-bottom: 1px solid var(--gray-200); flex-shrink: 0; padding: 0.55rem 0.4rem; }
+.support-tab-nav { display: flex; border-top: 1px solid var(--gray-200); flex-shrink: 0; padding: 0.55rem 0.4rem; }
 .dark-mode .support-tab-nav { border-color: rgba(201,168,76,0.15) !important; }
 .support-tab-btn {
   flex: 1; padding: 0.35rem 0.2rem; border: none; border-radius: 10px; background: transparent; cursor: pointer;
