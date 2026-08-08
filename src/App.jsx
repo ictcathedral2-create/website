@@ -1383,10 +1383,10 @@ export default function App() {
         Opportunities: {
             page: "Community",
             items: [
-                { label: "Business Directory", onClick: () => navigate("Business Directory") },
-                { label: "Requests", onClick: () => navigate("Requests") },
-                { label: "Job Board", onClick: () => navigate("Job Board") },
-                { label: "Job Seekers", onClick: () => navigate("Job Seekers") },
+                { label: "Browse Businesses", onClick: () => navigate("Business Directory") },
+                { label: "Request Something", onClick: () => navigate("Requests") },
+                { label: "Find Jobs", onClick: () => navigate("Job Board") },
+                { label: "Seek a Job", onClick: () => navigate("Job Seekers") },
             ],
         },
     };
@@ -3550,10 +3550,10 @@ function CommunityPage({ initialTab, showTabs = true }) {
                 <div className="container">
                     {showTabs && <div className="tab-nav community-tabs">
                         {[
-                            ["Business", "Business Directory"],
-                            ["Wanted", "Requests"],
-                            ["Jobs", "Job Board"],
-                            ["JobSeekers", "Job Seekers"],
+                            ["Business", "Browse Businesses"],
+                            ["Wanted", "Request Something"],
+                            ["Jobs", "Find Jobs"],
+                            ["JobSeekers", "Seek a Job"],
                         ].map(([key, label]) => (
                             <button key={key} className={`tab-btn${activeTab === key ? " active" : ""}`} onClick={() => setActiveTab(key)}>
                                 {label}
@@ -3565,7 +3565,7 @@ function CommunityPage({ initialTab, showTabs = true }) {
                         <>
                             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem", marginBottom: "2rem" }}>
                                 <div>
-                                    <h2 className="section-title" style={{ fontSize: "1.6rem", marginBottom: "0.25rem" }}>Business Directory</h2>
+                                    <h2 className="section-title" style={{ fontSize: "1.6rem", marginBottom: "0.25rem" }}>Browse Businesses</h2>
                                     <p style={{ color: "var(--gray-600)", fontSize: "0.9rem" }}>Discover and support youth-run businesses in our community.</p>
                                 </div>
                                 <button className="btn btn-gold" onClick={() => openCommunityForm("business")}>+ List Your Business</button>
@@ -3584,7 +3584,7 @@ function CommunityPage({ initialTab, showTabs = true }) {
                         <>
                             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem", marginBottom: "2rem" }}>
                                 <div>
-                                    <h2 className="section-title" style={{ fontSize: "1.6rem", marginBottom: "0.25rem" }}>Job Board</h2>
+                                    <h2 className="section-title" style={{ fontSize: "1.6rem", marginBottom: "0.25rem" }}>Find Jobs</h2>
                                     <p style={{ color: "var(--gray-600)", fontSize: "0.9rem" }}>Opportunities shared by our community — view or download each advert.</p>
                                 </div>
                                 <button className="btn btn-gold" onClick={() => openCommunityForm("job")}>+ Post a Job</button>
@@ -3603,7 +3603,7 @@ function CommunityPage({ initialTab, showTabs = true }) {
                         <>
                             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem", marginBottom: "2rem" }}>
                                 <div>
-                                    <h2 className="section-title" style={{ fontSize: "1.6rem", marginBottom: "0.25rem" }}>Job Seekers</h2>
+                                    <h2 className="section-title" style={{ fontSize: "1.6rem", marginBottom: "0.25rem" }}>Seek a Job</h2>
                                     <p style={{ color: "var(--gray-600)", fontSize: "0.9rem" }}>Looking for work? Let employers in our community find you.</p>
                                 </div>
                                 <button className="btn btn-gold" onClick={() => openCommunityForm("job-seeker")}>+ I'm Looking for a Job</button>
@@ -3622,7 +3622,7 @@ function CommunityPage({ initialTab, showTabs = true }) {
                         <>
                             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem", marginBottom: "2rem" }}>
                                 <div>
-                                    <h2 className="section-title" style={{ fontSize: "1.6rem", marginBottom: "0.25rem" }}>Requests</h2>
+                                    <h2 className="section-title" style={{ fontSize: "1.6rem", marginBottom: "0.25rem" }}>Request Something</h2>
                                     <p style={{ color: "var(--gray-600)", fontSize: "0.9rem" }}>Looking for a specific product or service? Post it here.</p>
                                 </div>
                                 <button className="btn btn-gold" onClick={() => openCommunityForm("request")}>+ I'm Looking for Something</button>
