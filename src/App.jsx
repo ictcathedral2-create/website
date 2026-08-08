@@ -8,6 +8,14 @@ import SupportWidget from "./components/SupportWidget";
 import logo from "./assets/logo.png";
 
 const NAV_LINKS = ["Home", "Ministries", "Sermons", "Events", "Connect", "Give", "Community", "Testimonies", "About"];
+const NAV_MENU = [
+    { label: "Home", page: "Home" },
+    { label: "Ministries", page: "Ministries" },
+    { label: "Activities", page: "Events" },
+    { label: "Resources", activePages: ["Sermons"] },
+    { label: "Get Involved", activePages: ["Give", "Ministries", "Testimonies"] },
+    { label: "Opportunities", page: "Community" },
+];
 const SITE_URL = "https://ackstpaulsyouths.vercel.app";
 const PAGE_SEO = {
     Home: {
@@ -217,7 +225,7 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(14,32,68,0.08); border-bottom-color: 
 .nav-dropdown-item {
   display: block; width: 100%; text-align: left; padding: 0.6rem 0.85rem; border-radius: 8px;
   font-size: 0.8rem; font-weight: 600; letter-spacing: 0.01em; color: var(--navy); background: none; border: none; cursor: pointer;
-  transition: all 0.15s;
+  text-decoration: none; transition: all 0.15s;
 }
 .nav-dropdown-item:hover { background: rgba(201,168,76,0.1); color: var(--gold-dark); }
 .dark-mode .nav-dropdown-inner { background: #131D35 !important; border-color: rgba(201,168,76,0.15) !important; }
@@ -238,7 +246,7 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(14,32,68,0.08); border-bottom-color: 
   display: block; width: 100%; text-align: left;
   padding: 0.75rem 0 0.75rem 1.25rem; font-size: 0.92rem; font-weight: 600;
   color: var(--gray-600); background: none; border: none; cursor: pointer;
-  border-bottom: 1px solid var(--gray-200);
+  border-bottom: 1px solid var(--gray-200); text-decoration: none;
 }
 .mobile-submenu-item:hover { color: var(--gold-dark); }
 .dark-mode .mobile-submenu-item { color: #A0A8B8 !important; border-bottom-color: rgba(201,168,76,0.15) !important; }
@@ -1337,9 +1345,28 @@ export default function App() {
         document.querySelector('link[rel="canonical"]')?.setAttribute("href", url);
     }, [activePage]);
     const NAV_DROPDOWNS = {
-        Ministries: MINISTRIES.map(m => ({ label: m.title, id: slugify(m.title) })),
-        Events: events.map(e => ({ label: e.title, id: slugify(e.title) })),
+        Activities: {
+            page: "Events",
+            items: events.map(e => ({ label: e.title, onClick: () => navigateToAnchor("Events", slugify(e.title)) })),
+        },
+        Resources: {
+            items: [
+                { label: "Recorded Sermons", onClick: () => { setActiveTab("Video"); navigate("Sermons"); } },
+                { label: "Written Sermons", onClick: () => { setActiveTab("Written"); navigate("Sermons"); } },
+                { label: "Liturgy", href: "https://sites.google.com/view/cathedralyouths/liturgy" },
+                { label: "Gallery", onClick: () => { setActiveTab("Gallery"); navigate("Sermons"); } },
+            ],
+        },
+        "Get Involved": {
+            items: [
+                { label: "Give", onClick: () => navigate("Give") },
+                { label: "Become a Member", onClick: openJoinUs },
+                { label: "Join a Ministry", onClick: () => navigate("Ministries") },
+                { label: "Give a Testimony", onClick: () => navigate("Testimonies") },
+            ],
+        },
     };
+    const isNavItemActive = item => item.page === activePage || item.activePages?.includes(activePage);
 
     return (
         <>
@@ -1356,34 +1383,28 @@ export default function App() {
                             </div>
                         </a>
                         <div className="nav-links">
-                            {NAV_LINKS.map(p => {
-                                const dropdown = NAV_DROPDOWNS[p];
+                            {NAV_MENU.map(item => {
+                                const dropdown = NAV_DROPDOWNS[item.label];
                                 if (dropdown) {
                                     return (
-                                        <div key={p} className="nav-item">
-                                            <button className={`nav-link${activePage === p ? " active" : ""}`} onClick={() => navigate(p)}>
-                                                {p}<span className="nav-caret">▾</span>
+                                        <div key={item.label} className="nav-item">
+                                            <button className={`nav-link${isNavItemActive(item) ? " active" : ""}`} onClick={() => dropdown.page && navigate(dropdown.page)}>
+                                                {item.label}<span className="nav-caret">▾</span>
                                             </button>
                                             <div className="nav-dropdown">
                                                 <div className="nav-dropdown-inner">
-                                                    {dropdown.map(item => (
-                                                        <button key={item.id} className="nav-dropdown-item" onClick={() => navigateToAnchor(p, item.id)}>{item.label}</button>
+                                                    {dropdown.items.map(dropdownItem => dropdownItem.href ? (
+                                                        <a key={dropdownItem.label} className="nav-dropdown-item" href={dropdownItem.href} target="_blank" rel="noreferrer">{dropdownItem.label}</a>
+                                                    ) : (
+                                                        <button key={dropdownItem.label} className="nav-dropdown-item" onClick={dropdownItem.onClick}>{dropdownItem.label}</button>
                                                     ))}
                                                 </div>
                                             </div>
                                         </div>
                                     );
                                 }
-                                return <button key={p} className={`nav-link${activePage === p ? " active" : ""}`} onClick={() => navigate(p)}>{p}</button>;
+                                return <button key={item.label} className={`nav-link${isNavItemActive(item) ? " active" : ""}`} onClick={() => navigate(item.page)}>{item.label}</button>;
                             })}
-                            <a
-                                className="nav-link"
-                                href="https://sites.google.com/view/cathedralyouths/liturgy"
-                                target="_blank"
-                                rel="noreferrer"
-                            >
-                                Liturgy
-                            </a>
                             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginLeft: "0.5rem" }}>
                                 <button
                                     className={`theme-toggle${dark ? " dark" : ""}`}
@@ -1393,7 +1414,6 @@ export default function App() {
                                 >
                                     <div className="toggle-thumb" />
                                 </button>
-                                <button className="nav-cta" onClick={openJoinUs}>Join Us</button>
                             </div>
                         </div>
                         <div className="mobile-menu-btn">
@@ -1409,40 +1429,32 @@ export default function App() {
 
                 {/* ─── MOBILE DRAWER ─── */}
                 <div className={`mobile-drawer${mobileMenuOpen ? " open" : ""}`}>
-                    {NAV_LINKS.map(p => {
-                        const dropdown = NAV_DROPDOWNS[p];
+                    {NAV_MENU.map(item => {
+                        const dropdown = NAV_DROPDOWNS[item.label];
                         if (dropdown) {
-                            const expanded = mobileSubmenuOpen === p;
+                            const expanded = mobileSubmenuOpen === item.label;
                             return (
-                                <div key={p} className="mobile-submenu">
+                                <div key={item.label} className="mobile-submenu">
                                     <button
-                                        className={`nav-link mobile-submenu-toggle${activePage === p ? " active" : ""}`}
-                                        onClick={() => setMobileSubmenuOpen(expanded ? null : p)}
+                                        className={`nav-link mobile-submenu-toggle${isNavItemActive(item) ? " active" : ""}`}
+                                        onClick={() => setMobileSubmenuOpen(expanded ? null : item.label)}
                                     >
-                                        {p}
+                                        {item.label}
                                         <span className={`nav-caret${expanded ? " open" : ""}`}>▾</span>
                                     </button>
                                     <div className={`mobile-submenu-panel${expanded ? " open" : ""}`}>
-                                        <button className="mobile-submenu-item" onClick={() => navigate(p)}>View All {p}</button>
-                                        {dropdown.map(item => (
-                                            <button key={item.id} className="mobile-submenu-item" onClick={() => navigateToAnchor(p, item.id)}>{item.label}</button>
+                                        {dropdown.page && <button className="mobile-submenu-item" onClick={() => navigate(dropdown.page)}>View All {item.label}</button>}
+                                        {dropdown.items.map(dropdownItem => dropdownItem.href ? (
+                                            <a key={dropdownItem.label} className="mobile-submenu-item" href={dropdownItem.href} target="_blank" rel="noreferrer" onClick={() => setMobileMenuOpen(false)}>{dropdownItem.label}</a>
+                                        ) : (
+                                            <button key={dropdownItem.label} className="mobile-submenu-item" onClick={dropdownItem.onClick}>{dropdownItem.label}</button>
                                         ))}
                                     </div>
                                 </div>
                             );
                         }
-                        return <button key={p} className={`nav-link${activePage === p ? " active" : ""}`} onClick={() => navigate(p)}>{p}</button>;
+                        return <button key={item.label} className={`nav-link${isNavItemActive(item) ? " active" : ""}`} onClick={() => navigate(item.page)}>{item.label}</button>;
                     })}
-                    <a
-                        className="nav-link"
-                        href="https://sites.google.com/view/cathedralyouths/liturgy"
-                        target="_blank"
-                        rel="noreferrer"
-                        onClick={() => setMobileMenuOpen(false)}
-                    >
-                        Liturgy
-                    </a>
-                    <button className="btn btn-gold" style={{ marginTop: "1rem" }} onClick={openJoinUs}>Join Us</button>
                 </div>
 
                 {/* ─── PAGES ─── */}
