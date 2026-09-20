@@ -10,6 +10,35 @@ const PUBLIC_MIRRORS = {
   wantedPosts: "publicWantedPosts",
 };
 
+// Notification category each mirrored collection maps to in the mobile app's
+// Notification Settings screen (st-pauls-youths-app/src/lib/notifications.js).
+const MIRROR_NOTIFY_CATEGORY = {
+  testimonies: "testimonies",
+  businessListings: "community",
+  jobPostings: "community",
+  jobSeekers: "community",
+  wantedPosts: "community",
+};
+
+// Fans a push notification out to every subscribed mobile app device via
+// /api/notify-devices — a best-effort call that never blocks or fails the
+// content save itself. The mobile app and the website share one Firebase
+// Realtime Database, so this is the only extra step needed to notify app
+// users of the same add/edit/delete an admin already sees reflected live.
+async function notifyContentChange(category, title, body) {
+  try {
+    const token = await auth.currentUser?.getIdToken();
+    if (!token) return;
+    await fetch("/api/notify-devices", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ category, title, body }),
+    });
+  } catch {
+    // Best-effort — see comment above.
+  }
+}
+
 // Updates a submission's status. For mirrored collections, also syncs the
 // public copy (added when approved, removed otherwise).
 export async function updateSubmissionStatus(collection, id, status) {
@@ -63,6 +92,12 @@ async function syncPublicMirror(collection, id, status, record) {
     const rest = { ...record };
     delete rest.id;
     await set(ref(db, `${publicPath}/${id}`), { ...rest, status: "approved" });
+    const label = record.businessName || record.jobTitle || record.name || record.title || "A listing";
+    notifyContentChange(
+      MIRROR_NOTIFY_CATEGORY[collection],
+      collection === "testimonies" ? "Testimony Updated" : "Community Listing Updated",
+      label
+    );
   } else {
     await remove(ref(db, `${publicPath}/${id}`));
   }
@@ -72,21 +107,25 @@ async function syncPublicMirror(collection, id, status, record) {
 export async function createEvent(data) {
   const newRef = push(ref(db, "events"));
   await set(newRef, data);
+  notifyContentChange("events", "New Event Added", data.title || "A new event was added");
   return newRef.key;
 }
 
 export async function updateEvent(id, data) {
   await set(ref(db, `events/${id}`), data);
+  notifyContentChange("events", "Event Updated", data.title || "An event was updated");
 }
 
 export async function deleteEvent(id) {
   await remove(ref(db, `events/${id}`));
+  notifyContentChange("events", "Event Removed", "An event was cancelled or removed");
 }
 
 // Public-facing gallery (event posters / after-event photos), managed only by admins but readable by anyone.
 export async function createGalleryItem(data) {
   const newRef = push(ref(db, "gallery"));
   await set(newRef, { ...data, createdAt: Date.now() });
+  notifyContentChange("gallery", "New Photo Added", data.caption || "A new photo was added to the gallery");
   return newRef.key;
 }
 
@@ -102,11 +141,13 @@ export async function deleteGalleryItem(id) {
 export async function createWrittenSermon(data) {
   const newRef = push(ref(db, "writtenSermons"));
   await set(newRef, { ...data, createdAt: Date.now() });
+  notifyContentChange("sermons", "New Written Sermon", data.title || "A new written sermon was posted");
   return newRef.key;
 }
 
 export async function updateWrittenSermon(id, data) {
   await set(ref(db, `writtenSermons/${id}`), data);
+  notifyContentChange("sermons", "Written Sermon Updated", data.title || "A written sermon was updated");
 }
 
 export async function deleteWrittenSermon(id) {
@@ -117,6 +158,7 @@ export async function deleteWrittenSermon(id) {
 export async function createSermonGalleryItem(data) {
   const newRef = push(ref(db, "sermonGallery"));
   await set(newRef, { ...data, createdAt: Date.now() });
+  notifyContentChange("gallery", "New Sermon Photo", data.caption || "A new sermon photo was added");
   return newRef.key;
 }
 

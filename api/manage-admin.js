@@ -1,6 +1,7 @@
 import { cert, getApps, getApp, initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getDatabase } from "firebase-admin/database";
+import { sendPushToCategory } from "./notify-devices.js";
 
 const PUBLIC_MIRRORS = {
   testimonies: "publicTestimonies",
@@ -8,6 +9,16 @@ const PUBLIC_MIRRORS = {
   jobPostings: "publicJobPostings",
   jobSeekers: "publicJobSeekers",
   wantedPosts: "publicWantedPosts",
+};
+
+// Notification category each mirrored collection maps to in the mobile app's
+// Notification Settings screen (st-pauls-youths-app/src/lib/notifications.js).
+const MIRROR_NOTIFY_CATEGORY = {
+  testimonies: "testimonies",
+  businessListings: "community",
+  jobPostings: "community",
+  jobSeekers: "community",
+  wantedPosts: "community",
 };
 
 const SUBMISSION_STATUSES = {
@@ -132,6 +143,16 @@ export default async function handler(req, res) {
           : null;
       }
       await db.ref().update(updates);
+
+      if (publicPath && status === "approved") {
+        const label = record.businessName || record.jobTitle || record.name || record.title || "New listing";
+        sendPushToCategory(db, {
+          category: MIRROR_NOTIFY_CATEGORY[collection],
+          title: collection === "testimonies" ? "New Testimony Shared" : "New on the Community Board",
+          body: label,
+        }).catch(() => {});
+      }
+
       return res.status(200).json({ ok: true });
     }
 
