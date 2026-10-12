@@ -8,13 +8,14 @@ import SupportWidget from "./components/SupportWidget";
 import logo from "./assets/logo.png";
 import { NAV_LINKS, PAGE_SEO, PAGE_PATHS, SITE_URL, slugify, pageToPath, pageUrl } from "./seo";
 import { eventDateOf } from "./utils/eventDate";
+import { APK_AVAILABLE, APK_FILE_NAME, APK_URL, APP_VERSION } from "./appDownload";
 
 const NAV_MENU = [
     { label: "Home", page: "Home" },
     { label: "About", page: "About" },
     { label: "Ministries", page: "Ministries" },
     { label: "Activities", page: "Events" },
-    { label: "Resources", activePages: ["Sermons", "Recorded Sermons", "Written Sermons", "Gallery"] },
+    { label: "Resources", activePages: ["Sermons", "Recorded Sermons", "Written Sermons", "Gallery", "Mobile App"] },
     { label: "Get Involved", activePages: ["Give", "Ministries", "Testimonies"] },
     { label: "Opportunities", page: "Community", activePages: ["Community", "Business Directory", "Requests", "Job Board", "Job Seekers"] },
 ];
@@ -477,6 +478,54 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 .section-title.white { color: white; }
 .section-desc { font-size: clamp(0.98rem, 1.2vw, 1.08rem); color: var(--gray-600); line-height: 1.8; max-width: 640px; margin: 0 auto; }
 .section-desc.white { color: rgba(255,255,255,0.75); }
+
+/* ── Mobile app download ── */
+.app-promo { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr); gap: 3rem; align-items: center; }
+.app-promo .overline { color: var(--gold-light); }
+.app-promo .section-title { text-align: left; }
+.app-promo .section-desc { margin: 0 0 1.75rem; text-align: left; }
+.app-badges { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; margin-top: 1.25rem; font-size: 0.82rem; color: rgba(255,255,255,0.6); }
+.app-badges span::before { content: "✓"; color: var(--gold); margin-right: 6px; font-weight: 700; }
+.app-download-row { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
+.app-download-btn { display: inline-flex; align-items: center; gap: 12px; padding: 0.8rem 1.4rem; border-radius: 14px; background: var(--gold); color: var(--navy); text-decoration: none; font-weight: 700; text-align: left; box-shadow: 0 8px 24px rgba(201,168,76,0.35); transition: transform 0.2s, box-shadow 0.2s; }
+.app-download-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(201,168,76,0.5); }
+.app-download-btn small { display: block; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.75; }
+.app-download-btn strong { display: block; font-size: 1.05rem; line-height: 1.1; }
+.app-download-btn.disabled { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.85); box-shadow: none; cursor: default; }
+.app-download-btn.disabled:hover { transform: none; }
+.app-download-btn.on-light.disabled { background: var(--gray-100); color: var(--gray-600); }
+.app-phone { justify-self: center; width: 230px; height: 440px; border-radius: 36px; background: #0A1530; padding: 12px; box-shadow: 0 30px 60px rgba(0,0,0,0.35), inset 0 0 0 2px rgba(255,255,255,0.08); transform: rotate(4deg); }
+.app-phone-screen { height: 100%; border-radius: 26px; background: var(--cream); overflow: hidden; display: flex; flex-direction: column; }
+.app-phone-top { background: linear-gradient(135deg, var(--navy), var(--navy-mid)); color: white; padding: 1.4rem 1rem 1rem; display: flex; align-items: center; gap: 10px; }
+.app-phone-top img { width: 34px; height: 34px; border-radius: 9px; object-fit: cover; }
+.app-phone-top b { font-family: var(--font-display); font-size: 0.95rem; display: block; line-height: 1; white-space: nowrap; }
+.app-phone-top span { font-size: 0.6rem; color: var(--gold-light); letter-spacing: 0.08em; text-transform: uppercase; }
+.app-phone-body { flex: 1; padding: 0.8rem; display: grid; gap: 0.55rem; align-content: start; }
+.app-phone-card { background: white; border-radius: 12px; padding: 0.65rem 0.75rem; box-shadow: 0 2px 8px rgba(14,32,68,0.06); }
+.app-phone-card i { display: block; height: 7px; border-radius: 4px; background: #E8E4DC; margin-top: 6px; }
+.app-phone-card i:first-child { margin-top: 0; width: 60%; background: var(--navy); opacity: 0.8; }
+.app-phone-card.gold i:first-child { background: var(--gold); opacity: 1; }
+.app-phone-tabs { display: flex; justify-content: space-around; padding: 0.6rem 0 0.8rem; background: white; border-top: 1px solid #E8E4DC; }
+.app-phone-tabs i { width: 18px; height: 18px; border-radius: 6px; background: #E8E4DC; }
+.app-phone-tabs i:first-child { background: var(--gold); }
+.app-features { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1.25rem; }
+.app-feature { padding: 1.5rem; }
+.app-feature-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; background: rgba(201,168,76,0.14); margin-bottom: 0.9rem; }
+.app-feature h3 { font-family: var(--font-display); font-size: 1.35rem; color: var(--navy); margin-bottom: 0.35rem; }
+.app-feature p { font-size: 0.92rem; color: var(--gray-600); line-height: 1.6; }
+.app-steps { counter-reset: step; display: grid; gap: 1rem; max-width: 760px; margin: 0 auto; }
+.app-step { display: flex; gap: 1rem; align-items: flex-start; padding: 1.25rem 1.4rem; }
+.app-step::before { counter-increment: step; content: counter(step); flex-shrink: 0; width: 34px; height: 34px; border-radius: 50%; background: var(--navy); color: var(--gold); font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.app-step h3 { font-size: 1rem; color: var(--navy); margin-bottom: 0.2rem; }
+.app-step p { font-size: 0.9rem; color: var(--gray-600); line-height: 1.6; }
+.dark-mode .app-feature h3, .dark-mode .app-step h3 { color: var(--gold-light); }
+@media (max-width: 860px) {
+  .app-promo { grid-template-columns: 1fr; gap: 2rem; text-align: center; }
+  .app-promo .section-title, .app-promo .section-desc { text-align: center; }
+  .app-promo .section-desc { margin: 0 auto 1.5rem; }
+  .app-download-row, .app-badges { justify-content: center; }
+  .app-phone { width: 190px; height: 360px; transform: none; }
+}
 .gold-line { width: 60px; height: 3px; background: linear-gradient(90deg, var(--gold), var(--gold-dark)); border-radius: 2px; margin: 1rem auto 0; }
 
 /* ─── CARDS ─── */
@@ -1368,6 +1417,7 @@ export default function App() {
                 { label: "Written Sermons", onClick: () => navigate("Written Sermons") },
                 { label: "Liturgy", href: "https://sites.google.com/view/cathedralyouths/liturgy" },
                 { label: "Gallery", onClick: () => navigate("Gallery") },
+                { label: "Mobile App", onClick: () => navigate("Mobile App") },
             ],
         },
         "Get Involved": {
@@ -1482,6 +1532,7 @@ export default function App() {
                 {/* ─── PAGES ─── */}
                 {activePage === "Home" && <HomePage countdown={countdown} nextEvent={nextEvent} eventPhase={eventPhase} events={events} navigate={navigate} statsRef={statsRef} stat1={stat1} stat2={stat2} stat3={stat3} stat4={stat4} dark={dark} onJoinUs={openJoinUs} />}
                 {activePage === "About" && <AboutPage navigate={navigate} dark={dark} />}
+                {activePage === "Mobile App" && <MobileAppPage navigate={navigate} />}
                 {activePage === "Ministries" && <MinistriesPage navigate={navigate} dark={dark} />}
                 {activePage === "Sermons" && <SermonsPage navigate={navigate} dark={dark} activeTab={activeTab} setActiveTab={setActiveTab} />}
                 {activePage === "Recorded Sermons" && <SermonsPage activeTab="Video" setActiveTab={() => {}} showTabs={false} />}
@@ -1773,6 +1824,142 @@ function PosterCarousel() {
     );
 }
 
+const APP_FEATURES = [
+    { icon: "🔔", title: "Notifications (coming soon)", desc: "A coming update will alert you when a new event, sermon or photo goes up, and let you choose what you hear about." },
+    { icon: "📅", title: "Events in your pocket", desc: "See what's coming up with a live countdown, and register for events in a couple of taps." },
+    { icon: "🎥", title: "Sermons on the go", desc: "Watch recorded services and read written sermons wherever you are." },
+    { icon: "🤝", title: "Community board", desc: "Browse the business directory, job board, job seekers and requests from fellow youths." },
+    { icon: "💬", title: "Help when you need it", desc: "Chat with the team for prayer, pastoral care or any question, right from the app." },
+    { icon: "🙏", title: "Give and testify", desc: "Support the ministry, and share or read testimonies of what God is doing among us." },
+];
+
+// Shows "Coming soon" until APK_AVAILABLE is switched on in appDownload.js.
+function AppDownloadButton({ onLight = false }) {
+    if (!APK_AVAILABLE) {
+        return (
+            <span className={`app-download-btn disabled${onLight ? " on-light" : ""}`} aria-disabled="true">
+                <span style={{ fontSize: "1.5rem" }} aria-hidden="true">⏳</span>
+                <span><small>Android app</small><strong>Coming soon</strong></span>
+            </span>
+        );
+    }
+    return (
+        <a className="app-download-btn" href={APK_URL} download={APK_FILE_NAME} rel="noopener">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M17.6 9.48l1.84-3.18a.38.38 0 0 0-.66-.38l-1.86 3.22a11.4 11.4 0 0 0-9.84 0L5.22 5.92a.38.38 0 0 0-.66.38L6.4 9.48A10.8 10.8 0 0 0 1 18h22a10.8 10.8 0 0 0-5.4-8.52zM7 15.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5zm10 0a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5z" />
+            </svg>
+            <span><small>Download for Android</small><strong>Get the app · v{APP_VERSION}</strong></span>
+        </a>
+    );
+}
+
+function AppPhoneMock() {
+    return (
+        <div className="app-phone" aria-hidden="true">
+            <div className="app-phone-screen">
+                <div className="app-phone-top">
+                    <img src={logo} alt="" />
+                    <div><b>ACK St Pauls</b><span>Youths</span></div>
+                </div>
+                <div className="app-phone-body">
+                    <div className="app-phone-card gold"><i /><i /><i style={{ width: "70%" }} /></div>
+                    <div className="app-phone-card"><i /><i style={{ width: "85%" }} /></div>
+                    <div className="app-phone-card"><i /><i /><i style={{ width: "50%" }} /></div>
+                    <div className="app-phone-card"><i /><i style={{ width: "65%" }} /></div>
+                </div>
+                <div className="app-phone-tabs"><i /><i /><i /><i /><i /></div>
+            </div>
+        </div>
+    );
+}
+
+// Home page banner pointing to the Mobile App page.
+function AppPromoSection({ navigate }) {
+    return (
+        <div className="section section-navy">
+            <div className="container app-promo">
+                <div>
+                    <div className="overline">Mobile App</div>
+                    <h2 className="section-title white">Take ACK St Pauls Youths with you</h2>
+                    <p className="section-desc white">
+                        Events, sermons, the community board, giving and live help, all in one free app.
+                    </p>
+                    <div className="app-download-row">
+                        <AppDownloadButton />
+                        <a className="btn btn-outline" href={pageToPath("Mobile App")} onClick={e => { e.preventDefault(); navigate("Mobile App"); }}>
+                            {APK_AVAILABLE ? "How to install →" : "Learn more →"}
+                        </a>
+                    </div>
+                    <div className="app-badges"><span>Free</span><span>Android</span><span>No account needed</span></div>
+                </div>
+                <AppPhoneMock />
+            </div>
+        </div>
+    );
+}
+
+function MobileAppPage({ navigate }) {
+    return (
+        <>
+            <div className="section section-navy" style={{ paddingTop: "8rem" }}>
+                <div className="container app-promo">
+                    <div>
+                        <div className="overline">Mobile App</div>
+                        <h1 className="section-title white" style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)" }}>The ACK St Pauls Youths app</h1>
+                        <p className="section-desc white">
+                            Everything on this website, on your phone: events, sermons, the community board, giving and live help.
+                        </p>
+                        <div className="app-download-row"><AppDownloadButton /></div>
+                        <div className="app-badges"><span>Free</span><span>Android 7.0 or newer</span><span>Version {APP_VERSION}</span></div>
+                    </div>
+                    <AppPhoneMock />
+                </div>
+            </div>
+
+            <div className="section section-cream">
+                <div className="container">
+                    <div className="section-header">
+                        <div className="overline">What's Inside</div>
+                        <h2 className="section-title">Built for our youth community</h2>
+                    </div>
+                    <div className="app-features">
+                        {APP_FEATURES.map(f => (
+                            <div key={f.title} className="card app-feature">
+                                <div className="app-feature-icon" aria-hidden="true">{f.icon}</div>
+                                <h3>{f.title}</h3>
+                                <p>{f.desc}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            <div className="section section-light">
+                <div className="container">
+                    <div className="section-header">
+                        <div className="overline">Installing on Android</div>
+                        <h2 className="section-title">Install in four steps</h2>
+                        <p className="section-desc">The app isn't on the Play Store yet, so you install it straight from this website. The file comes from our own official release page.</p>
+                    </div>
+                    <div className="app-steps">
+                        <div className="card app-step"><div><h3>Download the app</h3><p>Open this page on your Android phone and tap “Download for Android”. If your browser warns about the file type, choose “Download anyway”.</p></div></div>
+                        <div className="card app-step"><div><h3>Open the file</h3><p>When the download finishes, tap the notification, or open your Files or Downloads app and tap <strong>{APK_FILE_NAME}</strong>.</p></div></div>
+                        <div className="card app-step"><div><h3>Allow the install</h3><p>Android may say your browser isn't allowed to install apps. Tap <strong>Settings</strong>, turn on <strong>Allow from this source</strong>, then go back.</p></div></div>
+                        <div className="card app-step"><div><h3>Install and open</h3><p>Tap <strong>Install</strong>, then <strong>Open</strong>. If it asks to send notifications, tap <strong>Allow</strong> so you're ready when they arrive in an update.</p></div></div>
+                    </div>
+                    <div style={{ textAlign: "center", marginTop: "2.5rem" }}>
+                        <AppDownloadButton onLight />
+                        <p className="section-desc" style={{ marginTop: "1.5rem", fontSize: "0.92rem" }}>
+                            On an iPhone? The app isn't available for iOS yet, but this website works fully on iPhone. In Safari, tap Share, then <strong>Add to Home Screen</strong> to keep it one tap away.
+                            {" "}Need help installing? <a href={pageToPath("Connect")} onClick={e => { e.preventDefault(); navigate("Connect"); }} style={{ color: "var(--gold-dark)", fontWeight: 600 }}>Contact us</a>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+}
+
 function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef, stat1, stat2, stat3, stat4, onJoinUs }) {
     const newsletter = useFormSubmit("newsletterSignups", { email: "" }, ["email"]);
     const { videos, loading: videosLoading } = useYouTubeVideos();
@@ -1990,6 +2177,8 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
                     </div>
                 </div>
             </div>
+
+            <AppPromoSection navigate={navigate} />
 
             {/* NEWSLETTER */}
             <div className="newsletter">

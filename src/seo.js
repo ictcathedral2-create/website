@@ -5,7 +5,7 @@
 export const SITE_URL = "https://ackstpaulsyouths.com";
 export const SITE_NAME = "ACK St Pauls Youths";
 
-export const NAV_LINKS = ["Home", "Ministries", "Sermons", "Recorded Sermons", "Written Sermons", "Gallery", "Events", "Connect", "Give", "Community", "Business Directory", "Requests", "Job Board", "Job Seekers", "Testimonies", "About"];
+export const NAV_LINKS = ["Home", "Ministries", "Sermons", "Recorded Sermons", "Written Sermons", "Gallery", "Events", "Connect", "Give", "Community", "Business Directory", "Requests", "Job Board", "Job Seekers", "Testimonies", "Mobile App", "About"];
 
 export const slugify = str => str.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
@@ -19,6 +19,7 @@ export const PAGE_PATHS = {
     Requests: "/opportunities/requests",
     "Job Board": "/opportunities/job-board",
     "Job Seekers": "/opportunities/job-seekers",
+    "Mobile App": "/app",
 };
 export const pageToPath = page => page === "Home" ? "/" : PAGE_PATHS[page] || `/${slugify(page)}`;
 export const pageUrl = page => `${SITE_URL}${pageToPath(page)}`;
@@ -99,6 +100,11 @@ export const PAGE_SEO = {
         title: "Testimonies | ACK St Pauls Youths",
         description: "Read faith stories and testimonies from the youth community at ACK St Paul's Cathedral in Embu, Kenya.",
         changefreq: "weekly", priority: "0.6",
+    },
+    "Mobile App": {
+        title: "Download the Android App | ACK St Pauls Youths",
+        description: "Get the free ACK St Pauls Youths app for Android: events, sermons, the community board, giving and live help from ACK St Paul's Cathedral, Embu.",
+        changefreq: "monthly", priority: "0.7",
     },
     About: {
         title: "About ACK St Pauls Youths | Anglican Youth Ministry in Embu",

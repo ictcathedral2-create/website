@@ -67,6 +67,10 @@
       "destination": "/about/index.html"
     },
     {
+      "source": "/app",
+      "destination": "/app/index.html"
+    },
+    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
