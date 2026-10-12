@@ -80,7 +80,7 @@ export default function AdminDashboard({ user, onLogout }) {
         <ToastProvider>
             <div className="adm">
                 <div className={`adm-overlay${menuOpen ? " open" : ""}`} onClick={() => setMenuOpen(false)} />
-                <aside className={`adm-sidebar${menuOpen ? " open" : ""}`} aria-label="Admin navigation">
+                <aside className={`adm-sidebar${menuOpen ? " open" : ""}`}>
                     <div className="adm-brand">
                         <img src={logo} alt="" />
                         <div>
@@ -88,7 +88,8 @@ export default function AdminDashboard({ user, onLogout }) {
                             <div className="adm-brand-sub">ACK St Pauls Youths</div>
                         </div>
                     </div>
-                    <nav className="adm-nav">
+                    {/* Not a <nav>: the public site styles every <nav> as its fixed top bar. */}
+                    <div className="adm-nav" role="navigation" aria-label="Admin sections">
                         {GROUPS.map(group => {
                             const items = sections.filter(s => s.group === group);
                             if (!items.length) return null;
@@ -110,7 +111,7 @@ export default function AdminDashboard({ user, onLogout }) {
                                 </div>
                             );
                         })}
-                    </nav>
+                    </div>
                     <div className="adm-user">
                         <div className="adm-user-role">{role === "super" ? "Super admin" : "Admin"}</div>
                         <div className="adm-user-email">{user?.email}</div>
