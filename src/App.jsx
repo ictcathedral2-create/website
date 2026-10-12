@@ -1358,6 +1358,14 @@ export default function App() {
         setMeta('meta[name="twitter:title"]', seo.title);
         setMeta('meta[name="twitter:description"]', seo.description);
         document.querySelector('link[rel="canonical"]')?.setAttribute("href", url);
+
+        // Google Analytics page view, sent after the title above is updated so
+        // reports show the right page name (gtag is set up in index.html).
+        window.gtag?.("event", "page_view", {
+            page_title: seo.title,
+            page_location: window.location.href,
+            page_path: window.location.pathname,
+        });
     }, [activePage]);
 
     // Publishes upcoming events as schema.org Event data so Google can show them as event results.

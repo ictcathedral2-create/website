@@ -83,6 +83,23 @@
         ]
       }
     </script>
+    <!-- Google Analytics 4. Page views are sent by the app (src/App.jsx) after
+         each client-side navigation, so the automatic first page_view is off.
+         Not loaded for the admin panel or local development. -->
+    <script>
+      (function () {
+        var id = "G-GWSLM95WPD";
+        if (location.hash.indexOf("#admin") === 0 || /^(localhost|127\.0\.0\.1)$/.test(location.hostname)) return;
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function () { dataLayer.push(arguments); };
+        gtag("js", new Date());
+        gtag("config", id, { send_page_view: false });
+        var s = document.createElement("script");
+        s.async = true;
+        s.src = "https://www.googletagmanager.com/gtag/js?id=" + id;
+        document.head.appendChild(s);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
