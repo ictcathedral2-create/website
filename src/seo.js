@@ -2,7 +2,7 @@
 // vite.config.js (to prerender a static HTML shell per page plus sitemap.xml),
 // so crawlers and link previews see the right metadata without running JS.
 
-export const SITE_URL = "https://ackstpaulsyouths.vercel.app";
+export const SITE_URL = "https://ackstpaulsyouths.com";
 export const SITE_NAME = "ACK St Pauls Youths";
 
 export const NAV_LINKS = ["Home", "Ministries", "Sermons", "Recorded Sermons", "Written Sermons", "Gallery", "Events", "Connect", "Give", "Community", "Business Directory", "Requests", "Job Board", "Job Seekers", "Testimonies", "About"];

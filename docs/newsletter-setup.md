@@ -43,7 +43,7 @@ After adding these, redeploy (any new push does this automatically).
 Once env vars are set, you can trigger a manual send without waiting for the schedule:
 
 ```
-curl -X GET https://ackstpaulsyouths.vercel.app/api/send-newsletter \
+curl -X GET https://ackstpaulsyouths.com/api/send-newsletter \
   -H "Authorization: Bearer YOUR_CRON_SECRET"
 ```
 

@@ -36,7 +36,7 @@ Go to your Vercel project → **Settings** → **Environment Variables** and add
 | `MPESA_CONSUMER_SECRET` | From your Daraja app |
 | `MPESA_SHORTCODE` | Your Paybill/Till number (use `174379` for sandbox testing) |
 | `MPESA_PASSKEY` | Your Lipa Na M-Pesa passkey |
-| `MPESA_CALLBACK_URL` | `https://ackstpaulsyouths.vercel.app/api/mpesa-callback` (must be a public HTTPS URL — Safaricom cannot call `localhost`) |
+| `MPESA_CALLBACK_URL` | `https://ackstpaulsyouths.com/api/mpesa-callback` (must be a public HTTPS URL — Safaricom cannot call `localhost`) |
 | `MPESA_ENV` | `sandbox` while testing, or `production` (or leave unset) once you have live production credentials |
 | `FIREBASE_SERVICE_ACCOUNT` | Same value already used for the newsletter feature — reuse it here too |
 | `FIREBASE_DATABASE_URL` | Same value already used for the newsletter feature |

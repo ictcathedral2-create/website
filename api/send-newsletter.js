@@ -1,7 +1,7 @@
 import { cert, getApps, getApp, initializeApp } from "firebase-admin/app";
 import { getDatabase } from "firebase-admin/database";
 
-const SITE_URL = "https://ackstpaulsyouths.vercel.app";
+const SITE_URL = "https://ackstpaulsyouths.com";
 const YOUTUBE_API_KEY = process.env.VITE_YOUTUBE_API_KEY;
 const YOUTUBE_CHANNEL_HANDLE = process.env.VITE_YOUTUBE_CHANNEL_HANDLE || "ackcathedralyouthembu";
 

@@ -28,7 +28,7 @@ export default async function handler(req, res) {
 
   const FROM = process.env.NEWSLETTER_FROM_EMAIL || "ACK St Pauls Youths <onboarding@resend.dev>";
   const TO = "ictcathedral2@gmail.com";
-  const SITE_URL = "https://ackstpaulsyouths.vercel.app";
+  const SITE_URL = "https://ackstpaulsyouths.com";
   const typeLabel = TYPE_LABELS[type] || "Support Request";
 
   const html = `
