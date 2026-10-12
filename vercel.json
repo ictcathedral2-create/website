@@ -6,6 +6,69 @@
     }
   ],
   "rewrites": [
-    { "source": "/((?!api/).*)", "destination": "/index.html" }
+    {
+      "source": "/ministries",
+      "destination": "/ministries/index.html"
+    },
+    {
+      "source": "/sermons",
+      "destination": "/sermons/index.html"
+    },
+    {
+      "source": "/resources/recorded-sermons",
+      "destination": "/resources/recorded-sermons/index.html"
+    },
+    {
+      "source": "/resources/written-sermons",
+      "destination": "/resources/written-sermons/index.html"
+    },
+    {
+      "source": "/resources/gallery",
+      "destination": "/resources/gallery/index.html"
+    },
+    {
+      "source": "/events",
+      "destination": "/events/index.html"
+    },
+    {
+      "source": "/connect",
+      "destination": "/connect/index.html"
+    },
+    {
+      "source": "/give",
+      "destination": "/give/index.html"
+    },
+    {
+      "source": "/community",
+      "destination": "/community/index.html"
+    },
+    {
+      "source": "/opportunities/business-directory",
+      "destination": "/opportunities/business-directory/index.html"
+    },
+    {
+      "source": "/opportunities/requests",
+      "destination": "/opportunities/requests/index.html"
+    },
+    {
+      "source": "/opportunities/job-board",
+      "destination": "/opportunities/job-board/index.html"
+    },
+    {
+      "source": "/opportunities/job-seekers",
+      "destination": "/opportunities/job-seekers/index.html"
+    },
+    {
+      "source": "/testimonies",
+      "destination": "/testimonies/index.html"
+    },
+    {
+      "source": "/about",
+      "destination": "/about/index.html"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
+    }
   ]
 }

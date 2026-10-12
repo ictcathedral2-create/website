@@ -1,5 +1,5 @@
 User-agent: *
 Allow: /
-Disallow: /#admin
+Disallow: /api/
 
-Sitemap: https://ackstpaulsyouths.com/sitemap.xml
+Sitemap: https://ackstpaulsyouths.vercel.app/sitemap.xml

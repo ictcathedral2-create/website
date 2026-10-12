@@ -6,8 +6,8 @@ import { validateEmail, validatePhone } from "./validation";
 import { compressImage, readPdfAsDataUri } from "./utils/fileToDataUri";
 import SupportWidget from "./components/SupportWidget";
 import logo from "./assets/logo.png";
+import { NAV_LINKS, PAGE_SEO, PAGE_PATHS, SITE_URL, slugify, pageToPath, pageUrl } from "./seo";
 
-const NAV_LINKS = ["Home", "Ministries", "Sermons", "Recorded Sermons", "Written Sermons", "Gallery", "Events", "Connect", "Give", "Community", "Business Directory", "Requests", "Job Board", "Job Seekers", "Testimonies", "About"];
 const NAV_MENU = [
     { label: "Home", page: "Home" },
     { label: "About", page: "About" },
@@ -17,60 +17,6 @@ const NAV_MENU = [
     { label: "Get Involved", activePages: ["Give", "Ministries", "Testimonies"] },
     { label: "Opportunities", page: "Community", activePages: ["Community", "Business Directory", "Requests", "Job Board", "Job Seekers"] },
 ];
-const SITE_URL = "https://ackstpaulsyouths.vercel.app";
-const PAGE_SEO = {
-    Home: {
-        title: "ACK St Pauls Youths | Youth Ministry in Embu, Kenya",
-        description: "ACK St Pauls Youths is the youth ministry of ACK St Paul's Cathedral in Embu, Kenya. Join us for worship, youth services, events, sermons, ministries, and community.",
-    },
-    Ministries: {
-        title: "Youth Ministries | ACK St Pauls Youths, Embu",
-        description: "Explore worship, discipleship, outreach, and service opportunities with ACK St Pauls Youths at ACK St Paul's Cathedral in Embu, Kenya.",
-    },
-    Sermons: {
-        title: "Sermons and Youth Teachings | ACK St Pauls Youths",
-        description: "Watch sermons, youth teachings, and faith resources from ACK St Paul's Cathedral Youth Ministry in Embu, Kenya.",
-    },
-    Events: {
-        title: "Youth Events in Embu | ACK St Pauls Youths",
-        description: "Find upcoming youth services, worship gatherings, outreach events, and community activities from ACK St Pauls Youths in Embu.",
-    },
-    Connect: {
-        title: "Connect With Us | ACK St Pauls Youths, Embu",
-        description: "Contact ACK St Pauls Youths at ACK St Paul's Cathedral, Embu, Kenya. Join our youth community, ask a question, or plan a visit.",
-    },
-    Give: {
-        title: "Give | ACK St Pauls Youths",
-        description: "Support the youth ministry, outreach, and discipleship work of ACK St Pauls Youths in Embu, Kenya.",
-    },
-    Community: {
-        title: "Youth Community | ACK St Pauls Youths, Embu",
-        description: "Discover the ACK St Pauls Youths community in Embu: opportunities to connect, serve, grow in faith, and find support.",
-    },
-    Testimonies: {
-        title: "Testimonies | ACK St Pauls Youths",
-        description: "Read faith stories and testimonies from the youth community at ACK St Paul's Cathedral in Embu, Kenya.",
-    },
-    About: {
-        title: "About ACK St Pauls Youths | Anglican Youth Ministry in Embu",
-        description: "Learn about ACK St Pauls Youths, the Anglican Church of Kenya youth ministry at ACK St Paul's Cathedral in Embu, Kenya.",
-    },
-};
-
-const slugify = str => str.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-
-// Maps a page name to its URL path (e.g. "Home" -> "/home") and back, so every
-// page has a real, shareable, bookmarkable, refreshable URL instead of hidden state.
-const PAGE_PATHS = {
-    "Recorded Sermons": "/resources/recorded-sermons",
-    "Written Sermons": "/resources/written-sermons",
-    Gallery: "/resources/gallery",
-    "Business Directory": "/opportunities/business-directory",
-    Requests: "/opportunities/requests",
-    "Job Board": "/opportunities/job-board",
-    "Job Seekers": "/opportunities/job-seekers",
-};
-const pageToPath = page => page === "Home" ? "/" : PAGE_PATHS[page] || `/${slugify(page)}`;
 const pageFromPath = pathname => {
     const slug = pathname.replace(/^\/+|\/+$/g, "").toLowerCase();
     if (slug.startsWith("events/")) return "Events";
@@ -1366,7 +1312,7 @@ export default function App() {
     // Keeps each client-side route discoverable with its own title, description, canonical URL, and social preview.
     useEffect(() => {
         const seo = PAGE_SEO[activePage] || PAGE_SEO.Home;
-        const url = activePage === "Home" ? `${SITE_URL}/` : `${SITE_URL}${pageToPath(activePage)}`;
+        const url = pageUrl(PAGE_SEO[activePage] ? activePage : "Home");
         const setMeta = (selector, content) => document.querySelector(selector)?.setAttribute("content", content);
 
         document.title = seo.title;
@@ -1378,6 +1324,40 @@ export default function App() {
         setMeta('meta[name="twitter:description"]', seo.description);
         document.querySelector('link[rel="canonical"]')?.setAttribute("href", url);
     }, [activePage]);
+
+    // Publishes upcoming events as schema.org Event data so Google can show them as event results.
+    useEffect(() => {
+        const pad = n => String(n).padStart(2, "0");
+        const items = events.map(e => {
+            const day = `${e.date.getFullYear()}-${pad(e.date.getMonth() + 1)}-${pad(e.date.getDate())}`;
+            return {
+                "@type": "Event",
+                name: e.title,
+                description: e.desc || undefined,
+                startDate: /^\d{2}:\d{2}$/.test(e.startTime || "") ? `${day}T${e.startTime}:00+03:00` : day,
+                eventStatus: "https://schema.org/EventScheduled",
+                eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+                url: `${pageUrl("Events")}#${slugify(e.title)}`,
+                image: [`${SITE_URL}/og-image.png`],
+                // Events have no venue field and some are held off-site, so only claim the town.
+                location: {
+                    "@type": "Place",
+                    name: "Embu, Kenya",
+                    address: { "@type": "PostalAddress", addressLocality: "Embu", addressRegion: "Embu County", addressCountry: "KE" },
+                },
+                organizer: { "@type": "Organization", name: "ACK St Pauls Youths", url: `${SITE_URL}/` },
+            };
+        });
+        let script = document.getElementById("events-jsonld");
+        if (!items.length) { script?.remove(); return; }
+        if (!script) {
+            script = document.createElement("script");
+            script.type = "application/ld+json";
+            script.id = "events-jsonld";
+            document.head.appendChild(script);
+        }
+        script.textContent = JSON.stringify({ "@context": "https://schema.org", "@graph": items });
+    }, [events]);
     const NAV_DROPDOWNS = {
         Activities: {
             page: "Events",
@@ -1540,7 +1520,7 @@ export default function App() {
                         </div>
                         <div>
                             <div className="footer-col-title">Quick Links</div>
-                            {NAV_LINKS.map(l => <div key={l} className="footer-link" onClick={() => navigate(l)}>{l}</div>)}
+                            {NAV_LINKS.map(l => <a key={l} className="footer-link" href={pageToPath(l)} onClick={e => { e.preventDefault(); navigate(l); }}>{l}</a>)}
                         </div>
                         <div>
                             <div className="footer-col-title">Service Times</div>

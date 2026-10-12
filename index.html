@@ -3,7 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" href="/og-image.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0E2044" />
 
@@ -11,6 +12,9 @@
     <meta name="description" content="ACK St Pauls Youths is the youth ministry of ACK St Paul's Cathedral in Embu, Kenya. Join us for worship, youth services, events, sermons, ministries, and community." />
     <meta name="keywords" content="ACK St Pauls Youths, ACK St Pauls, St Pauls ACK Cathedral Embu, ACK Cathedral Embu, youth ministry Embu, Anglican Church of Kenya youth, church youth group Kenya, Embu youth church, youth events Embu, sermons Embu" />
     <meta name="author" content="ACK St Pauls Youths" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="geo.region" content="KE-06" />
+    <meta name="geo.placename" content="Embu" />
     <link rel="canonical" href="https://ackstpaulsyouths.vercel.app/" />
 
     <!-- Open Graph / Facebook -->
@@ -19,11 +23,14 @@
     <meta property="og:title" content="ACK St Pauls Youths | Youth Ministry in Embu, Kenya" />
     <meta property="og:description" content="A generation rising in faith, purpose, and power. Join ACK St Pauls Youths, the youth ministry of ACK St Paul's Cathedral in Embu, Kenya." />
     <meta property="og:image" content="https://ackstpaulsyouths.vercel.app/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="ACK St Pauls Youths - youth ministry of ACK St Paul's Cathedral, Embu, Kenya" />
     <meta property="og:url" content="https://ackstpaulsyouths.vercel.app/" />
     <meta property="og:locale" content="en_US" />
 
     <!-- Twitter -->
-    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="ACK St Pauls Youths | Youth Ministry in Embu, Kenya" />
     <meta name="twitter:description" content="A generation rising in faith, purpose, and power. Join ACK St Pauls Youths, the youth ministry of ACK St Paul's Cathedral in Embu, Kenya." />
     <meta name="twitter:image" content="https://ackstpaulsyouths.vercel.app/og-image.png" />
@@ -31,33 +38,55 @@
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "Church",
-        "name": "ACK St Pauls Youths",
-        "alternateName": "ACK St Paul's Cathedral Youth Ministry",
-        "url": "https://ackstpaulsyouths.vercel.app/",
-        "logo": "https://ackstpaulsyouths.vercel.app/og-image.png",
-        "image": "https://ackstpaulsyouths.vercel.app/og-image.png",
-        "description": "The youth ministry of ACK St Paul's Cathedral in Embu, Kenya - worship, discipleship, ministries, and community for young people.",
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": "Embu",
-          "addressCountry": "KE"
-        },
-        "sameAs": [
-          "https://youtube.com/@ackcathedralyouthembu"
-        ],
-        "email": "ictcathedral2@gmail.com",
-        "hasMap": "https://www.google.com/maps/place/St+Pauls+Ack+Cathedral-Embu/@-0.5279977,37.4488796,17z",
-        "geo": {
-          "@type": "GeoCoordinates",
-          "latitude": -0.5279977,
-          "longitude": 37.4514545
-        }
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://ackstpaulsyouths.vercel.app/#website",
+            "url": "https://ackstpaulsyouths.vercel.app/",
+            "name": "ACK St Pauls Youths",
+            "alternateName": ["ACK St Paul's Cathedral Youths Embu", "St Pauls Cathedral Youth Embu"],
+            "inLanguage": "en",
+            "publisher": { "@id": "https://ackstpaulsyouths.vercel.app/#org" }
+          },
+          {
+            "@type": "Church",
+            "@id": "https://ackstpaulsyouths.vercel.app/#org",
+            "name": "ACK St Pauls Youths",
+            "alternateName": "ACK St Paul's Cathedral Youth Ministry",
+            "url": "https://ackstpaulsyouths.vercel.app/",
+            "logo": "https://ackstpaulsyouths.vercel.app/logo-512.png",
+            "image": "https://ackstpaulsyouths.vercel.app/og-image.png",
+            "description": "The youth ministry of ACK St Paul's Cathedral in Embu, Kenya - worship, discipleship, ministries, and community for young people.",
+            "parentOrganization": {
+              "@type": "Church",
+              "name": "ACK St Paul's Cathedral, Embu",
+              "hasMap": "https://www.google.com/maps/place/St+Pauls+Ack+Cathedral-Embu/@-0.5279977,37.4488796,17z"
+            },
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Embu",
+              "addressRegion": "Embu County",
+              "addressCountry": "KE"
+            },
+            "geo": {
+              "@type": "GeoCoordinates",
+              "latitude": -0.5279977,
+              "longitude": 37.4514545
+            },
+            "hasMap": "https://www.google.com/maps/place/St+Pauls+Ack+Cathedral-Embu/@-0.5279977,37.4488796,17z",
+            "areaServed": "Embu, Kenya",
+            "email": "ictcathedral2@gmail.com",
+            "sameAs": [
+              "https://youtube.com/@ackcathedralyouthembu"
+            ]
+          }
+        ]
       }
     </script>
   </head>
   <body>
     <div id="root"></div>
+    <!--seo:noscript-->
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
