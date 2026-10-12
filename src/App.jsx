@@ -509,8 +509,7 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 .app-phone-tabs i { width: 18px; height: 18px; border-radius: 6px; background: #E8E4DC; }
 .app-phone-tabs i:first-child { background: var(--gold); }
 .app-features { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1.25rem; }
-.app-feature { padding: 1.5rem; }
-.app-feature-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; background: rgba(201,168,76,0.14); margin-bottom: 0.9rem; }
+.app-feature { padding: 1.5rem; border-top: 3px solid var(--gold); }
 .app-feature h3 { font-family: var(--font-display); font-size: 1.35rem; color: var(--navy); margin-bottom: 0.35rem; }
 .app-feature p { font-size: 0.92rem; color: var(--gray-600); line-height: 1.6; }
 .app-steps { counter-reset: step; display: grid; gap: 1rem; max-width: 760px; margin: 0 auto; }
@@ -1825,12 +1824,12 @@ function PosterCarousel() {
 }
 
 const APP_FEATURES = [
-    { icon: "🔔", title: "Notifications (coming soon)", desc: "A coming update will alert you when a new event, sermon or photo goes up, and let you choose what you hear about." },
-    { icon: "📅", title: "Events in your pocket", desc: "See what's coming up with a live countdown, and register for events in a couple of taps." },
-    { icon: "🎥", title: "Sermons on the go", desc: "Watch recorded services and read written sermons wherever you are." },
-    { icon: "🤝", title: "Community board", desc: "Browse the business directory, job board, job seekers and requests from fellow youths." },
-    { icon: "💬", title: "Help when you need it", desc: "Chat with the team for prayer, pastoral care or any question, right from the app." },
-    { icon: "🙏", title: "Give and testify", desc: "Support the ministry, and share or read testimonies of what God is doing among us." },
+    { title: "Notifications", desc: "Coming in the next update: alerts when a new event, sermon or photo goes up, and you choose what you hear about." },
+    { title: "Events in your pocket", desc: "See what's coming up with a live countdown, and register for events in a couple of taps." },
+    { title: "Sermons on the go", desc: "Watch recorded services and read written sermons wherever you are." },
+    { title: "Community board", desc: "Browse the business directory, job board, job seekers and requests from fellow youths." },
+    { title: "Help when you need it", desc: "Chat with the team for prayer, pastoral care or any question, right from the app." },
+    { title: "Give and testify", desc: "Support the ministry, and share or read testimonies of what God is doing among us." },
 ];
 
 // Shows "Coming soon" until APK_AVAILABLE is switched on in appDownload.js.
@@ -1838,7 +1837,6 @@ function AppDownloadButton({ onLight = false }) {
     if (!APK_AVAILABLE) {
         return (
             <span className={`app-download-btn disabled${onLight ? " on-light" : ""}`} aria-disabled="true">
-                <span style={{ fontSize: "1.5rem" }} aria-hidden="true">⏳</span>
                 <span><small>Android app</small><strong>Coming soon</strong></span>
             </span>
         );
@@ -1925,7 +1923,6 @@ function MobileAppPage({ navigate }) {
                     <div className="app-features">
                         {APP_FEATURES.map(f => (
                             <div key={f.title} className="card app-feature">
-                                <div className="app-feature-icon" aria-hidden="true">{f.icon}</div>
                                 <h3>{f.title}</h3>
                                 <p>{f.desc}</p>
                             </div>
