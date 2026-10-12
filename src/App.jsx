@@ -1326,9 +1326,12 @@ export default function App() {
     }, [activePage]);
 
     // Publishes upcoming events as schema.org Event data so Google can show them as event results.
+    // Fetched over the database's REST endpoint rather than the live connection, because
+    // Google's renderer doesn't support WebSockets and never sees realtime data.
     useEffect(() => {
+        let cancelled = false;
         const pad = n => String(n).padStart(2, "0");
-        const items = events.map(e => {
+        const toJsonLd = events => events.map(e => {
             const day = `${e.date.getFullYear()}-${pad(e.date.getMonth() + 1)}-${pad(e.date.getDate())}`;
             return {
                 "@type": "Event",
@@ -1348,16 +1351,25 @@ export default function App() {
                 organizer: { "@type": "Organization", name: "ACK St Pauls Youths", url: `${SITE_URL}/` },
             };
         });
-        let script = document.getElementById("events-jsonld");
-        if (!items.length) { script?.remove(); return; }
-        if (!script) {
-            script = document.createElement("script");
-            script.type = "application/ld+json";
-            script.id = "events-jsonld";
-            document.head.appendChild(script);
-        }
-        script.textContent = JSON.stringify({ "@context": "https://schema.org", "@graph": items });
-    }, [events]);
+        fetch(`${import.meta.env.VITE_FIREBASE_DATABASE_URL}/events.json`)
+            .then(res => res.ok ? res.json() : null)
+            .then(data => {
+                if (cancelled || !data) return;
+                const upcoming = Object.values(data)
+                    .map(e => ({ ...e, date: resolveEventDate(e.day, e.month) }))
+                    .filter(e => e.date && e.title)
+                    .sort((a, b) => a.date - b.date);
+                if (!upcoming.length) return;
+                const script = document.createElement("script");
+                script.type = "application/ld+json";
+                script.id = "events-jsonld";
+                script.textContent = JSON.stringify({ "@context": "https://schema.org", "@graph": toJsonLd(upcoming) });
+                document.getElementById("events-jsonld")?.remove();
+                document.head.appendChild(script);
+            })
+            .catch(() => {});
+        return () => { cancelled = true; };
+    }, []);
     const NAV_DROPDOWNS = {
         Activities: {
             page: "Events",
