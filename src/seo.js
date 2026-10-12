@@ -27,12 +27,12 @@ export const pageUrl = page => `${SITE_URL}${pageToPath(page)}`;
 // changefreq/priority feed sitemap.xml; title/description feed <head>.
 export const PAGE_SEO = {
     Home: {
-        title: "ACK St Pauls Youths | Youth Ministry in Embu, Kenya",
-        description: "ACK St Pauls Youths is the youth ministry of ACK St Paul's Cathedral in Embu, Kenya. Join us for worship, youth services, events, sermons, ministries, and community.",
+        title: "ACK St Pauls Youths | Youth Church at ACK Cathedral Embu",
+        description: "ACK St Pauls Youths (ACK Youths Embu) is the youth church of ACK St Paul's Cathedral, Embu, Anglican Church of Kenya. Join our youth services, events, sermons and ministries in Embu town.",
         changefreq: "weekly", priority: "1.0",
     },
     Ministries: {
-        title: "Youth Ministries | ACK St Pauls Youths, Embu",
+        title: "Youth Ministries | ACK St Pauls Youths, Cathedral Embu",
         description: "Explore worship, discipleship, outreach, and service opportunities with ACK St Pauls Youths at ACK St Paul's Cathedral in Embu, Kenya.",
         changefreq: "monthly", priority: "0.8",
     },
@@ -62,7 +62,7 @@ export const PAGE_SEO = {
         changefreq: "weekly", priority: "0.8",
     },
     Connect: {
-        title: "Connect With Us | ACK St Pauls Youths, Embu",
+        title: "Visit or Contact Us | ACK St Paul's Cathedral Youth, Embu",
         description: "Contact ACK St Pauls Youths at ACK St Paul's Cathedral, Embu, Kenya. Join our youth community, ask a question, or plan a visit.",
         changefreq: "monthly", priority: "0.7",
     },

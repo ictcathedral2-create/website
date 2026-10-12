@@ -1563,10 +1563,10 @@ export default function App() {
                                 <div className="logo-cross"><img src={logo} alt="ACK St Pauls Cathedral crest" /></div>
                                 <div>
                                     <div className="footer-brand-name">ACK St Pauls Youths</div>
-                                    <div className="footer-brand-sub">Youth Ministry</div>
+                                    <div className="footer-brand-sub">ACK St Paul's Cathedral, Embu</div>
                                 </div>
                             </div>
-                            <div className="footer-desc">A vibrant community of faith-filled youth growing together in Christ, serving Embu and beyond for God's glory.</div>
+                            <div className="footer-desc">The youth church of ACK St Paul's Cathedral, Embu (Anglican Church of Kenya): faith-filled young people growing together in Christ and serving Embu and beyond.</div>
                             <div className="footer-verse">
                                 "Don't let anyone look down on you because you are young, but set an example in speech, conduct, love, faith, and purity."
                                 <cite>— 1 Timothy 4:12</cite>
@@ -1589,7 +1589,7 @@ export default function App() {
                             <div className="footer-col-title">Contact</div>
                             <div className="footer-contact-row">
                                 <div className="footer-contact-icon"><SocialIcon name="pin" size={16} /></div>
-                                <div className="footer-contact-text">Embu Town, Embu, Kenya</div>
+                                <div className="footer-contact-text">ACK St Paul's Cathedral, Embu Town, Kenya</div>
                             </div>
                             <a className="footer-contact-row" href="mailto:ictcathedral2@gmail.com">
                                 <div className="footer-contact-icon"><SocialIcon name="mail" size={16} /></div>
@@ -1992,7 +1992,7 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
                             Where Youth <br className="hero-title-break-1" /><span>Encounter God</span><br />& Change the World
                         </h1>
                         <p className="hero-desc">
-                            A generation rising in faith, purpose, and power. Join ACK St Pauls Youths, Embu's most vibrant youth community.
+                            A generation rising in faith, purpose, and power. Join ACK St Pauls Youths, the youth church of ACK St Paul's Cathedral and Embu's most vibrant youth community.
                         </p>
                         <div className="hero-btns">
                             <button className="btn btn-gold" onClick={onJoinUs}>Join Us Today</button>
@@ -2063,7 +2063,7 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
                     <div className="overline">Welcome Home</div>
                     <h2 className="section-title" style={{ marginBottom: "1rem" }}>A Family Built on Faith</h2>
                     <p className="section-desc" style={{ maxWidth: 700 }}>
-                        Whether you're exploring faith for the first time or growing deeper in your walk with Christ, ACK St Pauls Youths is your community. We gather, worship, learn, and serve together — because we are better together.
+                        Whether you're exploring faith for the first time or growing deeper in your walk with Christ, ACK St Pauls Youths is your community. We are the youth ministry of ACK St Paul's Cathedral in Embu town, part of the Anglican Church of Kenya (ACK). Young people from across Embu gather here every Sunday to worship, learn, and serve together, because we are better together.
                     </p>
                     <div style={{ display: "flex", gap: "1rem", justifyContent: "center", marginTop: "2rem", flexWrap: "wrap" }}>
                         <button className="btn btn-gold" onClick={() => navigate("About")}>Our Story</button>
