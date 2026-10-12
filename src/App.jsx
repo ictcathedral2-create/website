@@ -7,6 +7,7 @@ import { compressImage, readPdfAsDataUri } from "./utils/fileToDataUri";
 import SupportWidget from "./components/SupportWidget";
 import logo from "./assets/logo.png";
 import { NAV_LINKS, PAGE_SEO, PAGE_PATHS, SITE_URL, slugify, pageToPath, pageUrl } from "./seo";
+import { eventDateOf } from "./utils/eventDate";
 
 const NAV_MENU = [
     { label: "Home", page: "Home" },
@@ -1077,20 +1078,6 @@ const MINISTRIES = [
     { icon: "📖", color: "rgba(14,32,68,0.1)", title: "Pastoral Ministry", desc: "Providing spiritual oversight, discipleship, teaching, and pastoral guidance to nurture the whole church family in Christ." },
 ];
 
-// Resolves a "day + short month" pair to the nearest upcoming date, rolling to next year once passed.
-function resolveEventDate(day, monthAbbr) {
-    const now = new Date();
-    const monthIndex = new Date(`${monthAbbr} 1, 2000`).getMonth();
-    const dayNumber = Number(day);
-    if (!Number.isInteger(dayNumber) || dayNumber < 1 || dayNumber > 31 || Number.isNaN(monthIndex)) return null;
-    let candidate = new Date(now.getFullYear(), monthIndex, dayNumber, 23, 59, 59);
-    // JavaScript rolls invalid dates (for example, 31 February) into the next
-    // month. Reject those records instead of showing an event on the wrong day.
-    if (candidate.getMonth() !== monthIndex || candidate.getDate() !== dayNumber) return null;
-    if (candidate < now) candidate = new Date(now.getFullYear() + 1, monthIndex, Number(day), 23, 59, 59);
-    return candidate;
-}
-
 const URGENT_THRESHOLD_DAYS = 7;
 
 // Loads admin-managed events from Firebase, sorted soonest-first with an "urgent" flag
@@ -1101,7 +1088,7 @@ function useEvents() {
         const list = data || [];
         return list
             .map(e => {
-                const date = resolveEventDate(e.day, e.month);
+                const date = eventDateOf(e);
                 if (!date) return null;
                 const daysUntil = Math.ceil((date - new Date()) / 86400000);
                 return { ...e, date, urgent: daysUntil >= 0 && daysUntil <= URGENT_THRESHOLD_DAYS };
@@ -1356,7 +1343,7 @@ export default function App() {
             .then(data => {
                 if (cancelled || !data) return;
                 const upcoming = Object.values(data)
-                    .map(e => ({ ...e, date: resolveEventDate(e.day, e.month) }))
+                    .map(e => ({ ...e, date: eventDateOf(e) }))
                     .filter(e => e.date && e.title)
                     .sort((a, b) => a.date - b.date);
                 if (!upcoming.length) return;

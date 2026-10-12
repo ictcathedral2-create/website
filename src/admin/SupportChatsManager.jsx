@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useFirebaseCollection } from "../hooks/useFirebaseCollection";
 import { db, ref, set, push, remove } from "../firebase";
+import { EmptyState, Icon, Notice, PageHeader, StatusPill, formatWhen, useToast } from "./ui";
 
 const TYPING_IDLE_MS = 2500;
 
@@ -11,11 +12,12 @@ const TYPE_LABELS = {
     other: "Something Else",
 };
 
-const STATUS_COLORS = {
-    new: { bg: "rgba(224,115,48,0.12)", color: "var(--orange)" },
-    responded: { bg: "rgba(78,150,110,0.15)", color: "#4E966E" },
-    closed: { bg: "var(--gray-100)", color: "var(--gray-400)" },
-};
+const FILTERS = [
+    { key: "all", label: "All" },
+    { key: "new", label: "Awaiting reply" },
+    { key: "responded", label: "Responded" },
+    { key: "closed", label: "Closed" },
+];
 
 async function sendAdminReply(chatId, text) {
     const msgRef = push(ref(db, `supportChats/${chatId}/messages`));
@@ -37,11 +39,12 @@ async function deleteChat(chatId) {
 }
 
 function ChatCard({ chat }) {
+    const { run } = useToast();
     const [replyText, setReplyText] = useState("");
     const [sending, setSending] = useState(false);
     const [expanded, setExpanded] = useState(false);
     const messages = chat.messages ? Object.entries(chat.messages).sort((a, b) => a[1].at - b[1].at) : [];
-    const colors = STATUS_COLORS[chat.status] || STATUS_COLORS.new;
+    const lastMessage = messages[messages.length - 1]?.[1];
     const typingTimeoutRef = useRef(null);
     const isTypingRef = useRef(false);
 
@@ -70,89 +73,104 @@ function ChatCard({ chat }) {
     };
 
     const handleReply = async () => {
-        if (!replyText.trim()) return;
+        if (!replyText.trim() || sending) return;
         stopTyping();
         setSending(true);
-        try {
-            await sendAdminReply(chat.id, replyText.trim());
-            setReplyText("");
-        } finally {
-            setSending(false);
-        }
+        if (await run(() => sendAdminReply(chat.id, replyText.trim()), "Reply sent")) setReplyText("");
+        setSending(false);
     };
 
     const handleDelete = async () => {
         if (!window.confirm("Delete this support request and its whole conversation? This cannot be undone.")) return;
-        await deleteChat(chat.id);
+        await run(() => deleteChat(chat.id), "Conversation deleted");
+    };
+
+    const toggle = () => {
+        if (expanded) stopTyping();
+        setExpanded(!expanded);
     };
 
     return (
-        <div className="card" style={{ padding: "1.5rem" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "0.75rem", marginBottom: "0.75rem" }}>
+        <div className="adm-card adm-record">
+            <div className="adm-record-head">
                 <div>
-                    <div style={{ fontWeight: 700, color: "var(--navy)", fontSize: "0.95rem" }}>{TYPE_LABELS[chat.type] || "Support Request"}</div>
-                    <div style={{ fontSize: "0.82rem", color: "var(--gray-600)", marginTop: 2 }}>{chat.name || "—"} · {chat.phone || "—"}</div>
-                </div>
-                <span style={{ background: colors.bg, color: colors.color, fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", padding: "3px 10px", borderRadius: 20, whiteSpace: "nowrap" }}>
-                    {chat.status}
-                </span>
-            </div>
-
-            <div style={{ fontSize: "0.78rem", color: "var(--gray-400)", marginBottom: "0.85rem" }}>
-                Started {new Date(chat.createdAt).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" })}
-                {" · "}{messages.length} message{messages.length === 1 ? "" : "s"}
-            </div>
-
-            {!expanded ? (
-                <button className="btn btn-navy btn-sm" onClick={() => setExpanded(true)}>View Conversation</button>
-            ) : (
-                <>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", maxHeight: 280, overflowY: "auto", marginBottom: "0.85rem", padding: "0.85rem", background: "var(--cream)", borderRadius: 10 }}>
-                        {messages.map(([id, m]) => (
-                            <div
-                                key={id}
-                                style={{
-                                    maxWidth: "80%",
-                                    alignSelf: m.sender === "admin" ? "flex-end" : "flex-start",
-                                    background: m.sender === "admin" ? "linear-gradient(135deg, var(--gold), var(--gold-dark))" : "white",
-                                    color: m.sender === "admin" ? "white" : "var(--gray-800)",
-                                    padding: "0.55rem 0.8rem",
-                                    borderRadius: 12,
-                                    fontSize: "0.85rem",
-                                    lineHeight: 1.45,
-                                }}
-                            >
-                                {m.text}
-                                <div style={{ fontSize: "0.65rem", opacity: 0.7, marginTop: 3 }}>
-                                    {m.sender === "admin" ? "You" : chat.name || "Requester"} · {new Date(m.at).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
-                                </div>
-                            </div>
-                        ))}
+                    <div className="adm-record-title">{chat.name || "Anonymous"} · {TYPE_LABELS[chat.type] || "Support Request"}</div>
+                    <div className="adm-record-meta">
+                        {chat.phone ? <a href={`tel:${chat.phone}`}>{chat.phone}</a> : "No phone"}
+                        {" · "}started {formatWhen(chat.createdAt)} · {messages.length} message{messages.length === 1 ? "" : "s"}
                     </div>
-                    <div style={{ display: "flex", gap: "0.5rem", marginBottom: "0.85rem" }}>
+                </div>
+                <StatusPill status={chat.status} />
+            </div>
+
+            {!expanded && lastMessage && (
+                <div className="adm-field-value" style={{ marginTop: "0.75rem", color: "var(--gray-600)" }}>
+                    <strong style={{ color: "var(--navy)" }}>{lastMessage.sender === "admin" ? "You" : chat.name || "Them"}:</strong>{" "}
+                    {lastMessage.text?.length > 160 ? `${lastMessage.text.slice(0, 160)}…` : lastMessage.text}
+                </div>
+            )}
+
+            {expanded && (
+                <>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", maxHeight: 340, overflowY: "auto", margin: "0.9rem 0", padding: "0.9rem", background: "var(--adm-bg)", borderRadius: 12 }}>
+                        {messages.map(([id, m]) => {
+                            const mine = m.sender === "admin";
+                            return (
+                                <div
+                                    key={id}
+                                    style={{
+                                        maxWidth: "80%",
+                                        alignSelf: mine ? "flex-end" : "flex-start",
+                                        background: mine ? "var(--navy)" : "white",
+                                        color: mine ? "white" : "var(--gray-800)",
+                                        border: mine ? "none" : "1px solid var(--adm-line)",
+                                        padding: "0.55rem 0.8rem",
+                                        borderRadius: 12,
+                                        fontSize: "0.86rem",
+                                        lineHeight: 1.45,
+                                        whiteSpace: "pre-wrap",
+                                    }}
+                                >
+                                    {m.text}
+                                    <div style={{ fontSize: "0.66rem", opacity: 0.65, marginTop: 3 }}>
+                                        {mine ? "You" : chat.name || "Requester"} · {formatWhen(m.at)}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                    <div style={{ display: "flex", gap: "0.5rem", alignItems: "flex-end" }}>
                         <textarea
                             className="form-textarea"
-                            style={{ minHeight: 42, flex: 1 }}
-                            placeholder="Type a reply..."
+                            style={{ minHeight: 48, flex: 1 }}
+                            placeholder="Type a reply… (Ctrl+Enter to send)"
+                            aria-label="Reply"
                             value={replyText}
                             onChange={handleReplyChange}
+                            onKeyDown={e => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) handleReply(); }}
                         />
-                        <button className="btn btn-gold btn-sm" disabled={sending || !replyText.trim()} onClick={handleReply}>
-                            {sending ? "..." : "Reply"}
+                        <button className="adm-btn gold" disabled={sending || !replyText.trim()} onClick={handleReply}>
+                            <Icon name="send" size={15} /> {sending ? "Sending…" : "Send"}
                         </button>
-                    </div>
-                    <div style={{ display: "flex", gap: "0.6rem", flexWrap: "wrap" }}>
-                        <button className="btn btn-navy btn-sm" onClick={() => { stopTyping(); setExpanded(false); }}>Collapse</button>
-                        {chat.status !== "closed" && (
-                            <button className="btn btn-navy btn-sm" onClick={() => setChatStatus(chat.id, "closed")}>Mark Closed</button>
-                        )}
-                        {chat.status === "closed" && (
-                            <button className="btn btn-navy btn-sm" onClick={() => setChatStatus(chat.id, "responded")}>Reopen</button>
-                        )}
-                        <button className="btn btn-sm" style={{ background: "rgba(224,115,48,0.12)", color: "var(--orange)" }} onClick={handleDelete}>Delete</button>
                     </div>
                 </>
             )}
+
+            <div className="adm-record-foot">
+                <button className="adm-btn sm" onClick={toggle}>
+                    <Icon name="chat" size={14} /> {expanded ? "Hide conversation" : "Open conversation"}
+                </button>
+                <div className="adm-actions">
+                    {chat.status !== "closed" ? (
+                        <button className="adm-btn sm ghost" onClick={() => run(() => setChatStatus(chat.id, "closed"), "Marked closed")}>
+                            <Icon name="check" size={14} /> Mark closed
+                        </button>
+                    ) : (
+                        <button className="adm-btn sm ghost" onClick={() => run(() => setChatStatus(chat.id, "responded"), "Reopened")}>Reopen</button>
+                    )}
+                    <button className="adm-btn sm ghost danger" onClick={handleDelete}><Icon name="trash" size={14} /> Delete</button>
+                </div>
+            </div>
         </div>
     );
 }
@@ -160,27 +178,36 @@ function ChatCard({ chat }) {
 export default function SupportChatsManager() {
     const { data, loading, error } = useFirebaseCollection("supportChats");
     const [filter, setFilter] = useState("all");
-    const sorted = (data || []).slice().sort((a, b) => (b.updatedAt || b.createdAt) - (a.updatedAt || a.createdAt));
+    const sorted = (data || []).slice().sort((a, b) => (b.updatedAt || b.createdAt || 0) - (a.updatedAt || a.createdAt || 0));
     const filtered = filter === "all" ? sorted : sorted.filter(c => c.status === filter);
+    const countFor = key => (key === "all" ? sorted.length : sorted.filter(c => c.status === key).length);
 
     return (
         <div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.75rem", marginBottom: "1.5rem" }}>
-                <h2 style={{ fontFamily: "var(--font-display)", fontSize: "2.15rem", fontWeight: 700, lineHeight: 1, color: "var(--navy)", margin: 0 }}>
-                    Support Center <span style={{ color: "var(--gray-400)", fontWeight: 500, fontSize: "1rem" }}>({filtered.length})</span>
-                </h2>
-                <div className="tab-nav" style={{ marginBottom: 0 }}>
-                    {["all", "new", "responded", "closed"].map(f => (
-                        <button key={f} className={`tab-btn${filter === f ? " active" : ""}`} onClick={() => setFilter(f)}>{f}</button>
+            <PageHeader
+                eyebrow="Inbox"
+                title="Support Chats"
+                count={sorted.length}
+                subtitle="Live conversations started from the help button on the website. Your replies reach the visitor instantly."
+            />
+
+            <div className="adm-toolbar">
+                <div className="adm-filters" role="group" aria-label="Filter by status">
+                    {FILTERS.map(f => (
+                        <button key={f.key} className={`adm-filter${filter === f.key ? " active" : ""}`} aria-pressed={filter === f.key} onClick={() => setFilter(f.key)}>
+                            {f.label}<span>{countFor(f.key)}</span>
+                        </button>
                     ))}
                 </div>
             </div>
 
-            {loading && <p style={{ color: "var(--gray-400)" }}>Loading…</p>}
-            {!loading && error && <p style={{ color: "var(--orange)" }}>Couldn't load support requests. Check Firebase read permissions.</p>}
-            {!loading && !error && filtered.length === 0 && <p style={{ color: "var(--gray-400)" }}>No support requests here yet.</p>}
+            {loading && <div className="adm-loading">Loading…</div>}
+            {!loading && error && <Notice tone="error">Couldn't load support chats. Try refreshing the page.</Notice>}
+            {!loading && !error && filtered.length === 0 && (
+                <EmptyState icon="chat" title="No conversations here">New chats from the website appear automatically.</EmptyState>
+            )}
 
-            <div style={{ display: "grid", gap: "1rem" }}>
+            <div className="adm-list">
                 {filtered.map(chat => <ChatCard key={chat.id} chat={chat} />)}
             </div>
         </div>

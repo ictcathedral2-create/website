@@ -1,20 +1,25 @@
 import { useState } from "react";
 import { useFirebaseCollection } from "../hooks/useFirebaseCollection";
 import { createAdmin, updateAdminRole, resetAdminPassword, deleteAdmin } from "./adminUsersApi";
+import { Icon, Notice, PageHeader, formatWhen, useToast } from "./ui";
 
+// 12 characters from a cryptographically secure source, avoiding look-alikes (0/O, 1/l/I).
 function randomPassword() {
-    return Math.random().toString(36).slice(-5) + Math.random().toString(36).slice(-5).toUpperCase() + "!2";
+    const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
+    const bytes = crypto.getRandomValues(new Uint32Array(12));
+    return Array.from(bytes, b => alphabet[b % alphabet.length]).join("");
 }
 
 function displayRole(item) {
     // Legacy `true` entries lose their value when spread into an object by
-    // useFirebaseCollection, leaving no `role`/`email` — treat as super.
+    // useFirebaseCollection, leaving no `role`/`email`, so treat as super.
     return item.role || "super";
 }
 
 function NewAdminForm({ onCancel, onCreated }) {
+    const { run } = useToast();
     const [email, setEmail] = useState("");
-    const [password, setPassword] = useState(randomPassword());
+    const [password, setPassword] = useState(randomPassword);
     const [role, setRole] = useState("admin");
     const [error, setError] = useState(null);
     const [busy, setBusy] = useState(false);
@@ -26,120 +31,109 @@ function NewAdminForm({ onCancel, onCreated }) {
         }
         setBusy(true);
         setError(null);
-        try {
-            await createAdmin(email.trim(), password, role);
-            onCreated();
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setBusy(false);
-        }
+        if (await run(() => createAdmin(email.trim(), password, role), `Admin account created for ${email.trim()}`)) onCreated();
+        setBusy(false);
     };
 
     return (
-        <div style={{ padding: "1.25rem", background: "var(--cream)", borderRadius: 12, marginBottom: "1.5rem" }}>
-            <div style={{ display: "grid", gap: "0.85rem" }}>
-                <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label className="form-label">Email</label>
-                    <input className="form-input" type="email" placeholder="newadmin@example.com" value={email} onChange={e => setEmail(e.target.value)} />
+        <div className="adm-form">
+            <div className="adm-form-title">New admin account</div>
+            <div className="adm-form-grid">
+                <div className="form-group">
+                    <label className="form-label" htmlFor="na-email">Email</label>
+                    <input id="na-email" className="form-input" type="email" placeholder="newadmin@example.com" value={email} onChange={e => setEmail(e.target.value)} />
                 </div>
-                <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label className="form-label">Temporary Password</label>
-                    <div style={{ display: "flex", gap: "0.5rem" }}>
-                        <input className="form-input" value={password} onChange={e => setPassword(e.target.value)} />
-                        <button className="btn btn-navy btn-sm" onClick={() => setPassword(randomPassword())}>New</button>
-                    </div>
-                    <div style={{ fontSize: "0.75rem", color: "var(--gray-400)", marginTop: 4 }}>
-                        Share this with the new admin directly — they can log in with it right away.
-                    </div>
-                </div>
-                <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label className="form-label">Role</label>
-                    <select className="form-select" value={role} onChange={e => setRole(e.target.value)}>
-                        <option value="admin">Admin</option>
-                        <option value="super">Super User</option>
+                <div className="form-group">
+                    <label className="form-label" htmlFor="na-role">Role</label>
+                    <select id="na-role" className="form-select" value={role} onChange={e => setRole(e.target.value)}>
+                        <option value="admin">Admin: manages content and submissions</option>
+                        <option value="super">Super admin: can also manage admin accounts</option>
                     </select>
                 </div>
+                <div className="form-group full">
+                    <label className="form-label" htmlFor="na-password">Temporary password</label>
+                    <div style={{ display: "flex", gap: "0.5rem" }}>
+                        <input id="na-password" className="form-input" value={password} onChange={e => setPassword(e.target.value)} style={{ fontFamily: "monospace" }} />
+                        <button type="button" className="adm-btn" onClick={() => setPassword(randomPassword())}>Generate</button>
+                        <button type="button" className="adm-btn" onClick={() => navigator.clipboard?.writeText(password)}>Copy</button>
+                    </div>
+                    <div className="adm-hint">Share this with the new admin privately. They can sign in with it right away.</div>
+                </div>
             </div>
-            {error && <p style={{ color: "var(--orange)", fontSize: "0.8rem", marginTop: 10 }}>{error}</p>}
-            <div style={{ display: "flex", gap: "0.6rem", marginTop: "1rem" }}>
-                <button className="btn btn-gold btn-sm" disabled={busy} onClick={handleCreate}>
-                    {busy ? "Creating..." : "Create Admin"}
-                </button>
-                <button className="btn btn-navy btn-sm" onClick={onCancel}>Cancel</button>
+            {error && <div style={{ marginTop: "1rem" }}><Notice tone="error">{error}</Notice></div>}
+            <div className="adm-form-actions">
+                <button className="adm-btn gold" disabled={busy} onClick={handleCreate}>{busy ? "Creating…" : "Create admin"}</button>
+                <button className="adm-btn" disabled={busy} onClick={onCancel}>Cancel</button>
             </div>
         </div>
     );
 }
 
 function AdminRow({ item, currentUid }) {
+    const { run } = useToast();
     const [busy, setBusy] = useState(false);
-    const [error, setError] = useState(null);
     const [resetting, setResetting] = useState(false);
     const [newPassword, setNewPassword] = useState("");
     const role = displayRole(item);
     const isSelf = item.id === currentUid;
 
     // The admins list is a realtime subscription, so a successful call updates
-    // the UI on its own — no manual refetch needed here.
-    const run = async fn => {
+    // the UI on its own; no manual refetch needed here.
+    const act = async (fn, message) => {
         setBusy(true);
-        setError(null);
-        try {
-            await fn();
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setBusy(false);
+        const ok = await run(fn, message);
+        setBusy(false);
+        return ok;
+    };
+
+    const handleToggleRole = () => act(() => updateAdminRole(item.id, role === "super" ? "admin" : "super"), "Role updated");
+    const handleDelete = () => {
+        if (!window.confirm(`Remove ${item.email || "this admin"}? They'll immediately lose access.`)) return;
+        act(() => deleteAdmin(item.id), "Admin removed");
+    };
+    const handleResetPassword = async () => {
+        if (newPassword.length < 6) {
+            await run(() => { throw new Error("Password must be at least 6 characters."); });
+            return;
+        }
+        if (await act(() => resetAdminPassword(item.id, newPassword), "Password reset")) {
+            setResetting(false);
+            setNewPassword("");
         }
     };
 
-    const handleToggleRole = () => run(() => updateAdminRole(item.id, role === "super" ? "admin" : "super"));
-    const handleDelete = () => {
-        if (!window.confirm(`Remove ${item.email || "this admin"}? They'll immediately lose access.`)) return;
-        run(() => deleteAdmin(item.id));
-    };
-    const handleResetPassword = () => {
-        if (newPassword.length < 6) { setError("Password must be at least 6 characters."); return; }
-        run(async () => { await resetAdminPassword(item.id, newPassword); setResetting(false); setNewPassword(""); });
-    };
-
     return (
-        <div className="card" style={{ padding: "1.25rem" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "0.75rem", flexWrap: "wrap" }}>
+        <div className="adm-card adm-record">
+            <div className="adm-record-head">
                 <div>
-                    <div style={{ fontWeight: 700, color: "var(--navy)", fontSize: "0.95rem" }}>
-                        {item.email || "—"} {isSelf && <span style={{ color: "var(--gray-400)", fontWeight: 500, fontSize: "0.78rem" }}>(you)</span>}
-                    </div>
-                    <div style={{ fontSize: "0.78rem", color: "var(--gray-400)", marginTop: 2 }}>
-                        {item.addedAt ? `Added ${new Date(item.addedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}` : "Original admin account"}
-                    </div>
+                    <div className="adm-record-title">{item.email || "Original admin account"} {isSelf && <span className="adm-record-meta">(you)</span>}</div>
+                    <div className="adm-record-meta">{item.addedAt ? `Added ${formatWhen(item.addedAt)}` : "Created during setup"}</div>
                 </div>
-                <span style={{ background: role === "super" ? "rgba(201,168,76,0.15)" : "var(--gray-100)", color: role === "super" ? "var(--gold-dark)" : "var(--gray-600)", fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", padding: "3px 10px", borderRadius: 20 }}>
-                    {role === "super" ? "Super User" : "Admin"}
-                </span>
+                <span className={`adm-pill ${role === "super" ? "tone-warn" : "tone-info"}`}>{role === "super" ? "Super admin" : "Admin"}</span>
             </div>
 
-            {error && <p style={{ color: "var(--orange)", fontSize: "0.8rem", marginTop: 10 }}>{error}</p>}
-
             {resetting && (
-                <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.85rem" }}>
-                    <input className="form-input" placeholder="New password (min 6 chars)" value={newPassword} onChange={e => setNewPassword(e.target.value)} />
-                    <button className="btn btn-gold btn-sm" disabled={busy} onClick={handleResetPassword}>Set</button>
-                    <button className="btn btn-navy btn-sm" onClick={() => { setResetting(false); setNewPassword(""); }}>Cancel</button>
+                <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.9rem", flexWrap: "wrap" }}>
+                    <input className="form-input" style={{ flex: 1, minWidth: 200, fontFamily: "monospace" }} placeholder="New password (min 6 characters)" value={newPassword} onChange={e => setNewPassword(e.target.value)} />
+                    <button className="adm-btn" onClick={() => setNewPassword(randomPassword())}>Generate</button>
+                    <button className="adm-btn gold" disabled={busy} onClick={handleResetPassword}>Set password</button>
+                    <button className="adm-btn" onClick={() => { setResetting(false); setNewPassword(""); }}>Cancel</button>
                 </div>
             )}
 
-            <div style={{ display: "flex", gap: "0.6rem", marginTop: "0.85rem", flexWrap: "wrap", borderTop: "1px solid var(--gray-200)", paddingTop: "0.85rem" }}>
-                <button className="btn btn-navy btn-sm" disabled={busy} onClick={handleToggleRole}>
-                    {role === "super" ? "Make Admin" : "Make Super User"}
-                </button>
-                <button className="btn btn-navy btn-sm" disabled={busy || resetting} onClick={() => setResetting(true)}>Reset Password</button>
-                {!isSelf && (
-                    <button className="btn btn-sm" style={{ background: "rgba(224,115,48,0.12)", color: "var(--orange)" }} disabled={busy} onClick={handleDelete}>
-                        Remove Admin
-                    </button>
-                )}
+            <div className="adm-record-foot">
+                <span className="adm-record-meta">{role === "super" ? "Can manage admin accounts" : "Can manage content and submissions"}</span>
+                <div className="adm-actions">
+                    {!isSelf && (
+                        <button className="adm-btn sm ghost" disabled={busy} onClick={handleToggleRole}>
+                            {role === "super" ? "Make regular admin" : "Make super admin"}
+                        </button>
+                    )}
+                    <button className="adm-btn sm ghost" disabled={busy || resetting} onClick={() => setResetting(true)}>Reset password</button>
+                    {!isSelf && (
+                        <button className="adm-btn sm ghost danger" disabled={busy} onClick={handleDelete}><Icon name="trash" size={14} /> Remove</button>
+                    )}
+                </div>
             </div>
         </div>
     );
@@ -152,28 +146,24 @@ export default function AdminUsersManager({ currentUid }) {
 
     return (
         <div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.75rem", marginBottom: "1.5rem" }}>
-                <h2 style={{ fontFamily: "var(--font-display)", fontSize: "2.15rem", fontWeight: 700, lineHeight: 1, color: "var(--navy)", margin: 0 }}>
-                    Admin Users <span style={{ color: "var(--gray-400)", fontWeight: 500, fontSize: "1rem" }}>({admins.length})</span>
-                </h2>
-                <button className="btn btn-gold btn-sm" onClick={() => setCreating(!creating)}>
-                    {creating ? "Cancel" : "+ Add Admin"}
+            <PageHeader
+                eyebrow="Settings"
+                title="Admin Users"
+                count={admins.length}
+                subtitle="Super admins can add, promote, reset passwords for and remove other admin accounts. Only super admins can see this page."
+            >
+                <button className="adm-btn primary" onClick={() => setCreating(!creating)}>
+                    <Icon name={creating ? "close" : "plus"} size={15} /> {creating ? "Cancel" : "Add admin"}
                 </button>
-            </div>
-
-            <p style={{ color: "var(--gray-400)", fontSize: "0.85rem", marginBottom: "1.5rem" }}>
-                Super users can create, promote/demote, reset passwords for, and remove other admin accounts.
-            </p>
+            </PageHeader>
 
             {creating && <NewAdminForm onCancel={() => setCreating(false)} onCreated={() => setCreating(false)} />}
 
-            {loading && <p style={{ color: "var(--gray-400)" }}>Loading…</p>}
-            {!loading && error && <p style={{ color: "var(--orange)" }}>Couldn't load admin accounts. Check Firebase read permissions.</p>}
+            {loading && <div className="adm-loading">Loading…</div>}
+            {!loading && error && <Notice tone="error">Couldn't load admin accounts. Try refreshing the page.</Notice>}
 
-            <div style={{ display: "grid", gap: "1rem" }}>
-                {admins.map(item => (
-                    <AdminRow key={item.id} item={item} currentUid={currentUid} />
-                ))}
+            <div className="adm-list">
+                {admins.map(item => <AdminRow key={item.id} item={item} currentUid={currentUid} />)}
             </div>
         </div>
     );

@@ -1,442 +1,135 @@
-import { useState } from "react";
-import { useFirebaseCollection } from "../hooks/useFirebaseCollection";
+import { useEffect, useState } from "react";
 import { useAdminRole } from "../hooks/useAdminRole";
+import logo from "../assets/logo.png";
+import { GROUPS, SECTIONS } from "./sections";
+import { Icon, ToastProvider } from "./ui";
+import { hasPendingCount, usePendingCount } from "./usePendingCount";
+import Overview from "./Overview";
 import SubmissionSection from "./SubmissionSection";
 import EventsManager from "./EventsManager";
-import GalleryManager from "./GalleryManager";
+import ImageGalleryManager from "./ImageGalleryManager";
 import SupportChatsManager from "./SupportChatsManager";
 import WrittenSermonsManager from "./WrittenSermonsManager";
-import SermonGalleryManager from "./SermonGalleryManager";
 import AdminUsersManager from "./AdminUsersManager";
 
-function normalizeUrl(url) {
-    const trimmed = String(url || "").trim();
-    if (!trimmed) return "";
-    return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+// The open section lives in the URL (#admin/events) so a refresh or a shared
+// link lands on the same page.
+const sectionFromHash = () => window.location.hash.replace(/^#admin\/?/, "") || "overview";
+
+function NavBadge({ section }) {
+    const { count } = usePendingCount(section);
+    return count ? <span className="adm-badge" title={`${count} ${section.pendingLabel || "new"}`}>{count}</span> : null;
 }
 
-const SECTIONS = [
-    {
-        key: "manageEvents",
-        label: "Manage Events",
-        type: "events",
-    },
-    {
-        key: "manageGallery",
-        label: "Gallery / Posters",
-        type: "gallery",
-    },
-    {
-        key: "writtenSermons",
-        label: "Written Sermons",
-        type: "writtenSermons",
-    },
-    {
-        key: "sermonGallery",
-        label: "Sermons Gallery",
-        type: "sermonGallery",
-    },
-    {
-        key: "supportCenter",
-        label: "Support Center",
-        type: "support",
-        rawPath: "supportChats",
-        pendingStatus: "new",
-    },
-    {
-        key: "adminUsers",
-        label: "Admin Users",
-        type: "adminUsers",
-        superOnly: true,
-    },
-    {
-        key: "joinUsRegistrations",
-        label: "Join Us Registrations",
-        path: "joinUsRegistrations",
-        statusOptions: ["new", "contacted", "archived"],
-        columns: [
-            { key: "firstName", label: "Name", render: (v, item) => `${item.firstName || ""} ${item.lastName || ""}`.trim() },
-            { key: "phone", label: "Phone" },
-            { key: "area", label: "Area" },
-            { key: "gender", label: "Gender" },
-        ],
-        fields: [
-            { key: "firstName", label: "First Name", type: "text" },
-            { key: "lastName", label: "Last Name", type: "text" },
-            { key: "phone", label: "Phone", type: "text" },
-            { key: "area", label: "Area", type: "text" },
-            { key: "gender", label: "Gender", type: "select", options: ["Male", "Female"] },
-        ],
-        pendingStatus: "new",
-    },
-    {
-        key: "testimonies",
-        label: "Testimonies",
-        path: "testimonies",
-        statusOptions: ["pending", "approved", "rejected"],
-        columns: [
-            { key: "title", label: "Title" },
-            { key: "name", label: "Name" },
-            { key: "category", label: "Category" },
-            { key: "story", label: "Story" },
-        ],
-        fields: [
-            { key: "name", label: "Name", type: "text" },
-            { key: "title", label: "Title", type: "text" },
-            { key: "category", label: "Category", type: "select", options: ["Testimony / Personal Story", "Devotional Article", "Scripture Reflection", "Youth Experience"] },
-            { key: "story", label: "Story", type: "textarea" },
-        ],
-        pendingStatus: "pending",
-    },
-    {
-        key: "businessListings",
-        label: "Business Listings",
-        path: "businessListings",
-        statusOptions: ["pending", "approved", "rejected"],
-        columns: [
-            {
-                key: "mediaType", label: "Media", render: (v, item) => {
-                    if (v === "image" && item.mediaData) return <img src={item.mediaData} alt="" style={{ width: 48, height: 48, objectFit: "cover", borderRadius: 6 }} />;
-                    if (v === "video" && item.mediaUrl) return <a href={item.mediaUrl} target="_blank" rel="noreferrer">▶ Video</a>;
-                    return "—";
-                }
-            },
-            { key: "businessName", label: "Business" },
-            { key: "ownerName", label: "Owner" },
-            { key: "phone", label: "Phone" },
-            { key: "category", label: "Category" },
-            { key: "description", label: "Description" },
-            { key: "websiteUrl", label: "Website", render: v => v ? <a href={normalizeUrl(v)} target="_blank" rel="noreferrer">🔗 Link</a> : "—" },
-        ],
-        fields: [
-            { key: "businessName", label: "Business Name", type: "text" },
-            { key: "ownerName", label: "Owner Name", type: "text" },
-            { key: "phone", label: "Phone", type: "text" },
-            { key: "category", label: "Category", type: "select", options: ["Retail & Shops", "Food & Catering", "Services", "Agriculture", "Technology", "Fashion & Beauty", "Transport", "Other"] },
-            { key: "description", label: "Description", type: "textarea" },
-            { key: "showPhone", label: "Public Phone Number", type: "checkbox", helpText: "Show the owner's phone number on the public listing" },
-            { key: "websiteUrl", label: "Website / Social Link", type: "text" },
-        ],
-        pendingStatus: "pending",
-    },
-    {
-        key: "jobPostings",
-        label: "Job Postings",
-        path: "jobPostings",
-        statusOptions: ["pending", "approved", "rejected"],
-        columns: [
-            {
-                key: "advertType", label: "Advert", render: (v, item) => {
-                    if (v === "image" && item.advertData) return <img src={item.advertData} alt="" style={{ width: 48, height: 48, objectFit: "cover", borderRadius: 6 }} />;
-                    if (v === "pdf" && item.advertData) return <a href={item.advertData} target="_blank" rel="noreferrer">📄 PDF</a>;
-                    return "—";
-                }
-            },
-            { key: "jobTitle", label: "Job Title" },
-            { key: "company", label: "Company" },
-            { key: "contactPhone", label: "Phone" },
-            { key: "jobType", label: "Type" },
-            { key: "description", label: "Description" },
-            { key: "jobUrl", label: "Link", render: v => v ? <a href={normalizeUrl(v)} target="_blank" rel="noreferrer">🔗 Link</a> : "—" },
-        ],
-        fields: [
-            { key: "jobTitle", label: "Job Title", type: "text" },
-            { key: "company", label: "Company / Organization", type: "text" },
-            { key: "contactPhone", label: "Contact Phone", type: "text" },
-            { key: "jobType", label: "Job Type", type: "select", options: ["Full-time", "Part-time", "Internship", "Volunteer", "Casual"] },
-            { key: "description", label: "Description", type: "textarea" },
-            { key: "showContactPhone", label: "Public Contact Phone", type: "checkbox", helpText: "Show the contact phone number on the public job post" },
-            { key: "jobUrl", label: "Application Link / Website", type: "text" },
-        ],
-        pendingStatus: "pending",
-    },
-    {
-        key: "jobSeekers",
-        label: "Job Seekers",
-        path: "jobSeekers",
-        statusOptions: ["pending", "approved", "rejected"],
-        columns: [
-            { key: "name", label: "Name" },
-            { key: "phone", label: "Phone" },
-            { key: "desiredRole", label: "Looking For" },
-            { key: "bio", label: "Bio" },
-            { key: "cvData", label: "CV", render: v => v ? <a href={v} download="cv.pdf">📄 CV</a> : "—" },
-        ],
-        fields: [
-            { key: "name", label: "Full Name", type: "text" },
-            { key: "phone", label: "Phone", type: "text" },
-            { key: "desiredRole", label: "Desired Role / Field", type: "text" },
-            { key: "bio", label: "Bio / Skills", type: "textarea" },
-        ],
-        pendingStatus: "pending",
-    },
-    {
-        key: "wantedPosts",
-        label: "Requests",
-        path: "wantedPosts",
-        statusOptions: ["pending", "approved", "rejected"],
-        columns: [
-            { key: "name", label: "Name" },
-            { key: "phone", label: "Phone" },
-            { key: "itemWanted", label: "Looking For" },
-            { key: "description", label: "Description" },
-        ],
-        fields: [
-            { key: "name", label: "Full Name", type: "text" },
-            { key: "phone", label: "Phone", type: "text" },
-            { key: "itemWanted", label: "What They're Looking For", type: "text" },
-            { key: "description", label: "Description", type: "textarea" },
-        ],
-        pendingStatus: "pending",
-    },
-    {
-        key: "prayerRequests",
-        label: "Prayer Requests",
-        path: "prayerRequests",
-        statusOptions: ["new", "prayed", "archived"],
-        columns: [
-            { key: "name", label: "Name", render: (v, item) => (item.anonymous ? "Anonymous" : v || "—") },
-            { key: "phone", label: "Phone" },
-            { key: "request", label: "Request" },
-            { key: "source", label: "Source" },
-        ],
-        fields: [
-            { key: "name", label: "Name", type: "text" },
-            { key: "phone", label: "Phone", type: "text" },
-            { key: "request", label: "Request", type: "textarea" },
-            { key: "source", label: "Source", type: "text" },
-        ],
-        pendingStatus: "new",
-    },
-    {
-        key: "contactMessages",
-        label: "Contact Messages",
-        path: "contactMessages",
-        statusOptions: ["new", "responded", "archived"],
-        columns: [
-            { key: "firstName", label: "Name", render: (v, item) => `${item.firstName || ""} ${item.lastName || ""}`.trim() },
-            { key: "email", label: "Email" },
-            { key: "phone", label: "Phone" },
-            { key: "helpType", label: "Help Type" },
-            { key: "message", label: "Message" },
-        ],
-        fields: [
-            { key: "firstName", label: "First Name", type: "text" },
-            { key: "lastName", label: "Last Name", type: "text" },
-            { key: "email", label: "Email", type: "text" },
-            { key: "phone", label: "Phone", type: "text" },
-            { key: "helpType", label: "Help Type", type: "select", options: ["I'm new and want to know more", "I'd like to join a ministry", "I need pastoral support", "Partnership or collaboration", "Other"] },
-            { key: "message", label: "Message", type: "textarea" },
-        ],
-        pendingStatus: "new",
-    },
-    {
-        key: "eventRegistrations",
-        label: "Event Registrations",
-        path: "eventRegistrations",
-        statusOptions: ["registered", "confirmed", "cancelled"],
-        columns: [
-            { key: "firstName", label: "Name", render: (v, item) => `${item.firstName || ""} ${item.lastName || ""}`.trim() },
-            { key: "eventTitle", label: "Event" },
-            { key: "phone", label: "Phone" },
-            { key: "specialRequirements", label: "Notes" },
-        ],
-        fields: [
-            { key: "firstName", label: "First Name", type: "text" },
-            { key: "lastName", label: "Last Name", type: "text" },
-            { key: "eventTitle", label: "Event", type: "text" },
-            { key: "phone", label: "Phone", type: "text" },
-            { key: "specialRequirements", label: "Notes", type: "textarea" },
-        ],
-        pendingStatus: "registered",
-        groupByField: "eventTitle",
-    },
-    {
-        key: "ministryRegistrations",
-        label: "Ministry Registrations",
-        path: "ministryRegistrations",
-        statusOptions: ["new", "contacted", "archived"],
-        columns: [
-            { key: "firstName", label: "Name", render: (v, item) => `${item.firstName || ""} ${item.lastName || ""}`.trim() },
-            { key: "phone", label: "Phone" },
-            { key: "ministryTitle", label: "Ministry" },
-        ],
-        fields: [
-            { key: "firstName", label: "First Name", type: "text" },
-            { key: "lastName", label: "Last Name", type: "text" },
-            { key: "phone", label: "Phone", type: "text" },
-            { key: "ministryTitle", label: "Ministry", type: "text" },
-        ],
-        pendingStatus: "new",
-        groupByField: "ministryTitle",
-        groupOptions: ["ICT Ministry", "Praise & Worship Ministry", "Care Ministry", "Ushering Ministry", "Intercessory Ministry", "Creative Ministry", "Merchandise Ministry", "Pastoral Ministry"],
-    },
-    {
-        key: "smallGroupSignups",
-        label: "Small Group Signups",
-        path: "smallGroupSignups",
-        statusOptions: ["new", "assigned"],
-        columns: [
-            { key: "name", label: "Name" },
-            { key: "phone", label: "Phone" },
-            { key: "preferredGroup", label: "Preferred Group" },
-        ],
-        fields: [
-            { key: "name", label: "Name", type: "text" },
-            { key: "phone", label: "Phone", type: "text" },
-            { key: "preferredGroup", label: "Preferred Group", type: "select", options: ["Bible Study (Sunday · 11:00 AM)", "Missions", "Men's Fellowship (Friday · 5:00 PM)"] },
-        ],
-        pendingStatus: "new",
-        groupByField: "preferredGroup",
-        groupOptions: ["Bible Study (Sunday · 11:00 AM)", "Missions", "Men's Fellowship (Friday · 5:00 PM)"],
-    },
-    {
-        key: "newsletterSignups",
-        label: "Newsletter Signups",
-        path: "newsletterSignups",
-        statusOptions: ["new", "archived"],
-        columns: [
-            { key: "email", label: "Email" },
-            { key: "source", label: "Source" },
-        ],
-        fields: [
-            { key: "email", label: "Email", type: "text" },
-            { key: "source", label: "Source", type: "text" },
-        ],
-        pendingStatus: "new",
-    },
-    {
-        key: "givingRecords",
-        label: "Giving Records",
-        path: "givingRecords",
-        statusOptions: ["new", "received"],
-        columns: [
-            { key: "firstName", label: "Name", render: (v, item) => `${item.firstName || ""} ${item.lastName || ""}`.trim() },
-            { key: "email", label: "Email" },
-            { key: "category", label: "Category" },
-            { key: "amount", label: "Amount", render: v => `KSh ${Number(v || 0).toLocaleString()}` },
-            { key: "frequency", label: "Frequency" },
-        ],
-        fields: [
-            { key: "firstName", label: "First Name", type: "text" },
-            { key: "lastName", label: "Last Name", type: "text" },
-            { key: "email", label: "Email", type: "text" },
-            { key: "category", label: "Category", type: "select", options: ["Tithes & Offerings", "Youth Ministry Fund", "Mission & Outreach", "Building Fund", "Scholarship Fund"] },
-            { key: "amount", label: "Amount (KSh)", type: "number" },
-            { key: "frequency", label: "Frequency", type: "select", options: ["One-Time Gift", "Weekly", "Monthly"] },
-        ],
-        pendingStatus: "new",
-    },
-    {
-        key: "mpesaTransactions",
-        label: "M-Pesa Transactions",
-        path: "mpesaTransactions",
-        statusOptions: ["pending", "completed", "failed"],
-        columns: [
-            { key: "phone", label: "Phone" },
-            { key: "accountType", label: "Giving Towards" },
-            { key: "amount", label: "Amount", render: v => `KSh ${Number(v || 0).toLocaleString()}` },
-            { key: "mpesaReceiptNumber", label: "Receipt" },
-        ],
-        fields: [
-            { key: "phone", label: "Phone", type: "text" },
-            { key: "accountType", label: "Giving Towards", type: "text" },
-            { key: "amount", label: "Amount (KSh)", type: "number" },
-            { key: "mpesaReceiptNumber", label: "M-Pesa Receipt", type: "text" },
-        ],
-        pendingStatus: "pending",
-    },
-];
-
-function SidebarBadge({ path, rawPath, pendingStatus }) {
-    const { data } = useFirebaseCollection(rawPath || `submissions/${path}`);
-    const count = (data || []).filter(item => item.status === pendingStatus).length;
-    if (!count) return null;
-    return (
-        <span style={{ background: "var(--gold)", color: "white", fontSize: "0.7rem", fontWeight: 700, borderRadius: 10, padding: "1px 7px", marginLeft: "auto" }}>
-            {count}
-        </span>
-    );
+function SectionBody({ section, sections, user, open }) {
+    switch (section.type) {
+        case "overview": return <Overview sections={sections} open={open} />;
+        case "events": return <EventsManager />;
+        case "gallery":
+            return (
+                <ImageGalleryManager
+                    path="gallery"
+                    title="Posters & Photos"
+                    description="These rotate on the Home page. Upload event posters ahead of time, and photos after the event."
+                    aspect="3 / 4"
+                    notifyCategory="gallery"
+                />
+            );
+        case "sermonGallery":
+            return (
+                <ImageGalleryManager
+                    path="sermonGallery"
+                    title="Sermon Photos"
+                    description="These appear in the Gallery tab of the Sermons page: photos from services, preaching and worship."
+                    aspect="1 / 1"
+                    notifyCategory="gallery"
+                />
+            );
+        case "writtenSermons": return <WrittenSermonsManager />;
+        case "support": return <SupportChatsManager />;
+        case "adminUsers": return <AdminUsersManager currentUid={user?.uid} />;
+        default: return <SubmissionSection key={section.key} section={section} />;
+    }
 }
 
 export default function AdminDashboard({ user, onLogout }) {
-    const [activeSection, setActiveSection] = useState("testimonies");
-    const [mobileOpen, setMobileOpen] = useState(false);
+    const [activeKey, setActiveKey] = useState(sectionFromHash);
+    const [menuOpen, setMenuOpen] = useState(false);
     const role = useAdminRole(user?.uid);
-    const visibleSections = SECTIONS.filter(s => !s.superOnly || role === "super");
-    const current = visibleSections.find(s => s.key === activeSection);
+    const sections = SECTIONS.filter(s => !s.superOnly || role === "super");
+    const current = sections.find(s => s.key === activeKey) || sections[0];
 
-    const selectSection = key => {
-        setActiveSection(key);
-        setMobileOpen(false);
+    useEffect(() => {
+        const onHashChange = () => setActiveKey(sectionFromHash());
+        window.addEventListener("hashchange", onHashChange);
+        window.addEventListener("popstate", onHashChange);
+        return () => {
+            window.removeEventListener("hashchange", onHashChange);
+            window.removeEventListener("popstate", onHashChange);
+        };
+    }, []);
+
+    const open = key => {
+        window.history.pushState(null, "", key === "overview" ? "#admin" : `#admin/${key}`);
+        setActiveKey(key);
+        setMenuOpen(false);
+        document.querySelector(".adm-main")?.scrollTo(0, 0);
     };
 
     return (
-        <div className="admin-layout" style={{ height: "100vh", display: "flex", background: "var(--cream)", overflow: "hidden" }}>
-            <button className="admin-mobile-toggle" onClick={() => setMobileOpen(true)} aria-label="Open menu">☰</button>
-            <div className={`admin-overlay${mobileOpen ? " open" : ""}`} onClick={() => setMobileOpen(false)} />
-            <aside
-                className={`admin-sidebar${mobileOpen ? " open" : ""}`}
-                style={{ width: 260, background: "var(--navy)", color: "white", padding: "1.75rem 1.25rem", flexShrink: 0, height: "100vh", overflowY: "auto", display: "flex", flexDirection: "column" }}
-            >
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: "2rem" }}>
-                    <div style={{ width: 36, height: 36, borderRadius: 8, background: "linear-gradient(135deg, var(--gold), var(--gold-dark))", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>✝</div>
-                    <div>
-                        <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "1.25rem", lineHeight: 0.9 }}>Admin</div>
-                        <div style={{ fontSize: "0.64rem", fontWeight: 700, letterSpacing: "0.06em", color: "var(--gold-light)", marginTop: 4 }}>ACK St Pauls Youths</div>
+        <ToastProvider>
+            <div className="adm">
+                <div className={`adm-overlay${menuOpen ? " open" : ""}`} onClick={() => setMenuOpen(false)} />
+                <aside className={`adm-sidebar${menuOpen ? " open" : ""}`} aria-label="Admin navigation">
+                    <div className="adm-brand">
+                        <img src={logo} alt="" />
+                        <div>
+                            <div className="adm-brand-name">Admin</div>
+                            <div className="adm-brand-sub">ACK St Pauls Youths</div>
+                        </div>
                     </div>
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                    {visibleSections.map(s => (
-                        <button
-                            key={s.key}
-                            onClick={() => selectSection(s.key)}
-                            style={{
-                                display: "flex", alignItems: "center", gap: 8,
-                                textAlign: "left", padding: "0.65rem 0.85rem", borderRadius: 8,
-                                border: "none", cursor: "pointer", fontSize: "0.8rem", letterSpacing: "0.01em",
-                                background: activeSection === s.key ? "rgba(201,168,76,0.15)" : "transparent",
-                                color: activeSection === s.key ? "var(--gold-light)" : "rgba(255,255,255,0.75)",
-                                fontWeight: activeSection === s.key ? 600 : 500,
-                            }}
-                        >
-                            {s.label}
-                            {s.pendingStatus && <SidebarBadge path={s.path} rawPath={s.rawPath} pendingStatus={s.pendingStatus} />}
-                        </button>
-                    ))}
-                </div>
-                <div style={{ marginTop: "2rem", paddingTop: "1.25rem", borderTop: "1px solid rgba(255,255,255,0.1)" }}>
-                    <div style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.5)", marginBottom: "0.75rem", wordBreak: "break-all" }}>{user?.email}</div>
-                    <button className="btn btn-navy btn-sm" style={{ width: "100%", justifyContent: "center", border: "1px solid rgba(255,255,255,0.2)" }} onClick={onLogout}>
-                        Log Out
-                    </button>
-                </div>
-            </aside>
-            <main className="admin-main" style={{ flex: 1, padding: "2.5rem 3rem", overflowY: "auto" }}>
-                {current?.type === "events" ? (
-                    <EventsManager />
-                ) : current?.type === "gallery" ? (
-                    <GalleryManager />
-                ) : current?.type === "support" ? (
-                    <SupportChatsManager />
-                ) : current?.type === "writtenSermons" ? (
-                    <WrittenSermonsManager />
-                ) : current?.type === "sermonGallery" ? (
-                    <SermonGalleryManager />
-                ) : current?.type === "adminUsers" ? (
-                    <AdminUsersManager currentUid={user?.uid} />
-                ) : current && (
-                    <SubmissionSection
-                        title={current.label}
-                        path={current.path}
-                        columns={current.columns}
-                        fields={current.fields}
-                        statusOptions={current.statusOptions}
-                        groupByField={current.groupByField}
-                        groupOptions={current.groupOptions}
-                    />
-                )}
-            </main>
-        </div>
+                    <nav className="adm-nav">
+                        {GROUPS.map(group => {
+                            const items = sections.filter(s => s.group === group);
+                            if (!items.length) return null;
+                            return (
+                                <div key={group} className="adm-nav-group">
+                                    {group !== "Overview" && <div className="adm-nav-heading">{group}</div>}
+                                    {items.map(s => (
+                                        <button
+                                            key={s.key}
+                                            className={`adm-nav-item${current.key === s.key ? " active" : ""}`}
+                                            aria-current={current.key === s.key ? "page" : undefined}
+                                            onClick={() => open(s.key)}
+                                        >
+                                            <Icon name={s.icon} size={17} />
+                                            {s.label}
+                                            {hasPendingCount(s) && <NavBadge section={s} />}
+                                        </button>
+                                    ))}
+                                </div>
+                            );
+                        })}
+                    </nav>
+                    <div className="adm-user">
+                        <div className="adm-user-role">{role === "super" ? "Super admin" : "Admin"}</div>
+                        <div className="adm-user-email">{user?.email}</div>
+                        <div className="adm-user-actions">
+                            <a href="/" target="_blank" rel="noreferrer"><Icon name="external" size={14} /> View site</a>
+                            <button onClick={onLogout}><Icon name="logout" size={14} /> Log out</button>
+                        </div>
+                    </div>
+                </aside>
+                <main className="adm-main">
+                    <div className="adm-topbar">
+                        <button onClick={() => setMenuOpen(true)} aria-label="Open menu"><Icon name="menu" /></button>
+                        <strong>{current.label}</strong>
+                    </div>
+                    <div className="adm-content">
+                        <SectionBody section={current} sections={sections} user={user} open={open} />
+                    </div>
+                </main>
+            </div>
+        </ToastProvider>
     );
 }

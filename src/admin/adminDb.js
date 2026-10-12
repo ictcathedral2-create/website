@@ -121,20 +121,23 @@ export async function deleteEvent(id) {
   notifyContentChange("events", "Event Removed", "An event was cancelled or removed");
 }
 
-// Public-facing gallery (event posters / after-event photos), managed only by admins but readable by anyone.
-export async function createGalleryItem(data) {
-  const newRef = push(ref(db, "gallery"));
+// Public-facing image collections (Home page posters in `gallery`, Sermons page
+// photos in `sermonGallery`), managed only by admins but readable by anyone.
+const NEW_IMAGE_TITLES = { gallery: "New Photo Added", sermonGallery: "New Sermon Photo" };
+
+export async function createImageItem(path, data, notifyCategory = "gallery") {
+  const newRef = push(ref(db, path));
   await set(newRef, { ...data, createdAt: Date.now() });
-  notifyContentChange("gallery", "New Photo Added", data.caption || "A new photo was added to the gallery");
+  notifyContentChange(notifyCategory, NEW_IMAGE_TITLES[path] || "New Photo Added", data.caption || "A new photo was added to the gallery");
   return newRef.key;
 }
 
-export async function updateGalleryItem(id, data) {
-  await set(ref(db, `gallery/${id}`), data);
+export async function updateImageItem(path, id, data) {
+  await set(ref(db, `${path}/${id}`), data);
 }
 
-export async function deleteGalleryItem(id) {
-  await remove(ref(db, `gallery/${id}`));
+export async function deleteImageItem(path, id) {
+  await remove(ref(db, `${path}/${id}`));
 }
 
 // Public-facing written sermons, managed only by admins but readable by anyone.
@@ -152,20 +155,4 @@ export async function updateWrittenSermon(id, data) {
 
 export async function deleteWrittenSermon(id) {
   await remove(ref(db, `writtenSermons/${id}`));
-}
-
-// Public-facing sermons gallery (photos from services/preaching), managed only by admins but readable by anyone.
-export async function createSermonGalleryItem(data) {
-  const newRef = push(ref(db, "sermonGallery"));
-  await set(newRef, { ...data, createdAt: Date.now() });
-  notifyContentChange("gallery", "New Sermon Photo", data.caption || "A new sermon photo was added");
-  return newRef.key;
-}
-
-export async function updateSermonGalleryItem(id, data) {
-  await set(ref(db, `sermonGallery/${id}`), data);
-}
-
-export async function deleteSermonGalleryItem(id) {
-  await remove(ref(db, `sermonGallery/${id}`));
 }
