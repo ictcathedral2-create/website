@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useFormSubmit } from "./hooks/useFormSubmit";
 import { useFirebaseCollection } from "./hooks/useFirebaseCollection";
 import { useYouTubeVideos } from "./hooks/useYouTubeVideos";
@@ -525,6 +525,39 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
   .app-download-row, .app-badges { justify-content: center; }
   .app-phone { width: 190px; height: 360px; transform: none; }
 }
+/* App install prompt: small card bottom-left on desktop (support chat is bottom-right), bottom sheet on phones */
+.app-prompt {
+  position: fixed; left: 1.5rem; bottom: 1.5rem; z-index: 1150; width: 350px; max-width: calc(100vw - 2rem);
+  background: var(--navy); color: white; border: 1px solid rgba(201,168,76,0.4); border-radius: 18px;
+  padding: 1.25rem 1.25rem 1.3rem; box-shadow: 0 20px 50px rgba(0,0,0,0.35); animation: appPromptIn 0.35s ease;
+}
+@keyframes appPromptIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+.app-prompt-close {
+  position: absolute; top: 8px; right: 8px; width: 36px; height: 36px; border: none; border-radius: 50%;
+  background: transparent; color: rgba(255,255,255,0.7); font-size: 1.5rem; line-height: 1; cursor: pointer;
+}
+.app-prompt-close:hover, .app-prompt-close:focus-visible { background: rgba(255,255,255,0.1); color: white; }
+.app-prompt-close:focus-visible, .app-prompt-link:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.app-prompt-head { display: flex; align-items: center; gap: 12px; padding-right: 2rem; }
+.app-prompt-head img { width: 48px; height: 48px; flex-shrink: 0; border-radius: 12px; background: white; object-fit: contain; padding: 4px; }
+.app-prompt h2 { font-family: var(--font-display); font-size: 1.3rem; line-height: 1.1; color: white; }
+.app-prompt-meta { margin-top: 4px; font-size: 0.74rem; color: var(--gold-light); letter-spacing: 0.02em; }
+.app-prompt p { margin-top: 0.85rem; font-size: 0.9rem; line-height: 1.55; color: rgba(255,255,255,0.8); }
+.app-prompt-hint strong { color: var(--gold-light); }
+.app-prompt-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem; margin-top: 1rem; }
+.app-prompt-actions .app-download-btn { padding: 0.65rem 1.1rem; }
+.app-prompt-link { color: var(--gold-light); font-weight: 600; font-size: 0.9rem; text-decoration: underline; text-underline-offset: 3px; }
+.dark-mode .app-prompt { background: #0A1530; border-color: rgba(201,168,76,0.6); }
+@media (max-width: 640px) {
+  .app-prompt {
+    left: 0; right: 0; bottom: 0; width: auto; max-width: none; border-radius: 20px 20px 0 0;
+    padding: 1.25rem 1rem calc(1.25rem + env(safe-area-inset-bottom)); animation-name: appPromptUp;
+  }
+  .app-prompt-actions .app-download-btn { flex: 1 1 100%; justify-content: center; }
+  .app-prompt-actions .app-prompt-link { margin: 0 auto; }
+}
+@keyframes appPromptUp { from { transform: translateY(100%); } to { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .app-prompt { animation: none; } }
 .gold-line { width: 60px; height: 3px; background: linear-gradient(90deg, var(--gold), var(--gold-dark)); border-radius: 2px; margin: 1rem auto 0; }
 
 /* ─── CARDS ─── */
@@ -1193,10 +1226,10 @@ function SocialIcon({ name, size = 18 }) {
     }
 }
 
-function useAnimatedCount(end, trigger) {
+function useAnimatedCount(end, trigger, instant = false) {
     const [val, setVal] = useState(0);
     useEffect(() => {
-        if (!trigger) return;
+        if (!trigger || instant) return;
         let start = 0;
         const step = Math.ceil(end / 60);
         const id = setInterval(() => {
@@ -1205,8 +1238,8 @@ function useAnimatedCount(end, trigger) {
             if (start >= end) clearInterval(id);
         }, 25);
         return () => clearInterval(id);
-    }, [end, trigger]);
-    return val;
+    }, [end, trigger, instant]);
+    return trigger && instant ? end : val;
 }
 
 function HomeEventCard({ e, navigate }) {
@@ -1259,10 +1292,22 @@ export default function App() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [mobileSubmenuOpen, setMobileSubmenuOpen] = useState(null);
     const [joinUsOpen, setJoinUsOpen] = useState(() => window.location.pathname === joinUsRegistrationPath);
-    const [statsVisible, setStatsVisible] = useState(false);
+    // Without IntersectionObserver, or when the visitor prefers reduced motion,
+    // the stats show their final numbers straight away instead of counting up.
+    const [statsInstant] = useState(() =>
+        typeof window.IntersectionObserver === "undefined" ||
+        !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
+    const [statsVisible, setStatsVisible] = useState(statsInstant);
     const [activeTab, setActiveTab] = useState("Video");
     const [scrolled, setScrolled] = useState(false);
-    const statsRef = useRef(null);
+    // Callback ref: attaches the observer whenever the stats section mounts,
+    // including when the visitor reaches Home from another page.
+    const statsRef = useCallback(node => {
+        if (!node || statsVisible) return;
+        const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setStatsVisible(true); }, { threshold: 0.4 });
+        obs.observe(node);
+        return () => obs.disconnect();
+    }, [statsVisible]);
     const events = useEvents();
     const nextEvent = events[0] || null;
 
@@ -1289,16 +1334,10 @@ export default function App() {
         else if (now >= eventTiming.dayStart) eventPhase = "starting";
     }
 
-    const stat1 = useAnimatedCount(350, statsVisible);
-    const stat2 = useAnimatedCount(7, statsVisible);
-    const stat3 = useAnimatedCount(10, statsVisible);
-    const stat4 = useAnimatedCount(800, statsVisible);
-
-    useEffect(() => {
-        const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setStatsVisible(true); }, { threshold: 0.4 });
-        if (statsRef.current) obs.observe(statsRef.current);
-        return () => obs.disconnect();
-    }, []);
+    const stat1 = useAnimatedCount(350, statsVisible, statsInstant);
+    const stat2 = useAnimatedCount(7, statsVisible, statsInstant);
+    const stat3 = useAnimatedCount(10, statsVisible, statsInstant);
+    const stat4 = useAnimatedCount(800, statsVisible, statsInstant);
 
     useEffect(() => {
         const onScroll = () => setScrolled(window.scrollY > 12);
@@ -1605,6 +1644,8 @@ export default function App() {
 
                 <SupportWidget />
 
+                <AppInstallPrompt activePage={activePage} navigate={navigate} />
+
                 <JoinUsModal open={joinUsOpen} onClose={closeJoinUs} />
             </div>
         </>
@@ -1841,7 +1882,7 @@ const APP_FEATURES = [
 ];
 
 // Shows "Coming soon" until APK_AVAILABLE is switched on in appDownload.js.
-function AppDownloadButton({ onLight = false }) {
+function AppDownloadButton({ onLight = false, onClick }) {
     if (!APK_AVAILABLE) {
         return (
             <span className={`app-download-btn disabled${onLight ? " on-light" : ""}`} aria-disabled="true">
@@ -1850,12 +1891,106 @@ function AppDownloadButton({ onLight = false }) {
         );
     }
     return (
-        <a className="app-download-btn" href={APK_URL} download={APK_FILE_NAME} rel="noopener">
+        <a className="app-download-btn" href={APK_URL} download={APK_FILE_NAME} rel="noopener" onClick={onClick}>
             <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M17.6 9.48l1.84-3.18a.38.38 0 0 0-.66-.38l-1.86 3.22a11.4 11.4 0 0 0-9.84 0L5.22 5.92a.38.38 0 0 0-.66.38L6.4 9.48A10.8 10.8 0 0 0 1 18h22a10.8 10.8 0 0 0-5.4-8.52zM7 15.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5zm10 0a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5z" />
             </svg>
             <span><small>Download for Android</small><strong>Get the app · v{APP_VERSION}</strong></span>
         </a>
+    );
+}
+
+const APP_PROMPT_KEY = "appPromptShown";
+
+// "android", "ios", "app" (inside an Android WebView or a home-screen app) or "desktop".
+function detectDevice() {
+    const ua = navigator.userAgent || "";
+    if (/; wv\)/.test(ua) || window.matchMedia?.("(display-mode: standalone)").matches) return "app";
+    if (/iPhone|iPad|iPod/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)) return "ios";
+    if (/Android/i.test(ua)) return "android";
+    return "desktop";
+}
+
+// Invites visitors to install the Android app, once per browser session
+// (sessionStorage resets when the browser or tab is closed).
+function AppInstallPrompt({ activePage, navigate }) {
+    const [open, setOpen] = useState(false);
+    const [device] = useState(detectDevice);
+    const shownRef = useRef(false);
+    const dialogRef = useRef(null);
+    const closeRef = useRef(null);
+    const suppressed = !APK_AVAILABLE || device === "ios" || device === "app" || activePage === "Mobile App";
+
+    useEffect(() => {
+        if (suppressed || shownRef.current) return;
+        try { if (sessionStorage.getItem(APP_PROMPT_KEY)) return; } catch { /* storage blocked: fall back to shownRef */ }
+        const id = setTimeout(() => {
+            shownRef.current = true;
+            try { sessionStorage.setItem(APP_PROMPT_KEY, "1"); } catch { /* ignore */ }
+            setOpen(true);
+            window.gtag?.("event", "app_prompt_shown", { device });
+        }, 3000);
+        return () => clearTimeout(id);
+    }, [suppressed, device]);
+
+    const dismiss = useCallback(() => {
+        setOpen(false);
+        window.gtag?.("event", "app_prompt_dismissed", { device });
+    }, [device]);
+
+    useEffect(() => {
+        if (!open || suppressed) return;
+        const previous = document.activeElement;
+        const dialog = dialogRef.current;
+        closeRef.current?.focus({ preventScroll: true });
+        const onKey = e => { if (e.key === "Escape") dismiss(); };
+        document.addEventListener("keydown", onKey);
+        return () => {
+            document.removeEventListener("keydown", onKey);
+            // Hand focus back only if it was still in the prompt (it falls to <body> once the prompt unmounts).
+            const active = document.activeElement;
+            if (previous instanceof HTMLElement && previous !== document.body && (!active || active === document.body || dialog?.contains(active))) {
+                previous.focus({ preventScroll: true });
+            }
+        };
+    }, [open, suppressed, dismiss]);
+
+    if (!open || suppressed) return null;
+
+    const goToAppPage = e => {
+        e.preventDefault();
+        setOpen(false);
+        navigate("Mobile App");
+    };
+
+    return (
+        <div className="app-prompt" role="dialog" aria-labelledby="app-prompt-title" aria-describedby="app-prompt-desc" ref={dialogRef}>
+            <button type="button" className="app-prompt-close" aria-label="Close app download prompt" onClick={dismiss} ref={closeRef}>×</button>
+            <div className="app-prompt-head">
+                <img src={logo} alt="" />
+                <div>
+                    <h2 id="app-prompt-title">Get the ACK St Pauls Youths app</h2>
+                    <div className="app-prompt-meta">Version {APP_VERSION} · Free · Android 7.0+</div>
+                </div>
+            </div>
+            <p id="app-prompt-desc">Events, sermons, the community board, giving and live help, all in one app on your phone.</p>
+            {device === "android" ? (
+                <div className="app-prompt-actions">
+                    <AppDownloadButton onClick={() => {
+                        window.gtag?.("event", "app_prompt_download", { device });
+                        setOpen(false);
+                    }} />
+                    <a className="app-prompt-link" href={pageToPath("Mobile App")} onClick={goToAppPage}>How to install</a>
+                </div>
+            ) : (
+                <>
+                    <p className="app-prompt-hint">Open <strong>ackstpaulsyouths.com/app</strong> on your Android phone to download it.</p>
+                    <div className="app-prompt-actions">
+                        <a className="btn btn-gold btn-sm" href={pageToPath("Mobile App")} onClick={goToAppPage}>See the app</a>
+                    </div>
+                </>
+            )}
+        </div>
     );
 }
 
