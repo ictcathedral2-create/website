@@ -1,4 +1,4 @@
-import { auth, db, ref, set, push, remove } from "../firebase";
+import { auth, db, ref, set, push, update, remove } from "../firebase";
 
 // Collections whose approved records get mirrored to a public-readable path,
 // since their `submissions/*` tree is admin-only for reads.
@@ -155,4 +155,37 @@ export async function updateWrittenSermon(id, data) {
 
 export async function deleteWrittenSermon(id) {
   await remove(ref(db, `writtenSermons/${id}`));
+}
+
+// SMS members the admin adds by hand (Membership Sign-ups are included
+// automatically). Admin-only.
+export async function createSmsMember(data) {
+  const newRef = push(ref(db, "smsMembers"));
+  await set(newRef, { ...data, createdAt: Date.now() });
+  return newRef.key;
+}
+
+export async function updateSmsMember(id, data) {
+  await set(ref(db, `smsMembers/${id}`), data);
+}
+
+export async function deleteSmsMember(id) {
+  await remove(ref(db, `smsMembers/${id}`));
+}
+
+// Saves many members in one write (paste/import from Excel).
+export async function importSmsMembers(people) {
+  const updates = {};
+  const createdAt = Date.now();
+  people.forEach(person => {
+    updates[push(ref(db, "smsMembers")).key] = { ...person, createdAt };
+  });
+  await update(ref(db, "smsMembers"), updates);
+}
+
+// Opted-out numbers never receive an SMS, whichever list they come from.
+// Keyed by the normalised number (+2547…).
+export async function setSmsOptOut(phone, optedOut) {
+  if (optedOut) await set(ref(db, `smsOptOuts/${phone}`), true);
+  else await remove(ref(db, `smsOptOuts/${phone}`));
 }

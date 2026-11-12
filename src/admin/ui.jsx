@@ -62,8 +62,8 @@ export function PageHeader({ eyebrow, title, count, subtitle, children }) {
 // Colour family for a workflow status, so "new" always reads as needing action.
 const STATUS_TONES = {
     new: "warn", pending: "warn", registered: "warn",
-    approved: "ok", contacted: "ok", responded: "ok", prayed: "ok", confirmed: "ok", received: "ok", assigned: "ok", completed: "ok",
-    rejected: "off", archived: "off", cancelled: "off", closed: "off", failed: "off",
+    approved: "ok", done: "ok", contacted: "ok", responded: "ok", prayed: "ok", confirmed: "ok", received: "ok", assigned: "ok", completed: "ok",
+    rejected: "off", stopped: "off", archived: "off", cancelled: "off", closed: "off", failed: "off",
 };
 export const statusTone = status => STATUS_TONES[status] || "info";
 

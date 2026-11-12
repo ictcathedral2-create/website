@@ -72,6 +72,8 @@ export const SECTIONS = [
     },
 
     // ── People signing up ──
+    { key: "sendSms", label: "Send SMS", group: "People", icon: "send", type: "sendSms" },
+    { key: "smsMembers", label: "SMS Members", group: "People", icon: "phone", type: "smsMembers" },
     {
         key: "joinUsRegistrations", label: "Membership Sign-ups", group: "People", icon: "userPlus",
         path: "joinUsRegistrations",

@@ -11,6 +11,8 @@ import ImageGalleryManager from "./ImageGalleryManager";
 import SupportChatsManager from "./SupportChatsManager";
 import WrittenSermonsManager from "./WrittenSermonsManager";
 import AdminUsersManager from "./AdminUsersManager";
+import SendSms from "./SendSms";
+import SmsMembersManager from "./SmsMembersManager";
 
 // The open section lives in the URL (#admin/events) so a refresh or a shared
 // link lands on the same page.
@@ -47,6 +49,8 @@ function SectionBody({ section, sections, user, open }) {
             );
         case "writtenSermons": return <WrittenSermonsManager />;
         case "support": return <SupportChatsManager />;
+        case "sendSms": return <SendSms open={open} />;
+        case "smsMembers": return <SmsMembersManager open={open} />;
         case "adminUsers": return <AdminUsersManager currentUid={user?.uid} />;
         default: return <SubmissionSection key={section.key} section={section} />;
     }
