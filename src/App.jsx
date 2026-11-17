@@ -1264,6 +1264,20 @@ a.footer-contact-row:hover .footer-contact-text { color: white; }
 .metrics-card .stat-label { color: var(--gray-600); font-size: 0.8rem; margin-top: 0.35rem; }
 .dark-mode .metrics-card .stat-num { color: var(--gold-light) !important; }
 
+/* ─── HOME GALLERY MOMENTS ─── */
+.home-gallery-grid { display: grid; grid-template-columns: 1.15fr 0.85fr 0.85fr; gap: 1rem; }
+.home-gallery-card { min-height: 260px; position: relative; overflow: hidden; border-radius: 16px; background: var(--navy); box-shadow: var(--shadow-sm); }
+.home-gallery-card:first-child { min-height: 360px; grid-row: span 2; }
+.home-gallery-card img { width: 100%; height: 100%; position: absolute; inset: 0; object-fit: cover; transition: transform 0.45s ease; }
+.home-gallery-card:hover img { transform: scale(1.045); }
+.home-gallery-card::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(15,30,54,0.76), rgba(15,30,54,0.02) 58%); pointer-events: none; }
+.home-gallery-caption { position: absolute; z-index: 1; left: 1.25rem; right: 1.25rem; bottom: 1.1rem; color: white; font-family: var(--font-display); font-size: 1rem; line-height: 1.25; }
+@media (max-width: 760px) {
+  .home-gallery-grid { grid-template-columns: 1fr 1fr; }
+  .home-gallery-card, .home-gallery-card:first-child { min-height: 210px; grid-row: auto; }
+  .home-gallery-card:first-child { grid-column: 1 / -1; min-height: 290px; }
+}
+
 /* ─── MOBILE THUMB-ZONE TAB BAR ─── */
 .tabbar { display: none; }
 @media (max-width: 1100px) {
@@ -2219,8 +2233,11 @@ function MobileAppPage({ navigate }) {
 function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef, stat1, stat2, stat3, stat4, onJoinUs }) {
     const newsletter = useFormSubmit("newsletterSignups", { email: "" }, ["email"]);
     const { videos, loading: videosLoading } = useYouTubeVideos();
+    const { data: galleryData } = useFirebaseCollection("sermonGallery");
     const [activeVideo, setActiveVideo] = useState(null);
     const latestVideo = videos.length > 0 ? videos[videos.length - 1] : null;
+    const galleryImages = (galleryData || []).slice().sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    const heroImage = galleryImages[0]?.imageData || heroService;
 
     const handleNewsletterSubmit = () => {
         if (!validateEmail(newsletter.formData.email)) return;
@@ -2259,7 +2276,7 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
                             </div>
                         </div>
                     </div>
-                    <div className="hero-photo" style={{ backgroundImage: `url(${heroService})` }}>
+                    <div className="hero-photo" style={{ backgroundImage: `url(${heroImage})` }}>
                         <div className="hero-photo-cap">
                             <p className="hero-photo-times tabular">Sundays · 08:00 AM · 08:30 AM · 11:00 AM</p>
                             <p className="hero-photo-title">Youth Church at ACK St Paul&apos;s Cathedral</p>
@@ -2375,6 +2392,28 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
                     </div>
                 </div>
             </div>
+
+            {galleryImages.length > 0 && (
+                <div className="section section-light">
+                    <div className="container">
+                        <div className="strip-head">
+                            <div>
+                                <div className="overline">Life Together</div>
+                                <h2 className="section-title" style={{ fontSize: "1.9rem", marginBottom: 0 }}>Moments from our community</h2>
+                            </div>
+                            <button className="btn btn-quiet btn-sm" onClick={() => navigate("Gallery")}>View Gallery →</button>
+                        </div>
+                        <div className="home-gallery-grid">
+                            {galleryImages.slice(0, 3).map((image, index) => (
+                                <div className="home-gallery-card" key={image.id || image.imageData}>
+                                    <img src={image.imageData} alt={image.caption || `ACK St Pauls Youths community moment ${index + 1}`} />
+                                    {image.caption && <p className="home-gallery-caption">{image.caption}</p>}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* UPCOMING EVENTS */}
             <div className="section section-light">
