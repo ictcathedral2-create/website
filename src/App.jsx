@@ -94,6 +94,8 @@ export const styles = `
   --gray-400: #94A3B8;
   --gray-600: #475569;
   --gray-800: #0F172A;
+  --shadow-sm: 0 10px 28px rgba(15, 30, 54, 0.07);
+  --shadow-md: 0 18px 42px rgba(15, 30, 54, 0.11);
 }
 
 html { font-size: 16px; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
@@ -489,7 +491,7 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 .section { padding: 4.5rem 2rem; }
 .section-sm { padding: 3rem 2rem; }
 .section-light { background: var(--white); }
-.section-cream { background: var(--cream); }
+.section-cream { background: linear-gradient(180deg, #F8FAFC 0%, #F4F7FB 100%); }
 .section-navy { background: var(--navy); }
 .section-navy-mid { background: var(--navy-mid); }
 .container { max-width: 1280px; margin: 0 auto; }
@@ -633,11 +635,12 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 .card {
   background: white; border-radius: 16px;
   border: 1px solid var(--line);
-  box-shadow: none;
-  transition: border-color 0.2s ease; overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease; overflow: hidden;
   position: relative;
 }
-.card:hover { border-color: var(--gray-400); }
+.card:hover { border-color: rgba(158,27,50,0.28); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+@media (prefers-reduced-motion: reduce) { .card { transition: none; } .card:hover { transform: none; } }
 
 .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
 .grid-3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem; align-items: stretch; }
@@ -1214,9 +1217,9 @@ a.footer-contact-row:hover .footer-contact-text { color: white; }
 .dark-mode .btn-quiet { background: transparent !important; color: #E2E8F0 !important; border-color: #1E293B !important; }
 
 /* ─── SPLIT HERO ─── */
-.hero-wrap { padding-top: 9rem; }
+.hero-wrap { padding-top: 9rem; background: radial-gradient(circle at 84% 16%, rgba(180,131,39,0.13), transparent 28%), linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%); }
 .hero-split { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 6fr); gap: 1.75rem; align-items: stretch; }
-.hero-copy { display: flex; flex-direction: column; justify-content: space-between; padding: 2.5rem; }
+.hero-copy { display: flex; flex-direction: column; justify-content: space-between; padding: 2.5rem; border-top: 3px solid var(--crimson); }
 .hero-copy .overline { margin-bottom: 1rem; }
 .hero-copy .hero-title { color: var(--gray-800); margin-bottom: 1.25rem; animation: none; }
 .hero-copy .hero-title span { color: var(--crimson); }
@@ -1231,7 +1234,7 @@ a.footer-contact-row:hover .footer-contact-text { color: white; }
 .dark-mode .hero-copy .hero-title { color: #F1F5F9 !important; }
 .dark-mode .hero-copy .hero-title span { color: #F7A8B8 !important; }
 .dark-mode .hero-copy .hero-stat-num { color: var(--gold-light) !important; }
-.hero-photo { position: relative; min-height: 420px; border-radius: 16px; border: 1px solid var(--line); overflow: hidden; background-size: cover; background-position: center 35%; }
+.hero-photo { position: relative; min-height: 420px; border-radius: 16px; border: 1px solid rgba(15,30,54,0.13); overflow: hidden; background-size: cover; background-position: center 35%; box-shadow: var(--shadow-md); }
 .hero-photo-cap { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; gap: 0.45rem; padding: 1.75rem;
   background: linear-gradient(to top, rgba(15,30,54,0.92) 0%, rgba(15,30,54,0.45) 45%, rgba(15,30,54,0.05) 100%); }
 .hero-photo-times { font-family: var(--font-mono); font-size: 0.72rem; line-height: 1.5; color: var(--gold-light); }
@@ -1281,28 +1284,31 @@ a.footer-contact-row:hover .footer-contact-text { color: white; }
 .tabbar { display: none; }
 @media (max-width: 1100px) {
   .nav-sub { display: none; }
-  .mobile-drawer { top: 70px; bottom: 64px; }
-  .app-content { padding-bottom: 64px; }
+  .mobile-drawer { top: 70px; bottom: calc(72px + env(safe-area-inset-bottom)); }
+  .app-content { padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
   .tabbar {
     display: grid; grid-template-columns: repeat(6, 1fr); align-items: center;
-    position: fixed; left: 0; right: 0; bottom: 0; z-index: 1150; height: 64px;
-    background: rgba(255,255,255,0.97); backdrop-filter: blur(12px); border-top: 1px solid var(--line);
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 1150; height: calc(72px + env(safe-area-inset-bottom)); padding-bottom: env(safe-area-inset-bottom);
+    background: rgba(255,255,255,0.96); backdrop-filter: blur(18px); border-top: 1px solid rgba(15,30,54,0.1); box-shadow: 0 -10px 30px rgba(15,30,54,0.08);
   }
   .tabbar-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
-    min-height: 44px; border: none; background: none; cursor: pointer; font: inherit; font-size: 0.64rem; font-weight: 500; color: var(--gray-400); padding: 0 2px; }
+    min-height: 52px; border: none; border-radius: 12px; background: none; cursor: pointer; font: inherit; font-size: 0.64rem; font-weight: 600; color: var(--gray-400); padding: 0 2px; margin: 0 2px; transition: color 0.18s ease, background 0.18s ease; }
+  .tabbar-btn svg { width: 20px; height: 20px; stroke-width: 1.9; }
   .tabbar-btn span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .tabbar-btn.active { color: var(--crimson); font-weight: 600; }
-  .dark-mode .tabbar { background: rgba(11,17,30,0.97) !important; border-top-color: #1E293B !important; }
+  .tabbar-btn:hover { color: var(--crimson); background: rgba(158,27,50,0.06); }
+  .tabbar-btn.active { color: var(--crimson); background: rgba(158,27,50,0.09); font-weight: 700; }
+  .dark-mode .tabbar { background: rgba(11,17,30,0.96) !important; border-top-color: #1E293B !important; box-shadow: 0 -10px 30px rgba(0,0,0,0.28); }
+  .dark-mode .tabbar-btn:hover, .dark-mode .tabbar-btn.active { background: rgba(247,168,184,0.12) !important; }
   .dark-mode .tabbar-btn.active { color: #F7A8B8 !important; }
-  .footer { padding-bottom: 5.5rem; }
-  .support-widget { bottom: 5rem; }
+  .footer { padding-bottom: calc(6.5rem + env(safe-area-inset-bottom)); }
+  .support-widget { bottom: calc(5.5rem + env(safe-area-inset-bottom)); }
   .hero-wrap { padding-top: 7rem; }
   .hero-split { grid-template-columns: 1fr; }
   .hero-copy { padding: 1.75rem; }
   .hero-photo { min-height: 260px; }
   .next-up { grid-template-columns: 1fr; }
   .metrics-card { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 1.5rem; }
-  .app-prompt { bottom: 5rem; }
+  .app-prompt { bottom: calc(5.5rem + env(safe-area-inset-bottom)); }
 }
 
 @media (max-width: 640px) {
@@ -1795,9 +1801,9 @@ export default function App() {
                             <span>{item.label === "Opportunities" ? "Jobs" : item.label}</span>
                         </button>
                     ))}
-                    <button className="tabbar-btn" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label={mobileMenuOpen ? "Close more navigation" : "Open more navigation"} aria-expanded={mobileMenuOpen} aria-controls="mobile-navigation">
+                    <button className={`tabbar-btn${mobileMenuOpen ? " active" : ""}`} onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"} aria-expanded={mobileMenuOpen} aria-controls="mobile-navigation">
                         <TabIcon name="menu" />
-                        <span>More</span>
+                        <span>Menu</span>
                     </button>
                 </div>
 
