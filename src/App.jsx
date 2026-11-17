@@ -62,24 +62,24 @@ export const styles = `
   --font-display: 'Fraunces', Georgia, serif;
   --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, Arial, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
-  --crimson: #9E1B32;
-  --crimson-hover: #811428;
+  --crimson: #6B2E8E;
+  --crimson-hover: #51216E;
   --line: #E2E8F0;
-  --gold: #B48327;
-  --gold-light: #E3BC6F;
-  --gold-dark: #8C6318;
-  --navy: #0F1E36;
-  --navy-mid: #1B3157;
-  --orange: #9E1B32;
-  --cream: #F8FAFC;
+  --gold: #C49A3A;
+  --gold-light: #E8C873;
+  --gold-dark: #8B681D;
+  --navy: #211634;
+  --navy-mid: #382252;
+  --orange: #B42346;
+  --cream: #FAF8FC;
   --white: #ffffff;
-  --gray-100: #F1F5F9;
-  --gray-200: #E2E8F0;
-  --gray-400: #94A3B8;
-  --gray-600: #475569;
-  --gray-800: #0F172A;
-  --shadow-sm: 0 10px 28px rgba(15, 30, 54, 0.07);
-  --shadow-md: 0 18px 42px rgba(15, 30, 54, 0.11);
+  --gray-100: #F3F0F6;
+  --gray-200: #E5DFEA;
+  --gray-400: #988FA3;
+  --gray-600: #5D5368;
+  --gray-800: #281D32;
+  --shadow-sm: 0 10px 28px rgba(33, 22, 52, 0.08);
+  --shadow-md: 0 18px 42px rgba(33, 22, 52, 0.13);
 }
 
 html { font-size: 16px; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
@@ -309,7 +309,7 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 
 .hero-cross-bg {
   position: absolute; inset: 0; width: 100%; height: 100%; transform: none; opacity: 1;
-  background: linear-gradient(100deg, #0F1E36 6%, rgba(15,30,54,0.92) 38%, rgba(15,30,54,0.62) 70%, rgba(15,30,54,0.45) 100%);
+  background: linear-gradient(100deg, #211634 6%, rgba(33,22,52,0.92) 38%, rgba(33,22,52,0.62) 70%, rgba(33,22,52,0.45) 100%);
 }
 
 .hero-wave { display: none; }
@@ -475,7 +475,7 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 .section { padding: 4.5rem 2rem; }
 .section-sm { padding: 3rem 2rem; }
 .section-light { background: var(--white); }
-.section-cream { background: linear-gradient(180deg, #F8FAFC 0%, #F4F7FB 100%); }
+.section-cream { background: linear-gradient(180deg, #FAF8FC 0%, #F4EFF8 100%); }
 .section-navy { background: var(--navy); }
 .section-navy-mid { background: var(--navy-mid); }
 .container { max-width: 1280px; margin: 0 auto; }
@@ -1201,7 +1201,7 @@ a.footer-contact-row:hover .footer-contact-text { color: white; }
 .dark-mode .btn-quiet { background: transparent !important; color: #E2E8F0 !important; border-color: #1E293B !important; }
 
 /* ─── SPLIT HERO ─── */
-.hero-wrap { padding-top: 9rem; background: radial-gradient(circle at 84% 16%, rgba(180,131,39,0.13), transparent 28%), linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%); }
+.hero-wrap { padding-top: 9rem; background: radial-gradient(circle at 84% 16%, rgba(196,154,58,0.18), transparent 28%), linear-gradient(180deg, #FAF8FC 0%, #F0EAF5 100%); }
 .hero-split { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 6fr); gap: 1.75rem; align-items: stretch; }
 .hero-copy { display: flex; flex-direction: column; justify-content: space-between; padding: 2.5rem; border-top: 3px solid var(--crimson); }
 .hero-copy .overline { margin-bottom: 1rem; }
@@ -1218,9 +1218,9 @@ a.footer-contact-row:hover .footer-contact-text { color: white; }
 .dark-mode .hero-copy .hero-title { color: #F1F5F9 !important; }
 .dark-mode .hero-copy .hero-title span { color: #F7A8B8 !important; }
 .dark-mode .hero-copy .hero-stat-num { color: var(--gold-light) !important; }
-.hero-photo { position: relative; min-height: 420px; border-radius: 16px; border: 1px solid rgba(15,30,54,0.13); overflow: hidden; background-size: cover; background-position: center 35%; box-shadow: var(--shadow-md); }
+.hero-photo { position: relative; min-height: 420px; border-radius: 16px; border: 1px solid rgba(33,22,52,0.13); overflow: hidden; background-size: cover; background-position: center 35%; box-shadow: var(--shadow-md); }
 .hero-photo-cap { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; gap: 0.45rem; padding: 1.75rem;
-  background: linear-gradient(to top, rgba(15,30,54,0.92) 0%, rgba(15,30,54,0.45) 45%, rgba(15,30,54,0.05) 100%); }
+  background: linear-gradient(to top, rgba(33,22,52,0.92) 0%, rgba(33,22,52,0.45) 45%, rgba(33,22,52,0.05) 100%); }
 .hero-photo-times { font-family: var(--font-mono); font-size: 0.72rem; line-height: 1.5; color: var(--gold-light); }
 .hero-photo-title { font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; color: white; line-height: 1.25; }
 .hero-photo-sub { font-size: 0.78rem; color: rgba(255,255,255,0.75); }
@@ -1270,7 +1270,7 @@ a.footer-contact-row:hover .footer-contact-text { color: white; }
 .home-gallery-card:first-child { min-height: 360px; grid-row: span 2; }
 .home-gallery-card img { width: 100%; height: 100%; position: absolute; inset: 0; object-fit: cover; transition: transform 0.45s ease; }
 .home-gallery-card:hover img { transform: scale(1.045); }
-.home-gallery-card::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(15,30,54,0.76), rgba(15,30,54,0.02) 58%); pointer-events: none; }
+.home-gallery-card::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(33,22,52,0.76), rgba(33,22,52,0.02) 58%); pointer-events: none; }
 .home-gallery-caption { position: absolute; z-index: 1; left: 1.25rem; right: 1.25rem; bottom: 1.1rem; color: white; font-family: var(--font-display); font-size: 1rem; line-height: 1.25; }
 @media (max-width: 760px) {
   .home-gallery-grid { grid-template-columns: 1fr 1fr; }
@@ -2459,7 +2459,7 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
                             <div
                                 className="featured-sermon-thumb"
                                 style={{
-                                    backgroundImage: `linear-gradient(rgba(15,30,54,0.4), rgba(15,30,54,0.5)), url(${latestVideo.thumbnail})`,
+                                    backgroundImage: `linear-gradient(rgba(33,22,52,0.4), rgba(33,22,52,0.5)), url(${latestVideo.thumbnail})`,
                                     backgroundSize: "cover", backgroundPosition: "center",
                                     padding: "3rem", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center",
                                     minHeight: 300, cursor: "pointer",
@@ -2566,7 +2566,7 @@ function AboutPage() {
                                 Today, ACK St Pauls Youths stands as a testament to God's faithfulness — a vibrant, multicultural community united by a singular passion: to know Christ and make Him known.
                             </p>
                         </div>
-                        <div className="about-image-mock" style={{ backgroundImage: `linear-gradient(to top, rgba(15,30,54,0.95) 0%, rgba(15,30,54,0.55) 55%, rgba(15,30,54,0.25) 100%), url(${youthFellowship})` }}>
+                        <div className="about-image-mock" style={{ backgroundImage: `linear-gradient(to top, rgba(33,22,52,0.95) 0%, rgba(33,22,52,0.55) 55%, rgba(33,22,52,0.25) 100%), url(${youthFellowship})` }}>
                             <div className="about-quote">
                                 "For I know the plans I have for you, declares the Lord — plans to prosper you and not to harm you, plans to give you hope and a future."
                                 <div style={{ fontSize: "0.8rem", marginTop: "0.75rem", color: "var(--gold)", fontStyle: "normal", fontWeight: 600 }}>— Jeremiah 29:11</div>
@@ -2825,7 +2825,7 @@ function SermonsPage({ activeTab, setActiveTab, showTabs = true }) {
                                             <div
                                                 className="sermon-thumb"
                                                 style={{
-                                                    backgroundImage: `linear-gradient(rgba(15,30,54,0.4), rgba(15,30,54,0.5)), url(${v.thumbnail})`,
+                                                    backgroundImage: `linear-gradient(rgba(33,22,52,0.4), rgba(33,22,52,0.5)), url(${v.thumbnail})`,
                                                     backgroundSize: "cover",
                                                     backgroundPosition: "center",
                                                 }}
