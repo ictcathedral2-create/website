@@ -101,6 +101,11 @@ body { font-family: var(--font-body); font-size: 0.97rem; font-weight: 400; line
 .tabular { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
 button, input, select, textarea { font: inherit; }
 .font-display { font-family: var(--font-display); }
+button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 3px solid var(--crimson); outline-offset: 3px;
+}
+button { touch-action: manipulation; }
 
 .dark-mode {
   --gray-100: #111C2E;
@@ -156,7 +161,7 @@ nav.scrolled { box-shadow: 0 1px 3px rgba(15,23,42,0.07); }
   padding: 0 1.5rem; height: 70px; gap: 1.25rem;
 }
 
-.nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; transition: opacity 0.2s ease; }
+.nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; transition: opacity 0.2s ease; background: none; border: none; padding: 0; text-align: left; cursor: pointer; }
 .nav-logo:hover { opacity: 0.85; }
 .logo-cross {
   width: 40px; height: 40px;
@@ -175,7 +180,7 @@ nav.scrolled { box-shadow: 0 1px 3px rgba(15,23,42,0.07); }
 .nav-links { display: flex; gap: 0.1rem; align-items: center; justify-content: flex-end; flex: 1; }
 .nav-link {
   position: relative;
-  padding: 0.6rem 0.72rem; border-radius: 8px;
+  min-height: 44px; padding: 0.6rem 0.72rem; border-radius: 8px;
   font-family: var(--font-body); font-size: 0.855rem; font-weight: 500; line-height: 1; letter-spacing: 0; text-transform: none; color: var(--gray-600);
   text-decoration: none; transition: color 0.2s ease, background 0.2s ease;
   cursor: pointer; background: none; border: none;
@@ -250,6 +255,9 @@ nav.scrolled { box-shadow: 0 1px 3px rgba(15,23,42,0.07); }
 .nav-cta:hover { background: var(--crimson-hover); }
 
 .mobile-menu-btn { display: none; background: none; border: none; cursor: pointer; padding: 0.5rem; }
+.menu-toggle { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 10px; background: transparent; border: none; cursor: pointer; }
+.menu-toggle:hover { background: var(--gray-100); }
+.dark-mode .menu-toggle:hover { background: #111C2E; }
 .hamburger { width: 24px; height: 2px; background: var(--navy); display: block; position: relative; transition: all 0.3s; }
 .hamburger::before, .hamburger::after { content: ''; position: absolute; width: 24px; height: 2px; background: var(--navy); transition: all 0.3s; }
 .hamburger::before { top: -7px; }
@@ -1273,7 +1281,8 @@ a.footer-contact-row:hover .footer-contact-text { color: white; }
 .tabbar { display: none; }
 @media (max-width: 1100px) {
   .nav-sub { display: none; }
-  .mobile-drawer { top: 70px; }
+  .mobile-drawer { top: 70px; bottom: 64px; }
+  .app-content { padding-bottom: 64px; }
   .tabbar {
     display: grid; grid-template-columns: repeat(6, 1fr); align-items: center;
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 1150; height: 64px;
@@ -1294,6 +1303,22 @@ a.footer-contact-row:hover .footer-contact-text { color: white; }
   .next-up { grid-template-columns: 1fr; }
   .metrics-card { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 1.5rem; }
   .app-prompt { bottom: 5rem; }
+}
+
+@media (max-width: 640px) {
+  .hero-copy { padding: 1.5rem; }
+  .hero-copy .hero-title { font-size: clamp(2.2rem, 10vw, 3rem); }
+  .hero-foot { margin-top: 1.5rem; padding-top: 1.25rem; }
+  .hero-foot .hero-btns { display: grid; grid-template-columns: 1fr; gap: 0.65rem; }
+  .hero-foot .hero-btns .btn { width: 100%; }
+  .hero-foot .hero-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem; }
+  .hero-copy .hero-stat-num { font-size: 1.45rem; }
+  .hero-copy .hero-stat-label { font-size: 0.67rem; line-height: 1.35; }
+  .hero-photo { min-height: 300px; }
+  .hero-photo-cap { padding: 1.25rem; }
+  .hero-photo-title { font-size: 1.18rem; }
+  .next-up { padding: 1rem; }
+  .metrics-card { gap: 1rem; }
 }
 
 `;
@@ -1511,11 +1536,21 @@ export default function App() {
         return () => window.removeEventListener("scroll", onScroll);
     }, []);
 
+    useEffect(() => {
+        if (!mobileMenuOpen) return undefined;
+        const onKeyDown = event => {
+            if (event.key === "Escape") setMobileMenuOpen(false);
+        };
+        window.addEventListener("keydown", onKeyDown);
+        return () => window.removeEventListener("keydown", onKeyDown);
+    }, [mobileMenuOpen]);
+
     const navigate = (page) => {
         if (window.location.pathname !== pageToPath(page)) window.history.pushState({}, "", pageToPath(page));
         setActivePage(page);
         setMobileMenuOpen(false);
         window.scrollTo({ top: 0, behavior: "smooth" });
+        window.requestAnimationFrame(() => document.getElementById("main-content")?.focus());
     };
 
     const openJoinUs = () => {
@@ -1618,13 +1653,13 @@ export default function App() {
                 {/* ─── NAV ─── */}
                 <nav className={scrolled ? "scrolled" : ""}>
                     <div className="nav-inner">
-                        <a className="nav-logo" onClick={() => navigate("Home")} style={{ cursor: "pointer" }}>
+                        <button className="nav-logo" onClick={() => navigate("Home")} aria-label="ACK St Pauls Youths home">
                             <div className="logo-cross"><img src={logo} alt="ACK St Pauls Cathedral crest" /></div>
                             <div>
                                 <div className="logo-text">ACK St Pauls</div>
                                 <div className="logo-sub">Youths</div>
                             </div>
-                        </a>
+                        </button>
                         <div className="nav-links">
                             {NAV_MENU.map(item => (
                                 <button key={item.label} className={`nav-link${isNavItemActive(item) ? " active" : ""}`} onClick={() => navigate(item.page)}>{item.label}</button>
@@ -1637,7 +1672,7 @@ export default function App() {
                             <button className={`theme-toggle${dark ? " dark" : ""}`} onClick={() => setDark(!dark)} aria-label="Toggle dark mode">
                                 <div className="toggle-thumb" />
                             </button>
-                            <button style={{ background: "none", border: "none", cursor: "pointer", fontSize: "1.4rem", color: dark ? "#E2E8F0" : "var(--navy)" }} onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+                            <button className="menu-toggle" style={{ fontSize: "1.4rem", color: dark ? "#E2E8F0" : "var(--navy)" }} onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label={mobileMenuOpen ? "Close menu" : "Open menu"} aria-expanded={mobileMenuOpen} aria-controls="mobile-navigation">
                                 {mobileMenuOpen ? "✕" : "☰"}
                             </button>
                         </div>
@@ -1666,7 +1701,7 @@ export default function App() {
                 </nav>
 
                 {/* ─── MOBILE DRAWER ─── */}
-                <div className={`mobile-drawer${mobileMenuOpen ? " open" : ""}`}>
+                <div id="mobile-navigation" className={`mobile-drawer${mobileMenuOpen ? " open" : ""}`} aria-hidden={!mobileMenuOpen}>
                     <div className="mobile-drawer-group">Main</div>
                     {NAV_MENU.map(item => (
                         <button key={item.label} className={`nav-link${isNavItemActive(item) ? " active" : ""}`} onClick={() => navigate(item.page)}>{item.label}</button>
@@ -1679,24 +1714,26 @@ export default function App() {
                 </div>
 
                 {/* ─── PAGES ─── */}
-                {activePage === "Home" && <HomePage countdown={countdown} nextEvent={nextEvent} eventPhase={eventPhase} events={events} navigate={navigate} statsRef={statsRef} stat1={stat1} stat2={stat2} stat3={stat3} stat4={stat4} dark={dark} onJoinUs={openJoinUs} />}
-                {activePage === "About" && <AboutPage navigate={navigate} dark={dark} />}
-                {activePage === "Mobile App" && <MobileAppPage navigate={navigate} />}
-                {activePage === "Ministries" && <MinistriesPage navigate={navigate} dark={dark} />}
-                {activePage === "Sermons" && <SermonsPage navigate={navigate} dark={dark} activeTab={activeTab} setActiveTab={setActiveTab} />}
-                {activePage === "Recorded Sermons" && <SermonsPage activeTab="Video" setActiveTab={() => {}} showTabs={false} />}
-                {activePage === "Written Sermons" && <SermonsPage activeTab="Written" setActiveTab={() => {}} showTabs={false} />}
-                {activePage === "Liturgy" && <LiturgyPage />}
-                {activePage === "Gallery" && <SermonsPage activeTab="Gallery" setActiveTab={() => {}} showTabs={false} />}
-                {activePage === "Events" && <EventsPage events={events} navigate={navigate} dark={dark} />}
-                {activePage === "Connect" && <ConnectPage navigate={navigate} dark={dark} />}
-                {activePage === "Give" && <GivePage dark={dark} />}
-                {activePage === "Community" && <CommunityPage dark={dark} />}
-                {activePage === "Business Directory" && <CommunityPage initialTab="Business" showTabs={false} />}
-                {activePage === "Requests" && <CommunityPage initialTab="Wanted" showTabs={false} />}
-                {activePage === "Job Board" && <CommunityPage initialTab="Jobs" showTabs={false} />}
-                {activePage === "Job Seekers" && <CommunityPage initialTab="JobSeekers" showTabs={false} />}
-                {activePage === "Testimonies" && <TestimoniesPage navigate={navigate} dark={dark} />}
+                <main id="main-content" className="app-content" tabIndex={-1}>
+                    {activePage === "Home" && <HomePage countdown={countdown} nextEvent={nextEvent} eventPhase={eventPhase} events={events} navigate={navigate} statsRef={statsRef} stat1={stat1} stat2={stat2} stat3={stat3} stat4={stat4} dark={dark} onJoinUs={openJoinUs} />}
+                    {activePage === "About" && <AboutPage navigate={navigate} dark={dark} />}
+                    {activePage === "Mobile App" && <MobileAppPage navigate={navigate} />}
+                    {activePage === "Ministries" && <MinistriesPage navigate={navigate} dark={dark} />}
+                    {activePage === "Sermons" && <SermonsPage navigate={navigate} dark={dark} activeTab={activeTab} setActiveTab={setActiveTab} />}
+                    {activePage === "Recorded Sermons" && <SermonsPage activeTab="Video" setActiveTab={() => {}} showTabs={false} />}
+                    {activePage === "Written Sermons" && <SermonsPage activeTab="Written" setActiveTab={() => {}} showTabs={false} />}
+                    {activePage === "Liturgy" && <LiturgyPage />}
+                    {activePage === "Gallery" && <SermonsPage activeTab="Gallery" setActiveTab={() => {}} showTabs={false} />}
+                    {activePage === "Events" && <EventsPage events={events} navigate={navigate} dark={dark} />}
+                    {activePage === "Connect" && <ConnectPage navigate={navigate} dark={dark} />}
+                    {activePage === "Give" && <GivePage dark={dark} />}
+                    {activePage === "Community" && <CommunityPage dark={dark} />}
+                    {activePage === "Business Directory" && <CommunityPage initialTab="Business" showTabs={false} />}
+                    {activePage === "Requests" && <CommunityPage initialTab="Wanted" showTabs={false} />}
+                    {activePage === "Job Board" && <CommunityPage initialTab="Jobs" showTabs={false} />}
+                    {activePage === "Job Seekers" && <CommunityPage initialTab="JobSeekers" showTabs={false} />}
+                    {activePage === "Testimonies" && <TestimoniesPage navigate={navigate} dark={dark} />}
+                </main>
 
                 {/* ─── FOOTER ─── */}
                 <footer className="footer">
@@ -1758,7 +1795,7 @@ export default function App() {
                             <span>{item.label === "Opportunities" ? "Jobs" : item.label}</span>
                         </button>
                     ))}
-                    <button className="tabbar-btn" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+                    <button className="tabbar-btn" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label={mobileMenuOpen ? "Close more navigation" : "Open more navigation"} aria-expanded={mobileMenuOpen} aria-controls="mobile-navigation">
                         <TabIcon name="menu" />
                         <span>More</span>
                     </button>
@@ -2033,15 +2070,15 @@ function detectDevice() {
     return "desktop";
 }
 
-// Invites visitors to install the Android app, once per browser session
-// (sessionStorage resets when the browser or tab is closed).
+// Offer the APK only where it is useful. Showing an Android download prompt on
+// desktop obscures the first action a new visitor is trying to take.
 function AppInstallPrompt({ activePage, navigate }) {
     const [open, setOpen] = useState(false);
     const [device] = useState(detectDevice);
     const shownRef = useRef(false);
     const dialogRef = useRef(null);
     const closeRef = useRef(null);
-    const suppressed = !APK_AVAILABLE || device === "ios" || device === "app" || activePage === "Mobile App";
+    const suppressed = !APK_AVAILABLE || device === "desktop" || device === "ios" || device === "app" || activePage === "Mobile App";
 
     useEffect(() => {
         if (suppressed || shownRef.current) return;
@@ -2051,7 +2088,7 @@ function AppInstallPrompt({ activePage, navigate }) {
             try { sessionStorage.setItem(APP_PROMPT_KEY, "1"); } catch { /* ignore */ }
             setOpen(true);
             window.gtag?.("event", "app_prompt_shown", { device });
-        }, 3000);
+        }, 12000);
         return () => clearTimeout(id);
     }, [suppressed, device]);
 
