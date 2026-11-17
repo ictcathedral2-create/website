@@ -23,6 +23,10 @@
       "destination": "/resources/written-sermons/index.html"
     },
     {
+      "source": "/resources/liturgy",
+      "destination": "/resources/liturgy/index.html"
+    },
+    {
       "source": "/resources/gallery",
       "destination": "/resources/gallery/index.html"
     },

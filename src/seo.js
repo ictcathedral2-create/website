@@ -5,7 +5,7 @@
 export const SITE_URL = "https://ackstpaulsyouths.com";
 export const SITE_NAME = "ACK St Pauls Youths";
 
-export const NAV_LINKS = ["Home", "Ministries", "Sermons", "Recorded Sermons", "Written Sermons", "Gallery", "Events", "Connect", "Give", "Community", "Business Directory", "Requests", "Job Board", "Job Seekers", "Testimonies", "Mobile App", "About"];
+export const NAV_LINKS = ["Home", "Ministries", "Sermons", "Recorded Sermons", "Written Sermons", "Liturgy", "Gallery", "Events", "Connect", "Give", "Community", "Business Directory", "Requests", "Job Board", "Job Seekers", "Testimonies", "Mobile App", "About"];
 
 export const slugify = str => str.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
@@ -14,6 +14,7 @@ export const slugify = str => str.toLowerCase().replace(/[^a-z0-9]+/g, "-").repl
 export const PAGE_PATHS = {
     "Recorded Sermons": "/resources/recorded-sermons",
     "Written Sermons": "/resources/written-sermons",
+    Liturgy: "/resources/liturgy",
     Gallery: "/resources/gallery",
     "Business Directory": "/opportunities/business-directory",
     Requests: "/opportunities/requests",
@@ -50,6 +51,11 @@ export const PAGE_SEO = {
         title: "Written Sermons | ACK St Pauls Youths, Embu",
         description: "Read written sermons and Bible teachings shared by the youth ministry of ACK St Paul's Cathedral in Embu, Kenya.",
         changefreq: "weekly", priority: "0.7",
+    },
+    Liturgy: {
+        title: "Order of Service & Liturgy | ACK St Pauls Youths, Embu",
+        description: "The order of service and Modern Service liturgy of the Sunday youth service at ACK St Paul's Cathedral, Embu: confession, Apostles' Creed, prayers and the Lord's Prayer. Download the PDF.",
+        changefreq: "monthly", priority: "0.6",
     },
     Gallery: {
         title: "Photo Gallery | ACK St Pauls Youths, Embu",

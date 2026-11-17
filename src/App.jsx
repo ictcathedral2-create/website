@@ -5,6 +5,7 @@ import { useYouTubeVideos } from "./hooks/useYouTubeVideos";
 import { validateEmail, validatePhone } from "./validation";
 import { compressImage, readPdfAsDataUri } from "./utils/fileToDataUri";
 import SupportWidget from "./components/SupportWidget";
+import LiturgyPage from "./components/LiturgyPage";
 import logo from "./assets/logo.png";
 import { NAV_LINKS, PAGE_SEO, PAGE_PATHS, SITE_URL, slugify, pageToPath, pageUrl } from "./seo";
 import { eventDateOf } from "./utils/eventDate";
@@ -15,7 +16,7 @@ const NAV_MENU = [
     { label: "About", page: "About" },
     { label: "Ministries", page: "Ministries" },
     { label: "Activities", page: "Events" },
-    { label: "Resources", activePages: ["Sermons", "Recorded Sermons", "Written Sermons", "Gallery", "Mobile App"] },
+    { label: "Resources", activePages: ["Sermons", "Recorded Sermons", "Written Sermons", "Liturgy", "Gallery", "Mobile App"] },
     { label: "Get Involved", activePages: ["Give", "Ministries", "Testimonies"] },
     { label: "Opportunities", page: "Community", activePages: ["Community", "Business Directory", "Requests", "Job Board", "Job Seekers"] },
 ];
@@ -518,6 +519,40 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 .app-step h3 { font-size: 1rem; color: var(--navy); margin-bottom: 0.2rem; }
 .app-step p { font-size: 0.9rem; color: var(--gray-600); line-height: 1.6; }
 .dark-mode .app-feature h3, .dark-mode .app-step h3 { color: var(--gold-light); }
+/* Liturgy page */
+.lit-wrap { max-width: 780px; }
+.lit-order { padding: 1.5rem 1.75rem; border-top: 3px solid var(--gold); margin-bottom: 2rem; }
+.lit-order ol { margin: 0.75rem 0 0; padding-left: 1.4rem; display: grid; gap: 0.35rem; font-family: var(--font-display); font-size: 1.2rem; color: var(--navy); }
+.lit-key { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; font-size: 0.82rem; color: var(--gray-600); margin-bottom: 1.5rem; }
+.lit-heading { margin: 2.5rem 0 1rem; text-align: left; }
+.lit-part { margin-bottom: 2rem; }
+.lit-title { font-family: var(--font-display); font-size: 1.5rem; color: var(--navy); margin: 0 0 0.75rem; padding-bottom: 0.4rem; border-bottom: 1px solid rgba(201,168,76,0.35); }
+.lit-title small { display: block; font-family: var(--font-body); font-size: 0.8rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold-dark); margin-top: 0.2rem; }
+.lit-line { display: flex; gap: 0.75rem; align-items: baseline; margin: 0 0 0.6rem; font-size: 1rem; line-height: 1.65; color: var(--gray-800, #2E2A25); }
+.lit-all > span:last-child { font-weight: 700; }
+.lit-role { flex-shrink: 0; display: inline-block; min-width: 4.6rem; padding: 1px 8px; border-radius: 6px; border: 1px solid rgba(201,168,76,0.6); color: var(--gold-dark); font-size: 0.66rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; text-align: center; line-height: 1.7; }
+.lit-all .lit-role, .lit-role-all { background: var(--navy); border-color: var(--navy); color: white; }
+.lit-minister .lit-role { background: #6B2238; border-color: #6B2238; color: white; }
+.lit-key .lit-role { min-width: 0; margin-right: 0.3rem; }
+.lit-note { font-style: italic; color: var(--gold-dark); font-size: 0.9rem; margin: 0.2rem 0 0.6rem; }
+.lit-sung { font-style: italic; color: #6B2238; margin: 0 0 0.4rem; }
+.lit-song { padding: 1.25rem 1.5rem; background: #FBF3E0; }
+.lit-song p { margin: 0 0 0.35rem; line-height: 1.55; }
+.lit-lords-prayer { padding: 1.75rem 1.5rem; margin: 1rem 0 1.25rem; text-align: center; font-family: var(--font-display); font-size: 1.15rem; line-height: 1.55; color: var(--navy); }
+.lit-lords-prayer h4 { font-size: 1.3rem; letter-spacing: 0.04em; text-transform: uppercase; margin: 0 0 0.75rem; color: var(--navy); }
+.lit-lords-prayer p { margin: 0; }
+.lit-amen { color: #6B2238; font-weight: 700; }
+.lit-lords-prayer .lit-amen { margin-top: 0.5rem; }
+.lit-prayer { line-height: 1.7; margin: 0; }
+.lit-or { text-align: center; font-style: italic; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; font-size: 0.75rem; color: var(--gold-dark); margin: 0.75rem 0; }
+.dark-mode .lit-title, .dark-mode .lit-order ol, .dark-mode .lit-lords-prayer, .dark-mode .lit-lords-prayer h4 { color: var(--gold-light); }
+.dark-mode .lit-line, .dark-mode .lit-prayer, .dark-mode .lit-song p { color: #E8E4DC; }
+.dark-mode .lit-all .lit-role, .dark-mode .lit-key .lit-role-all { background: var(--gold); border-color: var(--gold); color: var(--navy); }
+.dark-mode .lit-sung, .dark-mode .lit-amen { color: #E9A3B5; }
+@media (max-width: 600px) {
+  .lit-line { flex-direction: column; gap: 0.15rem; }
+  .lit-role { min-width: 0; }
+}
 @media (max-width: 860px) {
   .app-promo { grid-template-columns: 1fr; gap: 2rem; text-align: center; }
   .app-promo .section-title, .app-promo .section-desc { text-align: center; }
@@ -1461,7 +1496,7 @@ export default function App() {
             items: [
                 { label: "Recorded Sermons", onClick: () => navigate("Recorded Sermons") },
                 { label: "Written Sermons", onClick: () => navigate("Written Sermons") },
-                { label: "Liturgy", href: "https://sites.google.com/view/cathedralyouths/liturgy" },
+                { label: "Liturgy", onClick: () => navigate("Liturgy") },
                 { label: "Gallery", onClick: () => navigate("Gallery") },
                 { label: "Mobile App", onClick: () => navigate("Mobile App") },
             ],
@@ -1583,6 +1618,7 @@ export default function App() {
                 {activePage === "Sermons" && <SermonsPage navigate={navigate} dark={dark} activeTab={activeTab} setActiveTab={setActiveTab} />}
                 {activePage === "Recorded Sermons" && <SermonsPage activeTab="Video" setActiveTab={() => {}} showTabs={false} />}
                 {activePage === "Written Sermons" && <SermonsPage activeTab="Written" setActiveTab={() => {}} showTabs={false} />}
+                {activePage === "Liturgy" && <LiturgyPage />}
                 {activePage === "Gallery" && <SermonsPage activeTab="Gallery" setActiveTab={() => {}} showTabs={false} />}
                 {activePage === "Events" && <EventsPage events={events} navigate={navigate} dark={dark} />}
                 {activePage === "Connect" && <ConnectPage navigate={navigate} dark={dark} />}
