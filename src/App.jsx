@@ -26,22 +26,6 @@ const NAV_MENU = [
 // Secondary destinations, kept visible on the utility strip under the top bar.
 const UTILITY_LINKS = ["About", "Liturgy", "Gallery", "Written Sermons", "Testimonies", "Give", "Connect", "Mobile App"];
 
-const TAB_ICONS = {
-    home: "M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z",
-    book: "M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 19V5M8 7h7",
-    users: "M16 19v-1a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v1M9.5 10a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM21 19v-1a4 4 0 0 0-3-3.9M15.5 3.1a3.5 3.5 0 0 1 0 6.8",
-    calendar: "M8 3v3M16 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z",
-    briefcase: "M4 7h16a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1zM9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M3 13h18",
-    menu: "M4 7h16M4 12h16M4 17h16",
-};
-
-function TabIcon({ name }) {
-    return (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d={TAB_ICONS[name] || TAB_ICONS.menu} />
-        </svg>
-    );
-}
 const pageFromPath = pathname => {
     const slug = pathname.replace(/^\/+|\/+$/g, "").toLowerCase();
     if (slug.startsWith("events/")) return "Events";
@@ -1284,31 +1268,16 @@ a.footer-contact-row:hover .footer-contact-text { color: white; }
 .tabbar { display: none; }
 @media (max-width: 1100px) {
   .nav-sub { display: none; }
-  .mobile-drawer { top: 70px; bottom: calc(72px + env(safe-area-inset-bottom)); }
-  .app-content { padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
-  .tabbar {
-    display: grid; grid-template-columns: repeat(6, 1fr); align-items: center;
-    position: fixed; left: 0; right: 0; bottom: 0; z-index: 1150; height: calc(72px + env(safe-area-inset-bottom)); padding-bottom: env(safe-area-inset-bottom);
-    background: rgba(255,255,255,0.96); backdrop-filter: blur(18px); border-top: 1px solid rgba(15,30,54,0.1); box-shadow: 0 -10px 30px rgba(15,30,54,0.08);
-  }
-  .tabbar-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
-    min-height: 52px; border: none; border-radius: 12px; background: none; cursor: pointer; font: inherit; font-size: 0.64rem; font-weight: 600; color: var(--gray-400); padding: 0 2px; margin: 0 2px; transition: color 0.18s ease, background 0.18s ease; }
-  .tabbar-btn svg { width: 20px; height: 20px; stroke-width: 1.9; }
-  .tabbar-btn span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .tabbar-btn:hover { color: var(--crimson); background: rgba(158,27,50,0.06); }
-  .tabbar-btn.active { color: var(--crimson); background: rgba(158,27,50,0.09); font-weight: 700; }
-  .dark-mode .tabbar { background: rgba(11,17,30,0.96) !important; border-top-color: #1E293B !important; box-shadow: 0 -10px 30px rgba(0,0,0,0.28); }
-  .dark-mode .tabbar-btn:hover, .dark-mode .tabbar-btn.active { background: rgba(247,168,184,0.12) !important; }
-  .dark-mode .tabbar-btn.active { color: #F7A8B8 !important; }
-  .footer { padding-bottom: calc(6.5rem + env(safe-area-inset-bottom)); }
-  .support-widget { bottom: calc(5.5rem + env(safe-area-inset-bottom)); }
+  .mobile-drawer { top: 70px; bottom: 0; }
+  .footer { padding-bottom: 2rem; }
+  .support-widget { bottom: 1rem; }
   .hero-wrap { padding-top: 7rem; }
   .hero-split { grid-template-columns: 1fr; }
   .hero-copy { padding: 1.75rem; }
   .hero-photo { min-height: 260px; }
   .next-up { grid-template-columns: 1fr; }
   .metrics-card { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 1.5rem; }
-  .app-prompt { bottom: calc(5.5rem + env(safe-area-inset-bottom)); }
+  .app-prompt { bottom: 1rem; }
 }
 
 @media (max-width: 640px) {
@@ -1788,24 +1757,6 @@ export default function App() {
                         <span>Built with ♥ for God's Glory · Embu, Kenya</span>
                     </div>
                 </footer>
-
-                {/* Mobile thumb-zone tab bar */}
-                <div className="tabbar" role="navigation" aria-label="Mobile navigation">
-                    {NAV_MENU.map(item => (
-                        <button
-                            key={item.label}
-                            className={`tabbar-btn${isNavItemActive(item) ? " active" : ""}`}
-                            onClick={() => navigate(item.page)}
-                        >
-                            <TabIcon name={item.icon} />
-                            <span>{item.label === "Opportunities" ? "Jobs" : item.label}</span>
-                        </button>
-                    ))}
-                    <button className={`tabbar-btn${mobileMenuOpen ? " active" : ""}`} onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"} aria-expanded={mobileMenuOpen} aria-controls="mobile-navigation">
-                        <TabIcon name="menu" />
-                        <span>Menu</span>
-                    </button>
-                </div>
 
                 <SupportWidget />
 
