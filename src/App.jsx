@@ -13,15 +13,35 @@ import { NAV_LINKS, PAGE_SEO, PAGE_PATHS, SITE_URL, slugify, pageToPath, pageUrl
 import { eventDateOf } from "./utils/eventDate";
 import { APK_AVAILABLE, APK_FILE_NAME, APK_URL, APP_VERSION } from "./appDownload";
 
+// Five flat top-level destinations: every core page is one click away, with
+// the rest on the utility strip below the bar and in the footer.
 const NAV_MENU = [
-    { label: "Home", page: "Home" },
-    { label: "About", page: "About" },
-    { label: "Ministries", page: "Ministries" },
-    { label: "Activities", page: "Events" },
-    { label: "Resources", activePages: ["Sermons", "Recorded Sermons", "Written Sermons", "Liturgy", "Gallery", "Mobile App"] },
-    { label: "Get Involved", activePages: ["Give", "Ministries", "Testimonies"] },
-    { label: "Opportunities", page: "Community", activePages: ["Community", "Business Directory", "Requests", "Job Board", "Job Seekers"] },
+    { label: "Home", page: "Home", icon: "home" },
+    { label: "Sermons", page: "Sermons", icon: "book", activePages: ["Sermons", "Recorded Sermons", "Written Sermons", "Liturgy", "Gallery"] },
+    { label: "Ministries", page: "Ministries", icon: "users", activePages: ["Ministries", "Testimonies"] },
+    { label: "Events", page: "Events", icon: "calendar" },
+    { label: "Opportunities", page: "Community", icon: "briefcase", activePages: ["Community", "Business Directory", "Requests", "Job Board", "Job Seekers"] },
 ];
+
+// Secondary destinations, kept visible on the utility strip under the top bar.
+const UTILITY_LINKS = ["About", "Liturgy", "Gallery", "Written Sermons", "Testimonies", "Give", "Connect", "Mobile App"];
+
+const TAB_ICONS = {
+    home: "M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z",
+    book: "M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 19V5M8 7h7",
+    users: "M16 19v-1a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v1M9.5 10a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM21 19v-1a4 4 0 0 0-3-3.9M15.5 3.1a3.5 3.5 0 0 1 0 6.8",
+    calendar: "M8 3v3M16 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z",
+    briefcase: "M4 7h16a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1zM9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M3 13h18",
+    menu: "M4 7h16M4 12h16M4 17h16",
+};
+
+function TabIcon({ name }) {
+    return (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d={TAB_ICONS[name] || TAB_ICONS.menu} />
+        </svg>
+    );
+}
 const pageFromPath = pathname => {
     const slug = pathname.replace(/^\/+|\/+$/g, "").toLowerCase();
     if (slug.startsWith("events/")) return "Events";
@@ -236,9 +256,10 @@ nav.scrolled { box-shadow: 0 1px 3px rgba(15,23,42,0.07); }
 .hamburger::after { top: 7px; }
 
 .mobile-drawer {
-  display: none; position: fixed; top: 70px; left: 0; right: 0; bottom: 0;
+  display: none; position: fixed; top: 110px; left: 0; right: 0; bottom: 0;
   background: rgba(255,255,255,0.98); backdrop-filter: blur(16px);
-  z-index: 999; flex-direction: column; padding: 1.5rem 2rem;
+  z-index: 999; flex-direction: column; padding: 1.5rem 2rem 6rem;
+  overflow-y: auto;
   animation: fadeSlideUp 0.25s ease both;
 }
 .mobile-drawer.open { display: flex; }
@@ -1159,7 +1180,122 @@ a.footer-contact-row:hover .footer-contact-text { color: white; }
   .events-page-card .event-actions { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; margin-top: 0.1rem; }
   .events-page-card .event-actions .btn { width: 100%; min-width: 0; padding-left: 0.6rem; padding-right: 0.6rem; }
   .event-registration-card { padding: 1.5rem; }
+}
+
+/* ─── 3-ZONE TOP BAR + UTILITY STRIP ─── */
+.nav-actions { display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; }
+.nav-links { flex: 1; justify-content: center; gap: 0.35rem; }
+.nav-sub { border-top: 1px solid var(--line); background: rgba(248,250,252,0.9); }
+.nav-sub-inner { max-width: 1440px; margin: 0 auto; padding: 0 1.5rem; height: 40px; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; }
+.nav-sub-info { font-size: 0.75rem; color: var(--gray-600); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nav-sub-info strong { color: var(--gray-800); font-weight: 600; }
+.nav-sub-links { display: flex; align-items: center; gap: 0.15rem; flex-shrink: 0; }
+.nav-sub-link { padding: 0.3rem 0.55rem; border: none; background: none; border-radius: 6px; cursor: pointer; font: inherit; font-size: 0.75rem; font-weight: 500; color: var(--gray-600); white-space: nowrap; }
+.nav-sub-link:hover { color: var(--gray-800); background: var(--gray-100); }
+.nav-sub-link.active { color: var(--crimson); font-weight: 600; }
+.nav-sub-links .theme-toggle { margin-left: 0.6rem; }
+.dark-mode .nav-sub { background: rgba(11,17,30,0.9) !important; border-top-color: #1E293B !important; }
+.dark-mode .nav-sub-link:hover { background: #111C2E !important; color: #F1F5F9 !important; }
+.dark-mode .nav-sub-link.active { color: #F7A8B8 !important; }
+.mobile-drawer-group { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); margin: 1.25rem 0 0.35rem; }
+.mobile-drawer-group:first-child { margin-top: 0; }
+
+/* Quiet secondary button on light surfaces */
+.btn-quiet { background: white; color: var(--gray-800); border: 1px solid var(--line); }
+.btn-quiet:hover { background: var(--gray-100); }
+.dark-mode .btn-quiet { background: transparent !important; color: #E2E8F0 !important; border-color: #1E293B !important; }
+
+/* ─── SPLIT HERO ─── */
+.hero-wrap { padding-top: 9rem; }
+.hero-split { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 6fr); gap: 1.75rem; align-items: stretch; }
+.hero-copy { display: flex; flex-direction: column; justify-content: space-between; padding: 2.5rem; }
+.hero-copy .overline { margin-bottom: 1rem; }
+.hero-copy .hero-title { color: var(--gray-800); margin-bottom: 1.25rem; animation: none; }
+.hero-copy .hero-title span { color: var(--crimson); }
+.hero-copy .hero-desc { color: var(--gray-600); animation: none; margin-bottom: 1.25rem; }
+.hero-verse { font-family: var(--font-display); font-style: italic; font-size: 0.98rem; line-height: 1.6; color: var(--gray-600); padding-left: 1rem; border-left: 2px solid var(--gold); }
+.hero-verse cite { display: block; font-style: normal; font-family: var(--font-mono); font-size: 0.74rem; font-weight: 500; color: var(--crimson); margin-top: 0.5rem; }
+.hero-foot { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--line); animation: none; }
+.hero-foot .hero-btns { animation: none; }
+.hero-foot .hero-stats { margin-top: 1.75rem; gap: 2rem; animation: none; }
+.hero-copy .hero-stat-num { color: var(--navy); }
+.hero-copy .hero-stat-label { color: var(--gray-600); }
+.dark-mode .hero-copy .hero-title { color: #F1F5F9 !important; }
+.dark-mode .hero-copy .hero-title span { color: #F7A8B8 !important; }
+.dark-mode .hero-copy .hero-stat-num { color: var(--gold-light) !important; }
+.hero-photo { position: relative; min-height: 420px; border-radius: 16px; border: 1px solid var(--line); overflow: hidden; background-size: cover; background-position: center 35%; }
+.hero-photo-cap { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; gap: 0.45rem; padding: 1.75rem;
+  background: linear-gradient(to top, rgba(15,30,54,0.92) 0%, rgba(15,30,54,0.45) 45%, rgba(15,30,54,0.05) 100%); }
+.hero-photo-times { font-family: var(--font-mono); font-size: 0.72rem; line-height: 1.5; color: var(--gold-light); }
+.hero-photo-title { font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; color: white; line-height: 1.25; }
+.hero-photo-sub { font-size: 0.78rem; color: rgba(255,255,255,0.75); }
+
+/* ─── SERVICE STRIP + OPPORTUNITIES SPOTLIGHT ─── */
+.strip-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+.strip-head .section-header { margin-bottom: 0; text-align: left; }
+.service-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem; align-items: stretch; }
+.service-slot { padding: 1.35rem; display: flex; flex-direction: column; justify-content: space-between; gap: 1rem; }
+.service-slot-time { font-family: var(--font-mono); font-size: 0.86rem; font-weight: 600; color: var(--crimson); }
+.service-slot-title { font-size: 1rem; font-weight: 600; color: var(--gray-800); margin-top: 0.5rem; }
+.service-slot-desc { font-size: 0.86rem; color: var(--gray-600); line-height: 1.6; margin-top: 0.35rem; }
+.service-slot-where { font-size: 0.74rem; color: var(--gray-400); padding-top: 0.75rem; border-top: 1px solid var(--line); }
+.dark-mode .service-slot-title { color: #F1F5F9 !important; }
+.dark-mode .service-slot-time { color: #F7A8B8 !important; }
+.spotlight-card { background: var(--navy); color: white; border-radius: 16px; padding: 1.35rem; display: flex; flex-direction: column; justify-content: space-between; gap: 1rem; }
+.spotlight-eyebrow { font-family: var(--font-mono); font-size: 0.74rem; color: var(--gold-light); }
+.spotlight-title { font-family: var(--font-display); font-size: 1.1rem; font-weight: 600; margin-top: 0.5rem; line-height: 1.3; }
+.spotlight-desc { font-size: 0.85rem; color: rgba(255,255,255,0.72); line-height: 1.6; margin-top: 0.4rem; }
+.spotlight-card .btn { width: 100%; }
+
+/* ─── NEXT UP ─── */
+.next-up { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 1.5rem; padding: 1.5rem; align-items: center; }
+.next-up-poster { border-radius: 12px; overflow: hidden; }
+.next-up-body { padding: 0.5rem 0.5rem 0.5rem 0; }
+.next-up-title { font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; color: var(--gray-800); line-height: 1.25; margin: 0.5rem 0 1rem; }
+.next-up-desc { font-size: 0.9rem; color: var(--gray-600); line-height: 1.65; margin-bottom: 1.25rem; max-width: 46ch; }
+.next-up .countdown-label { color: var(--crimson); }
+.next-up .countdown-label::before { background: var(--crimson); }
+.next-up .countdown-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.6rem; max-width: 420px; }
+.next-up .countdown-unit { background: var(--gray-100); border: 1px solid var(--line); border-radius: 12px; padding: 0.75rem 0.4rem; text-align: center; }
+.next-up .countdown-num { color: var(--navy); font-size: 1.45rem; }
+.next-up .countdown-unit-label { color: var(--gray-400); }
+.dark-mode .next-up-title { color: #F1F5F9 !important; }
+.dark-mode .next-up .countdown-unit { background: #111C2E !important; border-color: #1E293B !important; }
+.dark-mode .next-up .countdown-num { color: var(--gold-light) !important; }
+
+/* ─── METRICS BAR ─── */
+.metrics-card { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.5rem; padding: 1.75rem 2rem; }
+.metrics-card .stat-num { color: var(--navy); font-size: 2.3rem; }
+.metrics-card .stat-label { color: var(--gray-600); font-size: 0.8rem; margin-top: 0.35rem; }
+.dark-mode .metrics-card .stat-num { color: var(--gold-light) !important; }
+
+/* ─── MOBILE THUMB-ZONE TAB BAR ─── */
+.tabbar { display: none; }
+@media (max-width: 1100px) {
+  .nav-sub { display: none; }
+  .mobile-drawer { top: 70px; }
+  .tabbar {
+    display: grid; grid-template-columns: repeat(6, 1fr); align-items: center;
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 1150; height: 64px;
+    background: rgba(255,255,255,0.97); backdrop-filter: blur(12px); border-top: 1px solid var(--line);
+  }
+  .tabbar-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+    min-height: 44px; border: none; background: none; cursor: pointer; font: inherit; font-size: 0.64rem; font-weight: 500; color: var(--gray-400); padding: 0 2px; }
+  .tabbar-btn span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tabbar-btn.active { color: var(--crimson); font-weight: 600; }
+  .dark-mode .tabbar { background: rgba(11,17,30,0.97) !important; border-top-color: #1E293B !important; }
+  .dark-mode .tabbar-btn.active { color: #F7A8B8 !important; }
+  .footer { padding-bottom: 5.5rem; }
+  .support-widget { bottom: 5rem; }
+  .hero-wrap { padding-top: 7rem; }
+  .hero-split { grid-template-columns: 1fr; }
+  .hero-copy { padding: 1.75rem; }
+  .hero-photo { min-height: 260px; }
+  .next-up { grid-template-columns: 1fr; }
+  .metrics-card { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 1.5rem; }
+  .app-prompt { bottom: 5rem; }
 }
+
 `;
 
 const TEAM = [
@@ -1320,7 +1456,6 @@ export default function App() {
     const [activePage, setActivePage] = useState(() => pageFromPath(window.location.pathname));
     const [dark, setDark] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [mobileSubmenuOpen, setMobileSubmenuOpen] = useState(null);
     const [joinUsOpen, setJoinUsOpen] = useState(() => window.location.pathname === joinUsRegistrationPath);
     // Without IntersectionObserver, or when the visitor prefers reduced motion,
     // the stats show their final numbers straight away instead of counting up.
@@ -1380,15 +1515,7 @@ export default function App() {
         if (window.location.pathname !== pageToPath(page)) window.history.pushState({}, "", pageToPath(page));
         setActivePage(page);
         setMobileMenuOpen(false);
-        setMobileSubmenuOpen(null);
         window.scrollTo({ top: 0, behavior: "smooth" });
-    };
-    const navigateToAnchor = (page, id) => {
-        if (window.location.pathname !== pageToPath(page)) window.history.pushState({}, "", pageToPath(page));
-        setActivePage(page);
-        setMobileMenuOpen(false);
-        setMobileSubmenuOpen(null);
-        setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
     };
 
     const openJoinUs = () => {
@@ -1482,38 +1609,6 @@ export default function App() {
             .catch(() => {});
         return () => { cancelled = true; };
     }, []);
-    const NAV_DROPDOWNS = {
-        Activities: {
-            page: "Events",
-            items: events.map(e => ({ label: e.title, onClick: () => navigateToAnchor("Events", slugify(e.title)) })),
-        },
-        Resources: {
-            items: [
-                { label: "Recorded Sermons", onClick: () => navigate("Recorded Sermons") },
-                { label: "Written Sermons", onClick: () => navigate("Written Sermons") },
-                { label: "Liturgy", onClick: () => navigate("Liturgy") },
-                { label: "Gallery", onClick: () => navigate("Gallery") },
-                { label: "Mobile App", onClick: () => navigate("Mobile App") },
-            ],
-        },
-        "Get Involved": {
-            items: [
-                { label: "Give", onClick: () => navigate("Give") },
-                { label: "Become a Member", onClick: openJoinUs },
-                { label: "Join a Ministry", onClick: () => navigate("Ministries") },
-                { label: "Give a Testimony", onClick: () => navigate("Testimonies") },
-            ],
-        },
-        Opportunities: {
-            page: "Community",
-            items: [
-                { label: "Browse Businesses", onClick: () => navigate("Business Directory") },
-                { label: "Request Something", onClick: () => navigate("Requests") },
-                { label: "Find Jobs", onClick: () => navigate("Job Board") },
-                { label: "Seek a Job", onClick: () => navigate("Job Seekers") },
-            ],
-        },
-    };
     const isNavItemActive = item => item.page === activePage || item.activePages?.includes(activePage);
 
     return (
@@ -1531,29 +1626,32 @@ export default function App() {
                             </div>
                         </a>
                         <div className="nav-links">
-                            {NAV_MENU.map(item => {
-                                const dropdown = NAV_DROPDOWNS[item.label];
-                                if (dropdown) {
-                                    return (
-                                        <div key={item.label} className="nav-item">
-                                            <button className={`nav-link${isNavItemActive(item) ? " active" : ""}`} onClick={() => dropdown.page && navigate(dropdown.page)}>
-                                                {item.label}<span className="nav-caret">▾</span>
-                                            </button>
-                                            <div className="nav-dropdown">
-                                                <div className="nav-dropdown-inner">
-                                                    {dropdown.items.map(dropdownItem => dropdownItem.href ? (
-                                                        <a key={dropdownItem.label} className="nav-dropdown-item" href={dropdownItem.href} target="_blank" rel="noreferrer">{dropdownItem.label}</a>
-                                                    ) : (
-                                                        <button key={dropdownItem.label} className="nav-dropdown-item" onClick={dropdownItem.onClick}>{dropdownItem.label}</button>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    );
-                                }
-                                return <button key={item.label} className={`nav-link${isNavItemActive(item) ? " active" : ""}`} onClick={() => navigate(item.page)}>{item.label}</button>;
-                            })}
-                            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginLeft: "0.5rem" }}>
+                            {NAV_MENU.map(item => (
+                                <button key={item.label} className={`nav-link${isNavItemActive(item) ? " active" : ""}`} onClick={() => navigate(item.page)}>{item.label}</button>
+                            ))}
+                        </div>
+                        <div className="nav-actions">
+                            <button className="nav-cta" onClick={openJoinUs}>Join Us</button>
+                        </div>
+                        <div className="mobile-menu-btn">
+                            <button className={`theme-toggle${dark ? " dark" : ""}`} onClick={() => setDark(!dark)} aria-label="Toggle dark mode">
+                                <div className="toggle-thumb" />
+                            </button>
+                            <button style={{ background: "none", border: "none", cursor: "pointer", fontSize: "1.4rem", color: dark ? "#E2E8F0" : "var(--navy)" }} onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+                                {mobileMenuOpen ? "✕" : "☰"}
+                            </button>
+                        </div>
+                    </div>
+                    {/* Utility strip: service details, secondary pages, theme */}
+                    <div className="nav-sub">
+                        <div className="nav-sub-inner">
+                            <p className="nav-sub-info">
+                                <strong>ACK St Paul&apos;s Cathedral</strong> · Embu Town · Sundays <span className="tabular">08:00</span>, <span className="tabular">08:30</span> &amp; <span className="tabular">11:00</span> AM
+                            </p>
+                            <div className="nav-sub-links">
+                                {UTILITY_LINKS.map(page => (
+                                    <button key={page} className={`nav-sub-link${activePage === page ? " active" : ""}`} onClick={() => navigate(page)}>{page}</button>
+                                ))}
                                 <button
                                     className={`theme-toggle${dark ? " dark" : ""}`}
                                     onClick={() => setDark(!dark)}
@@ -1564,45 +1662,20 @@ export default function App() {
                                 </button>
                             </div>
                         </div>
-                        <div className="mobile-menu-btn">
-                            <button className={`theme-toggle${dark ? " dark" : ""}`} onClick={() => setDark(!dark)} aria-label="Toggle dark mode">
-                                <div className="toggle-thumb" />
-                            </button>
-                            <button style={{ background: "none", border: "none", cursor: "pointer", fontSize: "1.4rem", color: dark ? "#E8E4DC" : "var(--navy)" }} onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-                                {mobileMenuOpen ? "✕" : "☰"}
-                            </button>
-                        </div>
                     </div>
                 </nav>
 
                 {/* ─── MOBILE DRAWER ─── */}
                 <div className={`mobile-drawer${mobileMenuOpen ? " open" : ""}`}>
-                    {NAV_MENU.map(item => {
-                        const dropdown = NAV_DROPDOWNS[item.label];
-                        if (dropdown) {
-                            const expanded = mobileSubmenuOpen === item.label;
-                            return (
-                                <div key={item.label} className="mobile-submenu">
-                                    <button
-                                        className={`nav-link mobile-submenu-toggle${isNavItemActive(item) ? " active" : ""}`}
-                                        onClick={() => setMobileSubmenuOpen(expanded ? null : item.label)}
-                                    >
-                                        {item.label}
-                                        <span className={`nav-caret${expanded ? " open" : ""}`}>▾</span>
-                                    </button>
-                                    <div className={`mobile-submenu-panel${expanded ? " open" : ""}`}>
-                                        {dropdown.page && <button className="mobile-submenu-item" onClick={() => navigate(dropdown.page)}>View All {item.label}</button>}
-                                        {dropdown.items.map(dropdownItem => dropdownItem.href ? (
-                                            <a key={dropdownItem.label} className="mobile-submenu-item" href={dropdownItem.href} target="_blank" rel="noreferrer" onClick={() => setMobileMenuOpen(false)}>{dropdownItem.label}</a>
-                                        ) : (
-                                            <button key={dropdownItem.label} className="mobile-submenu-item" onClick={dropdownItem.onClick}>{dropdownItem.label}</button>
-                                        ))}
-                                    </div>
-                                </div>
-                            );
-                        }
-                        return <button key={item.label} className={`nav-link${isNavItemActive(item) ? " active" : ""}`} onClick={() => navigate(item.page)}>{item.label}</button>;
-                    })}
+                    <div className="mobile-drawer-group">Main</div>
+                    {NAV_MENU.map(item => (
+                        <button key={item.label} className={`nav-link${isNavItemActive(item) ? " active" : ""}`} onClick={() => navigate(item.page)}>{item.label}</button>
+                    ))}
+                    <div className="mobile-drawer-group">More</div>
+                    {UTILITY_LINKS.map(page => (
+                        <button key={page} className={`nav-link${activePage === page ? " active" : ""}`} onClick={() => navigate(page)}>{page}</button>
+                    ))}
+                    <button className="btn btn-gold" style={{ marginTop: "1.25rem" }} onClick={() => { setMobileMenuOpen(false); openJoinUs(); }}>Join Us</button>
                 </div>
 
                 {/* ─── PAGES ─── */}
@@ -1672,6 +1745,24 @@ export default function App() {
                         <span>Built with ♥ for God's Glory · Embu, Kenya</span>
                     </div>
                 </footer>
+
+                {/* Mobile thumb-zone tab bar */}
+                <div className="tabbar" role="navigation" aria-label="Mobile navigation">
+                    {NAV_MENU.map(item => (
+                        <button
+                            key={item.label}
+                            className={`tabbar-btn${isNavItemActive(item) ? " active" : ""}`}
+                            onClick={() => navigate(item.page)}
+                        >
+                            <TabIcon name={item.icon} />
+                            <span>{item.label === "Opportunities" ? "Jobs" : item.label}</span>
+                        </button>
+                    ))}
+                    <button className="tabbar-btn" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+                        <TabIcon name="menu" />
+                        <span>More</span>
+                    </button>
+                </div>
 
                 <SupportWidget />
 
@@ -2144,79 +2235,132 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
 
     return (
         <>
-            {/* HERO */}
-            <div className="hero">
-                <div className="hero-pattern" style={{ backgroundImage: `url(${heroService})` }} />
-                <div className="hero-cross-bg" />
-                <svg className="hero-wave" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true">
-                    <path className="hero-wave-fill" d="M0,32 C240,60 480,0 720,20 C960,40 1200,58 1440,24 L1440,60 L0,60 Z" />
-                </svg>
-                <div className="hero-content container">
-                    <div className="hero-text-col">
-                        <div className="hero-badge">✝ ACK St Paul's Cathedral · Embu</div>
-                        <h1 className="hero-title">
-                            Where Youth <br className="hero-title-break-1" /><span>Encounter God</span><br />& Change the World
-                        </h1>
-                        <p className="hero-desc">
-                            A generation rising in faith, purpose, and power. Join ACK St Pauls Youths, the youth church of ACK St Paul's Cathedral and Embu's most vibrant youth community.
-                        </p>
-                        <div className="hero-btns">
-                            <button className="btn btn-gold" onClick={onJoinUs}>Join Us Today</button>
-                            <button className="btn btn-outline" onClick={() => navigate("Sermons")}>▶ Watch Online</button>
-                            <button className="btn btn-outline" onClick={() => navigate("Connect")}>Get Connected</button>
+            {/* HERO — the message beside the sanctuary, with the week's details */}
+            <div className="section hero-wrap section-cream">
+                <div className="container hero-split">
+                    <div className="card hero-copy">
+                        <div>
+                            <div className="overline">ACK St Paul&apos;s Cathedral · Embu Town</div>
+                            <h1 className="hero-title">
+                                Where Youth <span>Encounter God</span> &amp; Change the World
+                            </h1>
+                            <p className="hero-desc">
+                                A generation rising in faith, purpose, and power. Join ACK St Pauls Youths, the youth church of ACK St Paul's Cathedral and Embu's most vibrant youth community.
+                            </p>
+                            <p className="hero-verse">
+                                “Don&apos;t let anyone look down on you because you are young, but set an example in speech, conduct, love, faith, and purity.”
+                                <cite>1 Timothy 4:12</cite>
+                            </p>
                         </div>
-                        <div className="hero-stats">
-                            <div><div className="hero-stat-num">350+</div><div className="hero-stat-label">Active Youth</div></div>
-                            <div><div className="hero-stat-num">8+</div><div className="hero-stat-label">Ministries</div></div>
-                            <div><div className="hero-stat-num">10+</div><div className="hero-stat-label">Years of Faith</div></div>
+                        <div className="hero-foot">
+                            <div className="hero-btns">
+                                <button className="btn btn-gold" onClick={onJoinUs}>Join Us Today</button>
+                                <button className="btn btn-quiet" onClick={() => navigate("Sermons")}>▶ Watch Online</button>
+                                <button className="btn btn-quiet" onClick={() => navigate("Connect")}>Get Connected</button>
+                            </div>
+                            <div className="hero-stats">
+                                <div><div className="hero-stat-num">350+</div><div className="hero-stat-label">Active Youth</div></div>
+                                <div><div className="hero-stat-num">8+</div><div className="hero-stat-label">Ministries</div></div>
+                                <div><div className="hero-stat-num">10+</div><div className="hero-stat-label">Years of Faith</div></div>
+                            </div>
                         </div>
                     </div>
-                    <div className="hero-visual animate-float">
-                        <div className="service-card">
-                            <PosterCarousel />
-                            <div className="countdown-section">
-                                {!nextEvent ? (
-                                    <div style={{ textAlign: "center", padding: "1rem 0" }}>
-                                        <div style={{ fontSize: "0.85rem", color: "var(--gold-light)", fontWeight: 600 }}>✨ Stay tuned for our next event!</div>
-                                        <button className="btn btn-gold btn-sm" style={{ marginTop: "0.75rem" }} onClick={() => navigate("Events")}>View Upcoming Events</button>
-                                    </div>
-                                ) : eventPhase === "now" ? (
-                                    <div style={{ textAlign: "center", padding: "0.5rem 0" }}>
-                                        <span className="happening-now-badge">Happening Now</span>
-                                        <div style={{ fontSize: "0.85rem", color: "white", fontWeight: 600, marginTop: 10 }}>{nextEvent.title}</div>
-                                        <button className="btn btn-gold btn-sm" style={{ marginTop: "0.75rem" }} onClick={() => navigate("Events")}>View Details</button>
-                                    </div>
-                                ) : (
-                                    <>
-                                        <div className="countdown-label">{eventPhase === "starting" ? "Starting In" : `Next Up: ${nextEvent.title} In`}</div>
-                                        <div className="countdown-grid">
-                                            {[["d", "Days"], ["h", "Hrs"], ["m", "Min"], ["s", "Sec"]].map(([k, l]) => (
-                                                <div key={k} className="countdown-unit">
-                                                    <div className="countdown-num">{String(countdown[k]).padStart(2, "0")}</div>
-                                                    <div className="countdown-unit-label">{l}</div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </>
-                                )}
-                            </div>
+                    <div className="hero-photo" style={{ backgroundImage: `url(${heroService})` }}>
+                        <div className="hero-photo-cap">
+                            <p className="hero-photo-times tabular">Sundays · 08:00 AM · 08:30 AM · 11:00 AM</p>
+                            <p className="hero-photo-title">Youth Church at ACK St Paul&apos;s Cathedral</p>
+                            <p className="hero-photo-sub">Embu Town, Kenya · Everyone is welcome</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* THIS SUNDAY */}
+            {/* THIS SUNDAY — service strip plus the opportunities spotlight */}
             <div className="section-sm section-light">
                 <div className="container">
-                    <div className="section-header" style={{ marginBottom: "2rem" }}>
-                        <div className="overline">This Sunday at ACK St Pauls</div>
-                        <h2 className="section-title" style={{ fontSize: "1.6rem" }}>"Rise Up &amp; Shine" <span style={{ color: "var(--gray-400)", fontWeight: 400, fontSize: "0.9rem" }}>· Isaiah 60:1</span></h2>
+                    <div className="strip-head">
+                        <div>
+                            <div className="overline">This Sunday at ACK St Pauls</div>
+                            <h2 className="section-title" style={{ fontSize: "1.6rem", marginBottom: 0 }}>
+                                &quot;Rise Up &amp; Shine&quot; <span style={{ color: "var(--gray-400)", fontWeight: 400, fontSize: "0.9rem" }}>· Isaiah 60:1</span>
+                            </h2>
+                        </div>
+                        <button className="btn btn-quiet btn-sm" onClick={() => navigate("Liturgy")}>Order of Service →</button>
                     </div>
-                    <div className="service-times-grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))" }}>
-                        {[["Devotion", "8:00 AM"], ["Youth Service", "8:30 AM"], ["Bible Study", "11:00 AM"]].map(([n, t]) => (
-                            <div key={n} className="service-time-item" style={{ background: "var(--cream)", border: "1px solid rgba(201,168,76,0.2)" }}>
-                                <span className="service-time-name" style={{ color: "var(--gray-600)" }}>{n}</span>
-                                <span className="service-time-val" style={{ color: "var(--gold-dark)" }}>{t}</span>
+                    <div className="service-strip">
+                        {[
+                            ["08:00 AM", "Devotion", "Open the day together in prayer and the Word."],
+                            ["08:30 AM", "Youth Service", "Worship, teaching and fellowship as one family."],
+                            ["11:00 AM", "Bible Study", "Go deeper in Scripture in smaller groups."],
+                        ].map(([time, title, desc]) => (
+                            <div key={title} className="card service-slot">
+                                <div>
+                                    <p className="service-slot-time tabular">{time}</p>
+                                    <h3 className="service-slot-title">{title}</h3>
+                                    <p className="service-slot-desc">{desc}</p>
+                                </div>
+                                <p className="service-slot-where">ACK St Paul&apos;s Cathedral, Embu Town</p>
+                            </div>
+                        ))}
+                        <div className="spotlight-card">
+                            <div>
+                                <p className="spotlight-eyebrow tabular">Opportunities Hub</p>
+                                <h3 className="spotlight-title">Jobs &amp; Youth Business Directory</h3>
+                                <p className="spotlight-desc">Embu internships, attachments, youth-owned businesses and community requests.</p>
+                            </div>
+                            <button className="btn btn-white btn-sm" onClick={() => navigate("Community")}>Browse Opportunities</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* NEXT UP — poster and countdown */}
+            <div className="section-sm section-light" style={{ paddingTop: 0 }}>
+                <div className="container">
+                    <div className="card next-up">
+                        <div className="next-up-poster"><PosterCarousel /></div>
+                        <div className="next-up-body">
+                            {!nextEvent ? (
+                                <div>
+                                    <div className="overline">What&apos;s next</div>
+                                    <p className="next-up-title">Stay tuned for our next event</p>
+                                    <p className="next-up-desc">New services, trainings and outreach dates are posted here as soon as they are confirmed.</p>
+                                    <button className="btn btn-gold btn-sm" onClick={() => navigate("Events")}>View Upcoming Events</button>
+                                </div>
+                            ) : eventPhase === "now" ? (
+                                <div>
+                                    <span className="happening-now-badge">Happening Now</span>
+                                    <p className="next-up-title">{nextEvent.title}</p>
+                                    <button className="btn btn-gold btn-sm" onClick={() => navigate("Events")}>View Details</button>
+                                </div>
+                            ) : (
+                                <div>
+                                    <div className="countdown-label">{eventPhase === "starting" ? "Starting In" : "Next Up"}</div>
+                                    <p className="next-up-title">{nextEvent.title}</p>
+                                    <div className="countdown-grid">
+                                        {[["d", "Days"], ["h", "Hrs"], ["m", "Min"], ["s", "Sec"]].map(([k, l]) => (
+                                            <div key={k} className="countdown-unit">
+                                                <div className="countdown-num">{String(countdown[k]).padStart(2, "0")}</div>
+                                                <div className="countdown-unit-label">{l}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <button className="btn btn-gold btn-sm" style={{ marginTop: "1.25rem" }} onClick={() => navigate("Events")}>View All Events</button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* COMMUNITY METRICS */}
+            <div className="section-sm section-light" ref={statsRef} style={{ paddingTop: 0 }}>
+                <div className="container">
+                    <div className="card metrics-card">
+                        {[[stat1, "+", "Active Youth Members"], [stat2, "+", "Ministry Programs"], [stat3, "+", "Outreach Events / Year"], [stat4, "+", "Lives Impacted"]].map(([n, suffix, label], i) => (
+                            <div key={i}>
+                                <div className="stat-num tabular">{n.toLocaleString()}{suffix}</div>
+                                <div className="stat-label">{label}</div>
                             </div>
                         ))}
                     </div>
@@ -2234,21 +2378,6 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
                     <div style={{ display: "flex", gap: "1rem", justifyContent: "center", marginTop: "2rem", flexWrap: "wrap" }}>
                         <button className="btn btn-gold" onClick={() => navigate("About")}>Our Story</button>
                         <button className="btn btn-navy" onClick={() => navigate("Ministries")}>Find Your Ministry</button>
-                    </div>
-                </div>
-            </div>
-
-            {/* STATS */}
-            <div className="section section-navy" ref={statsRef}>
-                <div className="container">
-                    <div className="stats-grid">
-                        {[[stat1, "+", "Active Youth Members"], [stat2, "+", "Ministry Programs"], [stat3, "+", "Outreach Events / Year"], [stat4, "+", "Lives Impacted"]].map(([n, s, l], i) => (
-                            <div key={i} style={{ textAlign: "center" }}>
-                                <div className="stat-num">{n.toLocaleString()}{s}</div>
-                                <div className="stat-divider" />
-                                <div className="stat-label">{l}</div>
-                            </div>
-                        ))}
                     </div>
                 </div>
             </div>
