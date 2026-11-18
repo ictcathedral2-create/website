@@ -2638,8 +2638,8 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
                             </blockquote>
                         </div>
                         <div className="hero-slider-actions">
-                            <button className="btn btn-gold" onClick={onJoinUs}>Join us this Sunday</button>
-                            <button className="btn btn-sermon" onClick={() => navigate("Sermons")}>Watch a sermon</button>
+                            <button className="btn btn-gold" onClick={onJoinUs}>Join Us</button>
+                            <button className="btn btn-sermon" onClick={() => navigate("Sermons")}>Watch Sermon</button>
                         </div>
                     </div>
                     <div className="hero-slider-controls" aria-label="Choose a welcome highlight">
