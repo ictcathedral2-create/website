@@ -1463,7 +1463,7 @@ nav.scrolled { box-shadow: 0 5px 18px rgba(6,45,87,0.09); }
    rather than a permanent two-column composition. */
 .hero-slider { position: relative; min-height: 680px; padding-top: 110px; overflow: hidden; background: var(--navy); isolation: isolate; }
 .hero-slider-image { position: absolute; inset: 0; z-index: -2; background-repeat: no-repeat; background-size: cover; animation: heroImageIn 0.8s ease both; }
-.hero-slider-overlay { position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(3,27,55,0.94) 0%, rgba(3,36,71,0.78) 43%, rgba(3,36,71,0.25) 75%, rgba(3,36,71,0.12) 100%); }
+.hero-slider-overlay { position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(3,27,55,0.72) 0%, rgba(3,36,71,0.48) 43%, rgba(3,36,71,0.18) 75%, rgba(3,36,71,0.08) 100%); }
 .hero-slider-content { position: relative; z-index: 1; min-height: 570px; padding: clamp(4rem, 9vw, 8.5rem) max(2rem, calc((100vw - 1280px) / 2)) 3rem; display: flex; flex-direction: column; justify-content: space-between; }
 .hero-slider-copy { max-width: 650px; animation: heroCopyIn 0.7s 0.08s ease both; }
 .hero-slider-eyebrow { color: var(--gold-light); font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 1.2rem; }
@@ -1471,6 +1471,9 @@ nav.scrolled { box-shadow: 0 5px 18px rgba(6,45,87,0.09); }
 .hero-slider-desc { max-width: 56ch; color: rgba(255,255,255,0.9); font-size: 1.06rem; line-height: 1.75; margin-bottom: 1.6rem; }
 .hero-slider blockquote { max-width: 49ch; border-left: 3px solid var(--gold); color: rgba(255,255,255,0.85); font-family: var(--font-display); font-size: 1rem; font-style: italic; line-height: 1.6; margin: 0 0 2rem; padding-left: 1rem; }
 .hero-slider blockquote cite { display: block; color: var(--gold-light); font-family: var(--font-mono); font-size: 0.7rem; font-style: normal; font-weight: 700; letter-spacing: 0.08em; margin-top: 0.45rem; }
+.hero-slider-detail { max-width: 570px; margin-bottom: 1.6rem; padding: 1.1rem 1.2rem; border: 1px solid rgba(255,255,255,0.28); border-left: 3px solid var(--gold); border-radius: 10px; background: rgba(3,27,55,0.74); box-shadow: 0 10px 26px rgba(0,0,0,0.18); backdrop-filter: blur(6px); }
+.hero-slider-detail .hero-slider-desc { margin-bottom: 0.75rem; }
+.hero-slider-detail blockquote { margin: 0; }
 .hero-slider-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
 .hero-slider .btn-gold { background: var(--gold); color: var(--navy); }
 .hero-slider .btn-gold:hover { background: var(--gold-light); }
