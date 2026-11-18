@@ -1568,7 +1568,7 @@ nav.scrolled { box-shadow: 0 5px 18px rgba(70,44,55,0.12); }
    its copy and image together. */
 @media (max-width: 640px) {
   nav {
-    background: rgba(255, 255, 255, 0.98);
+    background: #F8FBFE;
     border-bottom: 1px solid #E0E8F0;
     box-shadow: 0 2px 14px rgba(6, 45, 87, 0.08);
   }
