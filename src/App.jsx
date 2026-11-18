@@ -20,11 +20,11 @@ const NAV_MENU = [
     { label: "Sermons", page: "Sermons", icon: "book", activePages: ["Sermons", "Recorded Sermons", "Written Sermons", "Liturgy", "Gallery"] },
     { label: "Ministries", page: "Ministries", icon: "users", activePages: ["Ministries", "Testimonies"] },
     { label: "Events", page: "Events", icon: "calendar" },
-    { label: "Opportunities", page: "Community", icon: "briefcase", activePages: ["Community", "Business Directory", "Requests", "Job Board", "Job Seekers"] },
+    { label: "Opportunities", page: "Community", icon: "briefcase", activePages: ["Community", "Business Directory", "Requests", "Job Board", "Job Seekers"] }, { label: "About", page: "About", icon: "info" },
 ];
 
 // Secondary destinations, kept visible on the utility strip under the top bar.
-const UTILITY_LINKS = ["About", "Liturgy", "Gallery", "Written Sermons", "Testimonies", "Give", "Connect", "Mobile App"];
+const UTILITY_LINKS = ["Liturgy", "Gallery", "Written Sermons", "Testimonies", "Give", "Connect", "Mobile App"];
 
 const pageFromPath = pathname => {
     const slug = pathname.replace(/^\/+|\/+$/g, "").toLowerCase();
