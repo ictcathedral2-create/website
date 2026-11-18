@@ -1568,7 +1568,7 @@ nav.scrolled { box-shadow: 0 5px 18px rgba(70,44,55,0.12); }
    its copy and image together. */
 @media (max-width: 640px) {
   nav {
-    position: relative;
+    position: fixed;
     background: #F8FBFE;
     border-bottom: 0;
     box-shadow: none;
@@ -1600,7 +1600,7 @@ nav.scrolled { box-shadow: 0 5px 18px rgba(70,44,55,0.12); }
   .mobile-search-panel button { min-width: 82px; border: 0; border-radius: 4px; background: var(--navy); color: white; font-size: 0.78rem; font-weight: 700; cursor: pointer; }
   .mobile-home-intro {
     display: block;
-    padding: 2.25rem 1.25rem 2rem;
+    padding: 6.25rem 1.25rem 2rem;
     text-align: center;
     background: #F8FBFE;
   }
