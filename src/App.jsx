@@ -350,12 +350,6 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 
 .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; animation: fadeSlideUp 0.7s 0.3s ease both; }
 
-.hero-stats {
-  display: flex; gap: 2.5rem; margin-top: 3rem;
-  animation: fadeSlideUp 0.7s 0.4s ease both;
-}
-.hero-stat-num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 2rem; font-weight: 600; line-height: 1; color: var(--gold-light); }
-.hero-stat-label { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.02em; color: rgba(255,255,255,0.6); margin-top: 6px; }
 
 .hero-visual {
   position: relative; width: min(100%, 360px); justify-self: start;
@@ -1159,7 +1153,6 @@ a.footer-contact-row:hover .footer-contact-text { color: white; }
   .countdown-unit { padding: 0.5rem 0.4rem; }
   .countdown-num { font-size: 1.25rem; }
   .hero-btns { order: 5; }
-  .hero-stats { order: 6; gap: 1.5rem; margin-top: 1.5rem; }
   .footer-grid { grid-template-columns: 1fr; }
   .footer-grid > div + div { border-left: none; padding-left: 0; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.06); }
   .event-card { flex-direction: column; gap: 1rem; }
@@ -1205,7 +1198,8 @@ a.footer-contact-row:hover .footer-contact-text { color: white; }
 /* Quiet secondary button on light surfaces */
 .btn-quiet { background: white; color: var(--gray-800); border: 1px solid var(--line); }
 .btn-quiet:hover { background: var(--gray-100); }
-.dark-mode .btn-quiet { background: transparent !important; color: #EFEAF5 !important; border-color: #2E2240 !important; }
+.dark-mode .btn-quiet { background: transparent !important; color: #EFEAF5 !important; border-color: #4A3760 !important; }
+.dark-mode .btn-quiet:hover { background: #2E2240 !important; border-color: #6A5186 !important; }
 
 /* ─── SPLIT HERO ─── */
 .hero-wrap { padding-top: 10.5rem; background: radial-gradient(circle at 84% 16%, rgba(196,154,58,0.18), transparent 28%), linear-gradient(180deg, #FAF8FC 0%, #F0EAF5 100%); }
@@ -1219,12 +1213,8 @@ a.footer-contact-row:hover .footer-contact-text { color: white; }
 .hero-verse cite { display: block; font-style: normal; font-family: var(--font-mono); font-size: 0.74rem; font-weight: 500; color: var(--crimson); margin-top: 0.5rem; }
 .hero-foot { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--line); animation: none; }
 .hero-foot .hero-btns { animation: none; }
-.hero-foot .hero-stats { margin-top: 1.75rem; gap: 2rem; animation: none; }
-.hero-copy .hero-stat-num { color: var(--navy); }
-.hero-copy .hero-stat-label { color: var(--gray-600); }
 .dark-mode .hero-copy .hero-title { color: #F7F3FB !important; }
 .dark-mode .hero-copy .hero-title span { color: #C9A3E8 !important; }
-.dark-mode .hero-copy .hero-stat-num { color: var(--gold-light) !important; }
 .hero-photo { position: relative; min-height: 420px; border-radius: 16px; border: 1px solid rgba(33,22,52,0.13); overflow: hidden; background-size: cover; background-position: center 35%; box-shadow: var(--shadow-md); }
 .hero-photo-cap { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; gap: 0.45rem; padding: 1.75rem;
   background: linear-gradient(to top, rgba(33,22,52,0.92) 0%, rgba(33,22,52,0.45) 45%, rgba(33,22,52,0.05) 100%); }
@@ -1235,19 +1225,12 @@ a.footer-contact-row:hover .footer-contact-text { color: white; }
 /* ─── SERVICE STRIP + OPPORTUNITIES SPOTLIGHT ─── */
 .strip-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
 .strip-head .section-header { margin-bottom: 0; text-align: left; }
-.service-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem; align-items: stretch; }
 .service-slot { padding: 1.35rem; display: flex; flex-direction: column; justify-content: space-between; gap: 1rem; }
 .service-slot-time { font-family: var(--font-mono); font-size: 0.86rem; font-weight: 600; color: var(--crimson); }
 .service-slot-title { font-size: 1rem; font-weight: 600; color: var(--gray-800); margin-top: 0.5rem; }
 .service-slot-desc { font-size: 0.86rem; color: var(--gray-600); line-height: 1.6; margin-top: 0.35rem; }
-.service-slot-where { font-size: 0.74rem; color: var(--gray-400); padding-top: 0.75rem; border-top: 1px solid var(--line); }
 .dark-mode .service-slot-title { color: #F7F3FB !important; }
 .dark-mode .service-slot-time { color: #C9A3E8 !important; }
-.spotlight-card { background: var(--navy); color: white; border-radius: 16px; padding: 1.35rem; display: flex; flex-direction: column; justify-content: space-between; gap: 1rem; }
-.spotlight-eyebrow { font-family: var(--font-mono); font-size: 0.74rem; color: var(--gold-light); }
-.spotlight-title { font-family: var(--font-display); font-size: 1.1rem; font-weight: 600; margin-top: 0.5rem; line-height: 1.3; }
-.spotlight-desc { font-size: 0.85rem; color: rgba(255,255,255,0.72); line-height: 1.6; margin-top: 0.4rem; }
-.spotlight-card .btn { width: 100%; }
 
 /* ─── NEXT UP ─── */
 .next-up { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 1.5rem; padding: 1.5rem; align-items: center; }
@@ -1304,16 +1287,81 @@ a.footer-contact-row:hover .footer-contact-text { color: white; }
   .hero-copy { padding: 1.5rem; }
   .hero-copy .hero-title { font-size: clamp(2.2rem, 10vw, 3rem); }
   .hero-foot { margin-top: 1.5rem; padding-top: 1.25rem; }
-  .hero-foot .hero-btns { display: grid; grid-template-columns: 1fr; gap: 0.65rem; }
+  .hero-foot .hero-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; }
   .hero-foot .hero-btns .btn { width: 100%; }
-  .hero-foot .hero-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem; }
-  .hero-copy .hero-stat-num { font-size: 1.45rem; }
-  .hero-copy .hero-stat-label { font-size: 0.67rem; line-height: 1.35; }
+  .hero-foot .hero-btns .btn:first-child { grid-column: 1 / -1; }
+  .hero-copy .hero-title { font-size: clamp(1.95rem, 8.4vw, 2.5rem); }
+  .hero-copy .hero-desc { font-size: 0.95rem; }
+  .hero-where { margin-top: 1.25rem; padding-top: 1rem; }
   .hero-photo { min-height: 300px; }
   .hero-photo-cap { padding: 1.25rem; }
   .hero-photo-title { font-size: 1.18rem; }
   .next-up { padding: 1rem; }
   .metrics-card { gap: 1rem; }
+}
+
+
+/* ─── HOME: set like a service sheet ─── */
+.hero-copy .hero-title { font-size: clamp(2.2rem, 3.5vw, 3.35rem); line-height: 1.05; letter-spacing: -0.025em; }
+.hero-copy .hero-desc { max-width: 46ch; }
+.hero-where { margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px solid var(--line); font-size: 0.86rem; line-height: 1.6; color: var(--gray-600); }
+.hero-photo-cap { gap: 0.45rem; }
+.dark-mode .hero-where { border-top-color: #2E2240 !important; }
+
+/* Section headers: a title, what it is for, and the one way onward. */
+.strip-head { margin-bottom: 1.75rem; }
+.strip-title { font-size: clamp(1.55rem, 2.3vw, 2.05rem); margin-bottom: 0.3rem; text-align: left; }
+.strip-sub { font-size: 0.85rem; color: var(--gray-600); }
+.strip-sub.tabular { font-size: 0.78rem; }
+
+/* The Sunday order of service: one sheet, ruled between the hours. */
+.service-sheet { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 0; }
+.service-sheet .service-slot { padding: 1.6rem 1.75rem; border-left: 1px solid var(--line); display: block; }
+.service-sheet .service-slot:first-child { border-left: none; }
+.service-slot-time { font-size: 1.15rem; letter-spacing: -0.01em; }
+.service-sheet .service-slot-desc { max-width: 34ch; }
+.dark-mode .service-sheet .service-slot { border-left-color: #2E2240 !important; }
+
+/* The jobs board, where people are already browsing what is on. */
+.opps-band {
+  margin-top: 1.5rem; background: var(--navy); border-radius: 16px; padding: 1.6rem 1.9rem;
+  display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap;
+}
+.opps-band h3 { font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; color: white; line-height: 1.25; }
+.opps-band p { font-size: 0.87rem; line-height: 1.6; color: rgba(255,255,255,0.72); margin-top: 0.35rem; max-width: 60ch; }
+
+/* Ministries as a list: eight names you can scan, one way through. */
+.ministry-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--line); }
+.ministry-row {
+  display: grid; grid-template-columns: 1.6rem 1fr; gap: 0.85rem; align-items: start; text-align: left;
+  padding: 1.15rem 1.5rem 1.15rem 0; border: none; border-bottom: 1px solid var(--line);
+  background: none; font: inherit; color: inherit; cursor: pointer;
+  transition: background 0.18s ease;
+}
+.ministry-row:nth-child(even) { padding-left: 1.75rem; border-left: 1px solid var(--line); }
+.ministry-row:hover { background: var(--gray-100); }
+.ministry-row-mark { font-size: 1.05rem; line-height: 1.5; }
+.ministry-row-title { display: block; font-size: 0.98rem; font-weight: 600; color: var(--gray-800); letter-spacing: -0.005em; }
+.ministry-row-desc {
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  font-size: 0.86rem; line-height: 1.6; color: var(--gray-600); margin-top: 0.2rem;
+}
+.dark-mode .ministry-list, .dark-mode .ministry-row { border-color: #2E2240 !important; }
+
+/* Lift belongs to cards you can click, not to every panel on the page. */
+.hero-copy:hover, .service-sheet:hover, .next-up:hover, .metrics-card:hover {
+  transform: none; box-shadow: var(--shadow-sm); border-color: var(--line);
+}
+
+@media (max-width: 860px) {
+  .service-sheet { grid-template-columns: 1fr; }
+  .service-sheet .service-slot { border-left: none; border-top: 1px solid var(--line); padding: 1.25rem 1.35rem; }
+  .service-sheet .service-slot:first-child { border-top: none; }
+  .dark-mode .service-sheet .service-slot { border-left-color: transparent !important; border-top-color: #2E2240 !important; }
+  .ministry-list { grid-template-columns: 1fr; }
+  .ministry-row, .ministry-row:nth-child(even) { padding: 1rem 0; border-left: none; }
+  .opps-band { padding: 1.35rem 1.4rem; }
+  .strip-head { margin-bottom: 1.35rem; }
 }
 
 `;
@@ -2257,12 +2305,11 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
                 <div className="container hero-split">
                     <div className="card hero-copy">
                         <div>
-                            <div className="overline">ACK St Paul&apos;s Cathedral · Embu Town</div>
                             <h1 className="hero-title">
-                                Where Youth <span>Encounter God</span> &amp; Change the World
+                                Where youth encounter God and change the world
                             </h1>
                             <p className="hero-desc">
-                                A generation rising in faith, purpose, and power. Join ACK St Pauls Youths, the youth church of ACK St Paul's Cathedral and Embu's most vibrant youth community.
+                                A generation rising in faith, purpose and power. ACK St Pauls Youths is the youth church of ACK St Paul&apos;s Cathedral, and Embu&apos;s most vibrant youth community.
                             </p>
                             <p className="hero-verse">
                                 “Don&apos;t let anyone look down on you because you are young, but set an example in speech, conduct, love, faith, and purity.”
@@ -2271,22 +2318,19 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
                         </div>
                         <div className="hero-foot">
                             <div className="hero-btns">
-                                <button className="btn btn-gold" onClick={onJoinUs}>Join Us Today</button>
-                                <button className="btn btn-quiet" onClick={() => navigate("Sermons")}>▶ Watch Online</button>
-                                <button className="btn btn-quiet" onClick={() => navigate("Connect")}>Get Connected</button>
+                                <button className="btn btn-gold" onClick={onJoinUs}>Join us this Sunday</button>
+                                <button className="btn btn-quiet" onClick={() => navigate("Sermons")}>Watch a sermon</button>
+                                <button className="btn btn-quiet" onClick={() => navigate("Connect")}>Get connected</button>
                             </div>
-                            <div className="hero-stats">
-                                <div><div className="hero-stat-num">350+</div><div className="hero-stat-label">Active Youth</div></div>
-                                <div><div className="hero-stat-num">8+</div><div className="hero-stat-label">Ministries</div></div>
-                                <div><div className="hero-stat-num">10+</div><div className="hero-stat-label">Years of Faith</div></div>
-                            </div>
+                            <p className="hero-where">
+                                We meet at ACK St Paul&apos;s Cathedral in Embu Town. Come as you are — everyone is welcome.
+                            </p>
                         </div>
                     </div>
                     <div className="hero-photo" style={{ backgroundImage: `url(${heroImage})` }}>
                         <div className="hero-photo-cap">
-                            <p className="hero-photo-times tabular">Sundays · 08:00 AM · 08:30 AM · 11:00 AM</p>
-                            <p className="hero-photo-title">Youth Church at ACK St Paul&apos;s Cathedral</p>
-                            <p className="hero-photo-sub">Embu Town, Kenya · Everyone is welcome</p>
+                            <p className="hero-photo-title">Youth church, every Sunday</p>
+                            <p className="hero-photo-times tabular">08:00 Devotion · 08:30 Service · 11:00 Bible study</p>
                         </div>
                     </div>
                 </div>
@@ -2297,36 +2341,23 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
                 <div className="container">
                     <div className="strip-head">
                         <div>
-                            <div className="overline">This Sunday at ACK St Pauls</div>
-                            <h2 className="section-title" style={{ fontSize: "1.6rem", marginBottom: 0 }}>
-                                &quot;Rise Up &amp; Shine&quot; <span style={{ color: "var(--gray-400)", fontWeight: 400, fontSize: "0.9rem" }}>· Isaiah 60:1</span>
-                            </h2>
+                            <h2 className="section-title strip-title">This Sunday: &ldquo;Rise Up &amp; Shine&rdquo;</h2>
+                            <p className="strip-sub tabular">Isaiah 60:1</p>
                         </div>
-                        <button className="btn btn-quiet btn-sm" onClick={() => navigate("Liturgy")}>Order of Service →</button>
+                        <button className="btn btn-quiet btn-sm" onClick={() => navigate("Liturgy")}>Order of service</button>
                     </div>
-                    <div className="service-strip">
+                    <div className="card service-sheet">
                         {[
-                            ["08:00 AM", "Devotion", "Open the day together in prayer and the Word."],
-                            ["08:30 AM", "Youth Service", "Worship, teaching and fellowship as one family."],
-                            ["11:00 AM", "Bible Study", "Go deeper in Scripture in smaller groups."],
+                            ["08:00", "Devotion", "Open the day together in prayer and the Word."],
+                            ["08:30", "Youth service", "Worship, teaching and fellowship as one family."],
+                            ["11:00", "Bible study", "Go deeper in Scripture in smaller groups."],
                         ].map(([time, title, desc]) => (
-                            <div key={title} className="card service-slot">
-                                <div>
-                                    <p className="service-slot-time tabular">{time}</p>
-                                    <h3 className="service-slot-title">{title}</h3>
-                                    <p className="service-slot-desc">{desc}</p>
-                                </div>
-                                <p className="service-slot-where">ACK St Paul&apos;s Cathedral, Embu Town</p>
+                            <div key={title} className="service-slot">
+                                <p className="service-slot-time tabular">{time}</p>
+                                <h3 className="service-slot-title">{title}</h3>
+                                <p className="service-slot-desc">{desc}</p>
                             </div>
                         ))}
-                        <div className="spotlight-card">
-                            <div>
-                                <p className="spotlight-eyebrow tabular">Opportunities Hub</p>
-                                <h3 className="spotlight-title">Jobs &amp; Youth Business Directory</h3>
-                                <p className="spotlight-desc">Embu internships, attachments, youth-owned businesses and community requests.</p>
-                            </div>
-                            <button className="btn btn-white btn-sm" onClick={() => navigate("Community")}>Browse Opportunities</button>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -2404,10 +2435,10 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
                     <div className="container">
                         <div className="strip-head">
                             <div>
-                                <div className="overline">Life Together</div>
-                                <h2 className="section-title" style={{ fontSize: "1.9rem", marginBottom: 0 }}>Moments from our community</h2>
+                                <h2 className="section-title strip-title">Life together</h2>
+                                <p className="strip-sub">Moments from around the community</p>
                             </div>
-                            <button className="btn btn-quiet btn-sm" onClick={() => navigate("Gallery")}>View Gallery →</button>
+                            <button className="btn btn-quiet btn-sm" onClick={() => navigate("Gallery")}>View the gallery</button>
                         </div>
                         <div className="home-gallery-grid">
                             {galleryImages.slice(0, 3).map((image, index) => (
@@ -2422,42 +2453,47 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
             )}
 
             {/* UPCOMING EVENTS */}
-            <div className="section section-light">
+            <div className="section section-cream">
                 <div className="container">
-                    <div className="section-header">
-                        <div className="overline">What's Coming Up</div>
-                        <h2 className="section-title">Upcoming Events</h2>
-                        <div className="gold-line" />
+                    <div className="strip-head">
+                        <div>
+                            <h2 className="section-title strip-title">What&apos;s coming up</h2>
+                            <p className="strip-sub">Services, trainings and outreach you can join</p>
+                        </div>
+                        <button className="btn btn-quiet btn-sm" onClick={() => navigate("Events")}>View all events</button>
                     </div>
-                    {events.length === 0 && <p style={{ textAlign: "center", color: "var(--gray-400)" }}>No upcoming events yet — check back soon!</p>}
+                    {events.length === 0 && <p style={{ color: "var(--gray-600)" }}>No upcoming events yet — check back soon.</p>}
                     <div className="grid-2 home-events-grid">
                         {events.slice(0, 4).map((e, i) => (
                             <HomeEventCard key={i} e={e} navigate={navigate} />
                         ))}
                     </div>
-                    <div style={{ textAlign: "center", marginTop: "2rem" }}>
-                        <button className="btn btn-navy" onClick={() => navigate("Events")}>View All Events</button>
+                    <div className="opps-band">
+                        <div>
+                            <h3>Jobs and the youth business directory</h3>
+                            <p>Internships and attachments around Embu, youth-owned businesses, and requests from the community.</p>
+                        </div>
+                        <button className="btn btn-white btn-sm" onClick={() => navigate("Community")}>Browse opportunities</button>
                     </div>
                 </div>
             </div>
 
             {/* FEATURED SERMON */}
-            <div className="section section-cream">
+            <div className="section section-light">
                 <div className="container">
-                    <div className="section-header">
-                        <div className="overline">Latest Message</div>
-                        <h2 className="section-title">Featured Sermon</h2>
-                        <div className="gold-line" />
+                    <div className="strip-head">
+                        <div>
+                            <h2 className="section-title strip-title">The latest message</h2>
+                            <p className="strip-sub">Missed Sunday? Catch up here</p>
+                        </div>
+                        <button className="btn btn-quiet btn-sm" onClick={() => navigate("Sermons")}>All sermons</button>
                     </div>
                     {videosLoading && (
-                        <div style={{ textAlign: "center", padding: "2rem 0", color: "var(--gray-400)" }}>Loading latest sermon…</div>
+                        <div style={{ padding: "1.5rem 0", color: "var(--gray-600)" }}>Loading the latest sermon…</div>
                     )}
                     {!videosLoading && !latestVideo && (
-                        <div style={{ textAlign: "center", padding: "2rem 0", color: "var(--gray-400)" }}>
+                        <div style={{ padding: "1.5rem 0", color: "var(--gray-600)" }}>
                             New sermon uploads will appear here soon.
-                            <div style={{ marginTop: "1rem" }}>
-                                <button className="btn btn-navy btn-sm" onClick={() => navigate("Sermons")}>Visit Sermons Page</button>
-                            </div>
                         </div>
                     )}
                     {!videosLoading && latestVideo && (
@@ -2497,21 +2533,24 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
             <VideoModal video={activeVideo} onClose={() => setActiveVideo(null)} />
 
             {/* MINISTRIES PREVIEW */}
-            <div className="section section-light">
+            <div className="section section-cream">
                 <div className="container">
-                    <div className="section-header">
-                        <div className="overline">Get Involved</div>
-                        <h2 className="section-title">Our Ministries</h2>
-                        <p className="section-desc">Eight vibrant arms of ministry — find where you belong and make your mark for God.</p>
-                        <div className="gold-line" />
+                    <div className="strip-head">
+                        <div>
+                            <h2 className="section-title strip-title">Eight ways to serve</h2>
+                            <p className="strip-sub">Find where you belong</p>
+                        </div>
+                        <button className="btn btn-quiet btn-sm" onClick={() => navigate("Ministries")}>Explore ministries</button>
                     </div>
-                    <div className="grid-3">
+                    <div className="ministry-list">
                         {MINISTRIES.map((m, i) => (
-                            <div key={i} className="card ministry-card">
-                                <div className="ministry-title">{m.title}</div>
-                                <div className="ministry-desc">{m.desc}</div>
-                                <div className="ministry-link" onClick={() => navigate("Ministries")}>Learn More →</div>
-                            </div>
+                            <button key={i} className="ministry-row" onClick={() => navigate("Ministries")}>
+                                <span className="ministry-row-mark" aria-hidden="true">{m.icon}</span>
+                                <span>
+                                    <span className="ministry-row-title">{m.title}</span>
+                                    <span className="ministry-row-desc">{m.desc}</span>
+                                </span>
+                            </button>
                         ))}
                     </div>
                 </div>
