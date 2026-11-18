@@ -1330,23 +1330,24 @@ a.footer-contact-row:hover .footer-contact-text { color: white; }
 .opps-band h3 { font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; color: white; line-height: 1.25; }
 .opps-band p { font-size: 0.87rem; line-height: 1.6; color: rgba(255,255,255,0.72); margin-top: 0.35rem; max-width: 60ch; }
 
-/* Ministries as a list: eight names you can scan, one way through. */
-.ministry-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--line); }
+/* Ministries as an editorial directory: each team is defined by its purpose. */
+.ministry-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
 .ministry-row {
-  display: grid; grid-template-columns: 1.6rem 1fr; gap: 0.85rem; align-items: start; text-align: left;
-  padding: 1.15rem 1.5rem 1.15rem 0; border: none; border-bottom: 1px solid var(--line);
+  display: grid; grid-template-columns: 2.5rem 1fr; gap: 1rem; align-items: start; text-align: left;
+  min-height: 142px; padding: 1.35rem 1.5rem; border: none; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line);
   background: none; font: inherit; color: inherit; cursor: pointer;
-  transition: background 0.18s ease;
+  transition: background 0.18s ease, color 0.18s ease;
 }
-.ministry-row:nth-child(even) { padding-left: 1.75rem; border-left: 1px solid var(--line); }
-.ministry-row:hover { background: var(--gray-100); }
-.ministry-row-mark { font-size: 1.05rem; line-height: 1.5; }
-.ministry-row-title { display: block; font-size: 0.98rem; font-weight: 600; color: var(--gray-800); letter-spacing: -0.005em; }
+.ministry-row:hover { background: white; }
+.ministry-row-index { color: var(--gold-dark); font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; line-height: 1.5; }
+.ministry-row-title { display: block; font-family: var(--font-display); font-size: 1.18rem; font-weight: 600; line-height: 1.1; color: var(--navy); letter-spacing: -0.02em; }
 .ministry-row-desc {
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-  font-size: 0.86rem; line-height: 1.6; color: var(--gray-600); margin-top: 0.2rem;
+  font-size: 0.86rem; line-height: 1.6; color: var(--gray-600); margin-top: 0.45rem;
 }
 .dark-mode .ministry-list, .dark-mode .ministry-row { border-color: #2E2240 !important; }
+.dark-mode .ministry-row:hover { background: #1A1226; }
+.dark-mode .ministry-row-title { color: #F7F3FB; }
 
 /* Lift belongs to cards you can click, not to every panel on the page. */
 .hero-copy:hover, .service-sheet:hover, .next-up:hover, .metrics-card:hover {
@@ -1359,7 +1360,7 @@ a.footer-contact-row:hover .footer-contact-text { color: white; }
   .service-sheet .service-slot:first-child { border-top: none; }
   .dark-mode .service-sheet .service-slot { border-left-color: transparent !important; border-top-color: #2E2240 !important; }
   .ministry-list { grid-template-columns: 1fr; }
-  .ministry-row, .ministry-row:nth-child(even) { padding: 1rem 0; border-left: none; }
+  .ministry-row { min-height: 0; padding: 1.1rem 0; border-right: none; }
   .opps-band { padding: 1.35rem 1.4rem; }
   .strip-head { margin-bottom: 1.35rem; }
 }
@@ -2796,15 +2797,15 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
                 <div className="container">
                     <div className="strip-head">
                         <div>
-                            <h2 className="section-title strip-title">Eight ways to serve</h2>
-                            <p className="strip-sub">Find where you belong</p>
+                            <h2 className="section-title strip-title">Find your place to serve</h2>
+                            <p className="strip-sub">Eight ministry teams, one shared purpose</p>
                         </div>
                         <button className="btn btn-quiet btn-sm" onClick={() => navigate("Ministries")}>Explore ministries</button>
                     </div>
                     <div className="ministry-list">
                         {MINISTRIES.map((m, i) => (
                             <button key={i} className="ministry-row" onClick={() => navigate("Ministries")}>
-                                <span className="ministry-row-mark" aria-hidden="true">{m.icon}</span>
+                                <span className="ministry-row-index" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
                                 <span>
                                     <span className="ministry-row-title">{m.title}</span>
                                     <span className="ministry-row-desc">{m.desc}</span>
