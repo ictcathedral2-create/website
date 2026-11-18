@@ -62,24 +62,24 @@ export const styles = `
   --font-display: 'Fraunces', Georgia, serif;
   --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, Arial, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
-  --crimson: #6B2E8E;
-  --crimson-hover: #51216E;
-  --line: #E5DFEA;
-  --gold: #C49A3A;
-  --gold-light: #E8C873;
-  --gold-dark: #8B681D;
-  --navy: #211634;
-  --navy-mid: #382252;
+  --crimson: #075CAC;
+  --crimson-hover: #03477F;
+  --line: #DCE5F0;
+  --gold: #D6A42C;
+  --gold-light: #F1C85B;
+  --gold-dark: #8B6513;
+  --navy: #062D57;
+  --navy-mid: #0B477F;
   --orange: #B42346;
-  --cream: #FAF8FC;
+  --cream: #F7F9FC;
   --white: #ffffff;
-  --gray-100: #F3F0F6;
-  --gray-200: #E5DFEA;
-  --gray-400: #6E6479;
-  --gray-600: #5D5368;
-  --gray-800: #281D32;
-  --shadow-sm: 0 10px 28px rgba(33, 22, 52, 0.08);
-  --shadow-md: 0 18px 42px rgba(33, 22, 52, 0.13);
+  --gray-100: #F1F5F9;
+  --gray-200: #DCE5F0;
+  --gray-400: #68778A;
+  --gray-600: #4D6075;
+  --gray-800: #13293F;
+  --shadow-sm: 0 10px 28px rgba(6, 45, 87, 0.08);
+  --shadow-md: 0 18px 42px rgba(6, 45, 87, 0.13);
 }
 
 html { font-size: 16px; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
@@ -1364,6 +1364,88 @@ a.footer-contact-row:hover .footer-contact-text { color: white; }
   .strip-head { margin-bottom: 1.35rem; }
 }
 
+/* ─── INSTITUTIONAL POLISH ───
+   A compact information band, bright masthead, precise accents and calmer
+   panels give every public route one clear visual system. */
+.nav-utility { background: var(--navy); color: rgba(255,255,255,0.82); }
+.nav-utility-inner { max-width: 1440px; height: 34px; margin: 0 auto; padding: 0 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; font-size: 0.72rem; font-weight: 500; letter-spacing: 0.01em; }
+.nav-utility-inner > div { display: flex; align-items: center; gap: 0.65rem; }
+.nav-utility a, .nav-utility button { color: rgba(255,255,255,0.9); background: none; border: 0; padding: 0; font: inherit; cursor: pointer; text-decoration: none; }
+.nav-utility a:hover, .nav-utility button:hover { color: var(--gold-light); }
+.nav-utility-dot { color: var(--gold); }
+nav { background: rgba(255,255,255,0.98); border-bottom-color: #D8E2ED; }
+nav.scrolled { box-shadow: 0 5px 18px rgba(6,45,87,0.09); }
+.nav-inner { height: 76px; }
+.logo-cross { width: 46px; height: 46px; border-radius: 0; }
+.logo-text { font-size: 1.16rem; color: var(--navy); }
+.logo-sub { color: var(--crimson); }
+.nav-links { gap: 0.35rem; }
+.nav-link { min-height: 48px; padding: 0.7rem 0.82rem; border-radius: 0; font-size: 0.79rem; font-weight: 650; color: #40546A; text-transform: uppercase; letter-spacing: 0.035em; }
+.nav-link:hover, .nav-link.active { color: var(--navy); }
+.nav-links .nav-link::after { left: 0.82rem; right: 0.82rem; height: 3px; background: var(--gold); }
+.nav-cta { border-radius: 4px; padding: 0.68rem 1.15rem; background: var(--crimson); box-shadow: 0 4px 12px rgba(7,92,172,0.18); }
+.nav-cta:hover { background: var(--crimson-hover); }
+.nav-sub { background: #F7F9FC; border-top: 0; border-bottom: 1px solid var(--line); }
+.nav-sub-inner { height: 38px; }
+.nav-sub-info { color: #60738A; }
+.nav-sub-info strong { color: var(--navy); }
+.nav-sub-link { border-radius: 0; font-size: 0.7rem; font-weight: 650; }
+.nav-sub-link.active { color: var(--crimson); }
+
+.hero-wrap { padding-top: 11.4rem; background: linear-gradient(135deg, #F8FBFE 0%, #ECF4FA 58%, #F8F3E5 100%); }
+.hero-split { gap: 2.25rem; max-width: 1320px; }
+.hero-copy { position: relative; padding: clamp(2rem,4vw,3.6rem); border: 1px solid #D6E2ED; border-top: 5px solid var(--gold); border-radius: 4px; box-shadow: none; background: rgba(255,255,255,0.88); }
+.hero-copy::before { content: 'WELCOME TO'; color: var(--crimson); font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.16em; margin-bottom: 1.1rem; }
+.hero-copy .hero-title { font-size: clamp(2.5rem,4vw,4.25rem); color: var(--navy); line-height: 1.02; }
+.hero-copy .hero-title span { color: var(--crimson); }
+.hero-copy .hero-desc { font-size: 1.03rem; line-height: 1.8; }
+.hero-verse { border-left: 3px solid var(--gold); color: #4C6279; }
+.hero-foot { border-top-color: #D6E2ED; }
+.hero-photo { border-radius: 4px; border: 0; min-height: 500px; box-shadow: 0 16px 40px rgba(6,45,87,0.16); }
+.hero-photo-cap { background: linear-gradient(to top, rgba(6,45,87,0.94), rgba(6,45,87,0.38) 48%, transparent 75%); padding: 2rem; }
+.hero-photo-title { font-size: 1.55rem; }
+
+.section { padding-top: 5.5rem; padding-bottom: 5.5rem; }
+.section-sm { padding-top: 3.75rem; padding-bottom: 3.75rem; }
+.section-cream { background: #F5F8FB; }
+.section-title { color: var(--navy); letter-spacing: -0.025em; }
+.overline { color: var(--crimson); font-size: 0.68rem; letter-spacing: 0.15em; }
+.section-header { margin-bottom: 3rem; }
+.card { border-color: #DCE5F0; border-radius: 5px; box-shadow: none; }
+.card:hover { box-shadow: 0 10px 24px rgba(6,45,87,0.08); }
+.btn { border-radius: 4px; font-weight: 700; }
+.btn-gold { background: var(--crimson); }
+.btn-gold:hover { background: var(--crimson-hover); }
+.btn-quiet { border-radius: 4px; }
+.service-sheet { border-top: 3px solid var(--gold); }
+.service-slot-time { color: var(--crimson); }
+.next-up { border-left: 4px solid var(--gold); }
+.metrics-card { border-top: 3px solid var(--crimson); }
+.metrics-card .stat-num { color: var(--crimson); }
+.opps-band { border-radius: 4px; border-left: 4px solid var(--gold); }
+.home-gallery-card, .home-gallery-card:first-child { border-radius: 4px; }
+.page-hero, .events-hero, .giving-hero { background: linear-gradient(115deg, #062D57, #0B4E8A); border-bottom: 4px solid var(--gold); }
+.page-hero::after, .events-hero::after { content: ''; display: block; width: 56px; height: 3px; margin: 1.35rem auto 0; background: var(--gold); }
+.newsletter { background: linear-gradient(115deg, #062D57, #0B477F); border-top: 4px solid var(--gold); }
+.footer { background: #041F3D; border-top: 4px solid var(--gold); }
+.footer-col-title { color: var(--gold-light); }
+.footer-link:hover { color: var(--gold-light); }
+
+@media (max-width: 1100px) {
+  .nav-utility, .nav-sub { display: none; }
+  .nav-inner { height: 70px; }
+  .hero-wrap { padding-top: 7rem; }
+}
+@media (max-width: 640px) {
+  .hero-wrap { padding: 5.7rem 1.25rem 2rem; }
+  .hero-split { gap: 1rem; }
+  .hero-copy { padding: 1.5rem; }
+  .hero-copy::before { margin-bottom: 0.7rem; }
+  .hero-photo { min-height: 340px; }
+  .section { padding-top: 4rem; padding-bottom: 4rem; }
+  .section-sm { padding-top: 2.75rem; padding-bottom: 2.75rem; }
+}
+
 `;
 
 const TEAM = [
@@ -1695,6 +1777,16 @@ export default function App() {
             <div className={dark ? "dark-mode" : ""} style={{ minHeight: "100vh" }}>
                 {/* ─── NAV ─── */}
                 <nav className={scrolled ? "scrolled" : ""}>
+                    <div className="nav-utility">
+                        <div className="nav-utility-inner">
+                            <span>ACK St Paul&apos;s Cathedral · Embu Town, Kenya</span>
+                            <div>
+                                <a href="mailto:ictcathedral2@gmail.com">ictcathedral2@gmail.com</a>
+                                <span className="nav-utility-dot">•</span>
+                                <button onClick={() => navigate("Connect")}>Plan your visit</button>
+                            </div>
+                        </div>
+                    </div>
                     <div className="nav-inner">
                         <button className="nav-logo" onClick={() => navigate("Home")} aria-label="ACK St Pauls Youths home">
                             <div className="logo-cross"><img src={logo} alt="ACK St Pauls Cathedral crest" /></div>
