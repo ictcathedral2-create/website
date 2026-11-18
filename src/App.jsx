@@ -1519,7 +1519,6 @@ nav.scrolled { box-shadow: 0 5px 18px rgba(70,44,55,0.12); }
 .hero-slider-detail .hero-slider-desc { margin-bottom: 0.75rem; }
 .hero-slider-detail blockquote { margin: 0; }
 .hero-slider-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
-.mobile-hero-feature { display: none; }
 .hero-slider .btn-gold { background: var(--gold); color: var(--navy); }
 .hero-slider .btn-gold:hover { background: var(--gold-light); }
 .hero-slider .btn-sermon { background: var(--crimson); border-color: var(--crimson); color: white; }
@@ -1564,8 +1563,8 @@ nav.scrolled { box-shadow: 0 5px 18px rgba(70,44,55,0.12); }
   .hero-slider-actions .btn { width: auto; min-height: 42px; padding: 0.6rem 0.9rem; }
 }
 
-/* Mobile home: a calm, stacked welcome like the supplied phone reference.
-   The feature image follows the calls-to-action rather than sitting behind copy. */
+/* Mobile masthead follows the supplied reference while the rotating hero keeps
+   its copy and image together. */
 @media (max-width: 640px) {
   nav {
     background: rgba(255, 255, 255, 0.98);
@@ -1576,93 +1575,31 @@ nav.scrolled { box-shadow: 0 5px 18px rgba(70,44,55,0.12); }
   .logo-cross { width: 46px; height: 46px; }
   .logo-text { font-size: 1.05rem; }
   .mobile-menu-btn { gap: 0.3rem; }
-  .theme-toggle { transform: scale(0.9); }
+  .mobile-icon-btn, .mobile-menu-btn .theme-toggle {
+    display: grid; place-items: center; width: 42px; height: 42px;
+    border: 0; border-radius: 50%; background: transparent; color: var(--navy); cursor: pointer;
+  }
+  .mobile-icon-btn:hover, .mobile-menu-btn .theme-toggle:hover { background: #EEF4F8; }
+  .mobile-icon-btn svg { width: 25px; height: 25px; stroke: currentColor; }
+  .mobile-menu-btn .theme-toggle { transform: none; }
+  .mobile-menu-btn .theme-toggle .toggle-thumb { display: none; }
+  .mobile-theme-symbol { font-size: 2rem; font-weight: 300; line-height: 1; }
   .menu-toggle { width: 42px; height: 42px; background: transparent; color: var(--navy) !important; font-size: 1.85rem !important; }
   .menu-toggle:hover { background: #EEF4F8; }
   .dark-mode .menu-toggle { background: transparent; color: var(--gold-light) !important; }
+  .dark-mode .mobile-icon-btn, .dark-mode .mobile-menu-btn .theme-toggle { color: var(--gold-light); }
+  .mobile-search-panel {
+    position: absolute; top: 74px; left: 0; right: 0; z-index: 1002;
+    padding: 0.85rem 1rem; background: white; border-bottom: 1px solid #DCE5F0;
+    box-shadow: 0 8px 18px rgba(6, 45, 87, 0.12);
+  }
+  .mobile-search-panel form { display: flex; gap: 0.55rem; }
+  .mobile-search-panel input { min-width: 0; flex: 1; height: 44px; padding: 0 0.8rem; border: 1px solid #B7C6D4; border-radius: 4px; color: var(--navy); background: white; }
+  .mobile-search-panel button { min-width: 82px; border: 0; border-radius: 4px; background: var(--navy); color: white; font-size: 0.78rem; font-weight: 700; cursor: pointer; }
 
   .hero-slider {
-    min-height: 0;
     padding-top: 74px;
-    background: #F8FBFE;
   }
-  .hero-slider-image,
-  .hero-slider-image.leaving,
-  .hero-slider-overlay { display: none; }
-  .hero-slider-content {
-    min-height: 0;
-    padding: 2.3rem 1.25rem 1.5rem;
-    text-align: center;
-    display: block;
-  }
-  .hero-slider-copy { max-width: none; animation: none; }
-  .hero-slider-eyebrow {
-    margin-bottom: 0.75rem;
-    color: var(--crimson);
-    font-size: 0.65rem;
-  }
-  .hero-slider h1 {
-    max-width: 12ch;
-    margin: 0 auto 1rem;
-    color: var(--navy);
-    font-size: clamp(2.2rem, 10.5vw, 3rem);
-    line-height: 1.02;
-    text-shadow: none;
-  }
-  .hero-slider-detail {
-    max-width: 35rem;
-    margin: 0 auto 1.5rem;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    box-shadow: none;
-    backdrop-filter: none;
-  }
-  .hero-slider-detail .hero-slider-desc {
-    margin: 0;
-    color: #52657A;
-    font-size: 0.93rem;
-    line-height: 1.65;
-  }
-  .hero-slider-detail blockquote { display: none; }
-  .hero-slider-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.7rem;
-  }
-  .hero-slider-actions .btn {
-    width: 100%;
-    min-height: 56px;
-    padding: 0.7rem 0.5rem;
-    border-radius: 2px;
-    font-size: 0.83rem;
-  }
-  .hero-slider .btn-gold { background: var(--navy); color: white; }
-  .hero-slider .btn-sermon { background: white; border: 1px solid var(--navy); color: var(--navy); }
-  .mobile-hero-feature {
-    display: block;
-    height: min(76vw, 370px);
-    margin-top: 1.4rem;
-    border: 1px solid #DFE8F0;
-    border-radius: 14px;
-    background-color: #EAF1F6;
-    background-repeat: no-repeat;
-    background-size: cover;
-    box-shadow: 0 14px 28px rgba(6, 45, 87, 0.12);
-  }
-  .hero-slider-controls {
-    justify-content: center;
-    gap: 0.45rem;
-    margin-top: 1rem;
-  }
-  .hero-slider-controls button { width: 22px; height: 3px; background: #B7C6D4; }
-  .hero-slider-controls button.active { width: 38px; background: var(--crimson); }
-  .dark-mode .hero-slider { background: #120C1C; }
-  .dark-mode .hero-slider h1 { color: #F7F3FB; }
-  .dark-mode .hero-slider-detail .hero-slider-desc { color: #CBBFD6; }
-  .dark-mode .hero-slider .btn-gold { background: var(--gold); color: var(--navy); }
-  .dark-mode .hero-slider .btn-sermon { background: transparent; border-color: var(--gold-light); color: var(--gold-light); }
-  .dark-mode .mobile-hero-feature { border-color: rgba(255,255,255,0.16); }
 }
 
 `;
@@ -1832,6 +1769,8 @@ export default function App() {
         }
     });
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+    const [mobileSearchQuery, setMobileSearchQuery] = useState("");
     const [joinUsOpen, setJoinUsOpen] = useState(() => window.location.pathname === joinUsRegistrationPath);
     // Without IntersectionObserver, or when the visitor prefers reduced motion,
     // the stats show their final numbers straight away instead of counting up.
@@ -1909,18 +1848,22 @@ export default function App() {
     }, [dark]);
 
     useEffect(() => {
-        if (!mobileMenuOpen) return undefined;
+        if (!mobileMenuOpen && !mobileSearchOpen) return undefined;
         const onKeyDown = event => {
-            if (event.key === "Escape") setMobileMenuOpen(false);
+            if (event.key === "Escape") {
+                setMobileMenuOpen(false);
+                setMobileSearchOpen(false);
+            }
         };
         window.addEventListener("keydown", onKeyDown);
         return () => window.removeEventListener("keydown", onKeyDown);
-    }, [mobileMenuOpen]);
+    }, [mobileMenuOpen, mobileSearchOpen]);
 
     const navigate = (page) => {
         if (window.location.pathname !== pageToPath(page)) window.history.pushState({}, "", pageToPath(page));
         setActivePage(page);
         setMobileMenuOpen(false);
+        setMobileSearchOpen(false);
         window.scrollTo({ top: 0, behavior: "smooth" });
         window.requestAnimationFrame(() => document.getElementById("main-content")?.focus());
     };
@@ -1930,6 +1873,16 @@ export default function App() {
         setActivePage("Home");
         setJoinUsOpen(true);
         setMobileMenuOpen(false);
+        setMobileSearchOpen(false);
+    };
+
+    const submitMobileSearch = event => {
+        event.preventDefault();
+        const query = mobileSearchQuery.trim().toLowerCase();
+        if (!query) return;
+        const destinations = [...NAV_MENU, ...UTILITY_LINKS.map(page => ({ label: page, page }))];
+        const match = destinations.find(item => item.label.toLowerCase().includes(query));
+        if (match) navigate(match.page);
     };
 
     const closeJoinUs = () => {
@@ -2052,14 +2005,30 @@ export default function App() {
                             <button className="nav-cta" onClick={openJoinUs}>Join Us</button>
                         </div>
                         <div className="mobile-menu-btn">
+                            <button
+                                className="mobile-icon-btn"
+                                onClick={() => { setMobileSearchOpen(open => !open); setMobileMenuOpen(false); }}
+                                aria-label={mobileSearchOpen ? "Close search" : "Search the site"}
+                                aria-expanded={mobileSearchOpen}
+                                aria-controls="mobile-site-search"
+                            >
+                                <svg viewBox="0 0 24 24" fill="none" strokeWidth="2.2" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8" /><path d="m16 16 5 5" /></svg>
+                            </button>
                             <button className={`theme-toggle${dark ? " dark" : ""}`} onClick={() => setDark(current => !current)} aria-label="Toggle dark mode">
                                 <div className="toggle-thumb" />
+                                <span className="mobile-theme-symbol" aria-hidden="true">{dark ? "☾" : "☼"}</span>
                             </button>
                             <button className="menu-toggle" style={{ fontSize: "1.4rem", color: dark ? "#EFEAF5" : "var(--navy)" }} onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label={mobileMenuOpen ? "Close menu" : "Open menu"} aria-expanded={mobileMenuOpen} aria-controls="mobile-navigation">
                                 {mobileMenuOpen ? "✕" : "☰"}
                             </button>
                         </div>
                     </div>
+                    {mobileSearchOpen && <div id="mobile-site-search" className="mobile-search-panel">
+                        <form onSubmit={submitMobileSearch}>
+                            <input autoFocus value={mobileSearchQuery} onChange={event => setMobileSearchQuery(event.target.value)} placeholder="Search sermons, events, ministries…" aria-label="Search the site" />
+                            <button type="submit">Search</button>
+                        </form>
+                    </div>}
                     {/* Utility strip: service details, secondary pages, theme */}
                     <div className="nav-sub">
                         <div className="nav-sub-inner">
@@ -2743,11 +2712,6 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
                             <button className="btn btn-gold" onClick={onJoinUs}>Join Us</button>
                             <button className="btn btn-sermon" onClick={() => navigate("Sermons")}>Watch Sermon</button>
                         </div>
-                        <div
-                            className="mobile-hero-feature"
-                            style={{ backgroundImage: `url(${activeHero.image})`, backgroundPosition: activeHero.position }}
-                            aria-hidden="true"
-                        />
                     </div>
                     <div className="hero-slider-controls" aria-label="Choose a welcome highlight">
                         {heroSlides.map((slide, index) => (
