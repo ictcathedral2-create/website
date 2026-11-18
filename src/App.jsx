@@ -1446,6 +1446,51 @@ nav.scrolled { box-shadow: 0 5px 18px rgba(6,45,87,0.09); }
   .section-sm { padding-top: 2.75rem; padding-bottom: 2.75rem; }
 }
 
+/* The primary navigation deliberately follows the reference's uncluttered
+   institution-header treatment: information band, white masthead, one menu. */
+.nav-links, .nav-cta, .nav-sub { display: none; }
+.mobile-menu-btn { display: flex; align-items: center; gap: 0.75rem; }
+.mobile-drawer { top: 110px; padding: 2rem max(2rem, calc((100vw - 1180px) / 2)); background: rgba(255,255,255,0.99); }
+.mobile-drawer .nav-link { max-width: 760px; margin: 0 auto; padding: 1.05rem 0; color: var(--navy); }
+.mobile-drawer-group { max-width: 760px; width: 100%; margin-left: auto; margin-right: auto; color: var(--crimson); }
+
+/* Full-width rotating hero: one changing image and one changing message,
+   rather than a permanent two-column composition. */
+.hero-slider { position: relative; min-height: 680px; padding-top: 110px; overflow: hidden; background: var(--navy); isolation: isolate; }
+.hero-slider-image { position: absolute; inset: 0; z-index: -2; background-repeat: no-repeat; background-size: cover; animation: heroImageIn 0.8s ease both; }
+.hero-slider-overlay { position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(3,27,55,0.94) 0%, rgba(3,36,71,0.78) 43%, rgba(3,36,71,0.25) 75%, rgba(3,36,71,0.12) 100%); }
+.hero-slider-content { position: relative; z-index: 1; min-height: 570px; padding: clamp(4rem, 9vw, 8.5rem) max(2rem, calc((100vw - 1280px) / 2)) 3rem; display: flex; flex-direction: column; justify-content: space-between; }
+.hero-slider-copy { max-width: 650px; animation: heroCopyIn 0.7s 0.08s ease both; }
+.hero-slider-eyebrow { color: var(--gold-light); font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 1.2rem; }
+.hero-slider h1 { color: white; font-family: var(--font-display); font-size: clamp(2.85rem, 5vw, 5rem); font-weight: 600; letter-spacing: -0.035em; line-height: 0.98; margin: 0 0 1.35rem; text-wrap: balance; }
+.hero-slider-desc { max-width: 56ch; color: rgba(255,255,255,0.9); font-size: 1.06rem; line-height: 1.75; margin-bottom: 1.6rem; }
+.hero-slider blockquote { max-width: 49ch; border-left: 3px solid var(--gold); color: rgba(255,255,255,0.85); font-family: var(--font-display); font-size: 1rem; font-style: italic; line-height: 1.6; margin: 0 0 2rem; padding-left: 1rem; }
+.hero-slider blockquote cite { display: block; color: var(--gold-light); font-family: var(--font-mono); font-size: 0.7rem; font-style: normal; font-weight: 700; letter-spacing: 0.08em; margin-top: 0.45rem; }
+.hero-slider-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.hero-slider .btn-gold { background: var(--gold); color: var(--navy); }
+.hero-slider .btn-gold:hover { background: var(--gold-light); }
+.hero-slider-controls { display: flex; gap: 0.6rem; align-items: center; }
+.hero-slider-controls button { width: 35px; height: 4px; border: 0; background: rgba(255,255,255,0.38); cursor: pointer; padding: 0; transition: width 0.2s ease, background 0.2s ease; }
+.hero-slider-controls button.active { width: 62px; background: var(--gold); }
+@keyframes heroImageIn { from { opacity: 0.55; transform: scale(1.035); } to { opacity: 1; transform: scale(1); } }
+@keyframes heroCopyIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (max-width: 1100px) {
+  .mobile-drawer { top: 70px; padding: 1.5rem 2rem 5rem; }
+  .hero-slider { min-height: 650px; padding-top: 70px; }
+  .hero-slider-content { min-height: 580px; padding: 6rem 1.5rem 3rem; }
+}
+@media (max-width: 640px) {
+  .mobile-drawer { padding: 1.5rem 1.25rem 5rem; }
+  .hero-slider { min-height: 710px; }
+  .hero-slider-overlay { background: linear-gradient(90deg, rgba(3,27,55,0.93), rgba(3,36,71,0.63)); }
+  .hero-slider-content { min-height: 640px; padding: 4.5rem 1.25rem 2rem; }
+  .hero-slider h1 { font-size: clamp(2.45rem, 11vw, 3.25rem); }
+  .hero-slider-desc { font-size: 0.98rem; }
+  .hero-slider-actions { display: grid; grid-template-columns: 1fr; }
+  .hero-slider-actions .btn { width: 100%; }
+}
+
 `;
 
 const TEAM = [
@@ -2384,6 +2429,44 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
     const latestVideo = videos.length > 0 ? videos[videos.length - 1] : null;
     const galleryImages = (galleryData || []).slice().sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
     const heroImage = galleryImages[0]?.imageData || heroService;
+    const secondaryHeroImage = galleryImages[1]?.imageData || youthFellowship;
+    const heroSlides = useMemo(() => [
+        {
+            eyebrow: "ACK St Paul's Cathedral · Embu",
+            title: "Where youth encounter God and change the world",
+            desc: "A generation rising in faith, purpose and power. Find a community where you can grow, serve, and become all God has called you to be.",
+            verse: "Don't let anyone look down on you because you are young, but set an example in speech, conduct, love, faith, and purity.",
+            cite: "1 Timothy 4:12",
+            image: heroImage,
+            position: "center 35%",
+        },
+        {
+            eyebrow: "Every Sunday",
+            title: "Worship together. Grow deeper. Live with purpose.",
+            desc: "From joyful worship to honest conversations and Bible study, there is a place for you in our church family.",
+            verse: "For where two or three gather in my name, there am I with them.",
+            cite: "Matthew 18:20",
+            image: secondaryHeroImage,
+            position: "center 45%",
+        },
+        {
+            eyebrow: "Faith in action",
+            title: "Made to serve our church and our city.",
+            desc: "Discover ministries, practical opportunities, and a generation committed to making the love of Christ visible in Embu and beyond.",
+            verse: "Let your light shine before others, that they may see your good deeds and glorify your Father in heaven.",
+            cite: "Matthew 5:16",
+            image: heroService,
+            position: "center 35%",
+        },
+    ], [heroImage, secondaryHeroImage]);
+    const [activeHeroSlide, setActiveHeroSlide] = useState(0);
+
+    useEffect(() => {
+        const id = window.setInterval(() => setActiveHeroSlide(current => (current + 1) % heroSlides.length), 6500);
+        return () => window.clearInterval(id);
+    }, [heroSlides.length]);
+
+    const activeHero = heroSlides[activeHeroSlide];
 
     const handleNewsletterSubmit = () => {
         if (!validateEmail(newsletter.formData.email)) return;
@@ -2392,41 +2475,31 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
 
     return (
         <>
-            {/* HERO — the message beside the sanctuary, with the week's details */}
-            <div className="section hero-wrap section-cream">
-                <div className="container hero-split">
-                    <div className="card hero-copy">
-                        <div>
-                            <h1 className="hero-title">
-                                Where youth encounter God and change the world
-                            </h1>
-                            <p className="hero-desc">
-                                A generation rising in faith, purpose and power. ACK St Pauls Youths is the youth church of ACK St Paul&apos;s Cathedral, and Embu&apos;s most vibrant youth community.
-                            </p>
-                            <p className="hero-verse">
-                                “Don&apos;t let anyone look down on you because you are young, but set an example in speech, conduct, love, faith, and purity.”
-                                <cite>1 Timothy 4:12</cite>
-                            </p>
-                        </div>
-                        <div className="hero-foot">
-                            <div className="hero-btns">
-                                <button className="btn btn-gold" onClick={onJoinUs}>Join us this Sunday</button>
-                                <button className="btn btn-quiet" onClick={() => navigate("Sermons")}>Watch a sermon</button>
-                                <button className="btn btn-quiet" onClick={() => navigate("Connect")}>Get connected</button>
-                            </div>
-                            <p className="hero-where">
-                                We meet at ACK St Paul&apos;s Cathedral in Embu Town. Come as you are — everyone is welcome.
-                            </p>
+            {/* HERO — a full-width rotating feature, inspired by the reference site's changing campus slides. */}
+            <section className="hero-slider" aria-label="Welcome highlights">
+                <div key={activeHeroSlide} className="hero-slider-image" style={{ backgroundImage: `url(${activeHero.image})`, backgroundPosition: activeHero.position }} />
+                <div className="hero-slider-overlay" />
+                <div className="container hero-slider-content">
+                    <div key={`copy-${activeHeroSlide}`} className="hero-slider-copy">
+                        <p className="hero-slider-eyebrow">{activeHero.eyebrow}</p>
+                        <h1>{activeHero.title}</h1>
+                        <p className="hero-slider-desc">{activeHero.desc}</p>
+                        <blockquote>
+                            “{activeHero.verse}”
+                            <cite>{activeHero.cite}</cite>
+                        </blockquote>
+                        <div className="hero-slider-actions">
+                            <button className="btn btn-gold" onClick={onJoinUs}>Join us this Sunday</button>
+                            <button className="btn btn-outline" onClick={() => navigate("Sermons")}>Watch a sermon</button>
                         </div>
                     </div>
-                    <div className="hero-photo" style={{ backgroundImage: `url(${heroImage})` }}>
-                        <div className="hero-photo-cap">
-                            <p className="hero-photo-title">Youth church, every Sunday</p>
-                            <p className="hero-photo-times tabular">08:00 Devotion · 08:30 Service · 11:00 Bible study</p>
-                        </div>
+                    <div className="hero-slider-controls" aria-label="Choose a welcome highlight">
+                        {heroSlides.map((slide, index) => (
+                            <button key={slide.title} className={index === activeHeroSlide ? "active" : ""} onClick={() => setActiveHeroSlide(index)} aria-label={`Show slide ${index + 1}`} aria-current={index === activeHeroSlide ? "true" : undefined} />
+                        ))}
                     </div>
                 </div>
-            </div>
+            </section>
 
             {/* THIS SUNDAY — service strip plus the opportunities spotlight */}
             <div className="section-sm section-light">
