@@ -1506,7 +1506,10 @@ nav.scrolled { box-shadow: 0 5px 18px rgba(6,45,87,0.09); }
 /* Full-width rotating hero: one changing image and one changing message,
    rather than a permanent two-column composition. */
 .hero-slider { position: relative; min-height: 680px; padding-top: 110px; overflow: hidden; background: var(--navy); isolation: isolate; }
-.hero-slider-image { position: absolute; inset: 0; z-index: -2; background-repeat: no-repeat; background-size: cover; animation: heroImageIn 0.8s ease both; }
+.hero-slider-image { position: absolute; inset: 0; z-index: -2; background-repeat: no-repeat; background-size: cover; animation: heroImageFadeIn 2.2s ease-out both; }
+.hero-slider-image.leaving { animation: heroImageFadeOut 2.4s ease-in both; pointer-events: none; }
+.hero-slider-image.transition-zoom { animation-name: heroImageZoomIn; }
+.hero-slider-image.transition-drift { animation-name: heroImageDriftIn; }
 .hero-slider-image-backdrop, .hero-slider-image-fit { display: none; }
 .hero-slider-overlay { position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(3,27,55,0.45) 0%, rgba(3,36,71,0.26) 43%, rgba(3,36,71,0.08) 75%, transparent 100%); }
 .hero-slider-content { position: relative; z-index: 1; min-height: 570px; padding: clamp(4rem, 9vw, 8.5rem) max(2rem, calc((100vw - 1280px) / 2)) 3rem; display: flex; flex-direction: column; justify-content: space-between; }
@@ -1527,8 +1530,15 @@ nav.scrolled { box-shadow: 0 5px 18px rgba(6,45,87,0.09); }
 .hero-slider-controls { display: flex; gap: 0.6rem; align-items: center; }
 .hero-slider-controls button { width: 35px; height: 4px; border: 0; background: rgba(255,255,255,0.38); cursor: pointer; padding: 0; transition: width 0.2s ease, background 0.2s ease; }
 .hero-slider-controls button.active { width: 62px; background: var(--gold); }
-@keyframes heroImageIn { from { opacity: 0.55; transform: scale(1.035); } to { opacity: 1; transform: scale(1); } }
+@keyframes heroImageFadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes heroImageFadeOut { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(1.025); } }
+@keyframes heroImageZoomIn { from { opacity: 0; transform: scale(1.08); } to { opacity: 1; transform: scale(1); } }
+@keyframes heroImageDriftIn { from { opacity: 0; transform: scale(1.035) translateX(1.5%); } to { opacity: 1; transform: scale(1) translateX(0); } }
 @keyframes heroCopyIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-slider-image, .hero-slider-image.leaving, .hero-slider-image.transition-zoom, .hero-slider-image.transition-drift, .hero-slider-copy { animation: none; }
+}
 
 @media (min-width: 641px) {
   .hero-slider-image { background-image: none !important; background-color: var(--navy); }
@@ -2549,14 +2559,30 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
             position: "center 35%",
         },
     ], [heroImage, secondaryHeroImage, thirdHeroImage, fourthHeroImage, fifthHeroImage]);
-    const [activeHeroSlide, setActiveHeroSlide] = useState(0);
+    const [heroTransition, setHeroTransition] = useState({ active: 0, previous: null });
+    const activeHeroSlide = heroTransition.active;
+    const changeHeroSlide = useCallback((nextSlide) => {
+        setHeroTransition(current => current.active === nextSlide ? current : { active: nextSlide, previous: current.active });
+    }, []);
 
     useEffect(() => {
-        const id = window.setInterval(() => setActiveHeroSlide(current => (current + 1) % heroSlides.length), 6500);
+        const id = window.setInterval(() => {
+            setHeroTransition(current => ({ active: (current.active + 1) % heroSlides.length, previous: current.active }));
+        }, 6500);
         return () => window.clearInterval(id);
     }, [heroSlides.length]);
 
+    useEffect(() => {
+        if (heroTransition.previous === null) return undefined;
+        const id = window.setTimeout(() => {
+            setHeroTransition(current => current.previous === heroTransition.previous ? { ...current, previous: null } : current);
+        }, 2400);
+        return () => window.clearTimeout(id);
+    }, [heroTransition.previous]);
+
     const activeHero = heroSlides[activeHeroSlide];
+    const previousHero = heroTransition.previous === null ? null : heroSlides[heroTransition.previous];
+    const heroTransitionClass = ["transition-fade", "transition-zoom", "transition-drift"][activeHeroSlide % 3];
 
     const handleNewsletterSubmit = () => {
         if (!validateEmail(newsletter.formData.email)) return;
@@ -2567,7 +2593,13 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
         <>
             {/* HERO — a full-width rotating feature, inspired by the reference site's changing campus slides. */}
             <section className="hero-slider" aria-label="Welcome highlights">
-                <div key={activeHeroSlide} className="hero-slider-image" style={{ backgroundImage: `url(${activeHero.image})`, backgroundPosition: activeHero.position }}>
+                {previousHero && (
+                    <div key={`leaving-${heroTransition.previous}-${activeHeroSlide}`} className="hero-slider-image leaving" style={{ backgroundImage: `url(${previousHero.image})`, backgroundPosition: previousHero.position }} aria-hidden="true">
+                        <div className="hero-slider-image-backdrop" style={{ backgroundImage: `url(${previousHero.image})` }} />
+                        <div className="hero-slider-image-fit" style={{ backgroundImage: `url(${previousHero.image})`, backgroundPosition: previousHero.position }} />
+                    </div>
+                )}
+                <div key={activeHeroSlide} className={`hero-slider-image ${heroTransitionClass}`} style={{ backgroundImage: `url(${activeHero.image})`, backgroundPosition: activeHero.position }}>
                     <div className="hero-slider-image-backdrop" style={{ backgroundImage: `url(${activeHero.image})` }} />
                     <div className="hero-slider-image-fit" style={{ backgroundImage: `url(${activeHero.image})`, backgroundPosition: activeHero.position }} />
                 </div>
@@ -2590,7 +2622,7 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
                     </div>
                     <div className="hero-slider-controls" aria-label="Choose a welcome highlight">
                         {heroSlides.map((slide, index) => (
-                            <button key={slide.title} className={index === activeHeroSlide ? "active" : ""} onClick={() => setActiveHeroSlide(index)} aria-label={`Show slide ${index + 1}`} aria-current={index === activeHeroSlide ? "true" : undefined} />
+                            <button key={slide.title} className={index === activeHeroSlide ? "active" : ""} onClick={() => changeHeroSlide(index)} aria-label={`Show slide ${index + 1}`} aria-current={index === activeHeroSlide ? "true" : undefined} />
                         ))}
                     </div>
                 </div>
