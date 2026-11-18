@@ -1474,6 +1474,8 @@ nav.scrolled { box-shadow: 0 5px 18px rgba(6,45,87,0.09); }
 .hero-slider-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
 .hero-slider .btn-gold { background: var(--gold); color: var(--navy); }
 .hero-slider .btn-gold:hover { background: var(--gold-light); }
+.hero-slider .btn-sermon { background: var(--crimson); border-color: var(--crimson); color: white; }
+.hero-slider .btn-sermon:hover { background: var(--crimson-hover); border-color: var(--crimson-hover); }
 .hero-slider-controls { display: flex; gap: 0.6rem; align-items: center; }
 .hero-slider-controls button { width: 35px; height: 4px; border: 0; background: rgba(255,255,255,0.38); cursor: pointer; padding: 0; transition: width 0.2s ease, background 0.2s ease; }
 .hero-slider-controls button.active { width: 62px; background: var(--gold); }
@@ -2521,7 +2523,7 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
                         </div>
                         <div className="hero-slider-actions">
                             <button className="btn btn-gold" onClick={onJoinUs}>Join us this Sunday</button>
-                            <button className="btn btn-outline" onClick={() => navigate("Sermons")}>Watch a sermon</button>
+                            <button className="btn btn-sermon" onClick={() => navigate("Sermons")}>Watch a sermon</button>
                         </div>
                     </div>
                     <div className="hero-slider-controls" aria-label="Choose a welcome highlight">
