@@ -1490,6 +1490,7 @@ nav.scrolled { box-shadow: 0 5px 18px rgba(6,45,87,0.09); }
   .hero-slider-image { background-image: none !important; background-color: var(--navy); }
   .hero-slider-image-backdrop { display: none; }
   .hero-slider-image-fit { display: block; position: absolute; inset: 0; background-repeat: no-repeat; background-position: center; background-size: contain; }
+  .hero-slider-overlay { background: linear-gradient(180deg, rgba(3,27,55,0.14), transparent 45%, rgba(3,27,55,0.1)); }
 }
 
 @media (max-width: 1100px) {
