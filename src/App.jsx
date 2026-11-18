@@ -866,10 +866,10 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
   background: rgba(255,255,255,0.1);
 }
 .footer-grid {
-  position: relative; display: grid; grid-template-columns: 1.65fr repeat(3, minmax(0, 1fr));
-  gap: 2.5rem; max-width: 1280px; margin: 0 auto;
+  position: relative; display: grid; grid-template-columns: minmax(260px, 0.85fr) minmax(0, 2.15fr);
+  gap: 4rem; max-width: 1280px; margin: 0 auto;
 }
-.footer-grid > div + div { padding-left: 2rem; border-left: 1px solid rgba(255,255,255,0.1); }
+.footer-grid > div + div { padding-left: 3rem; border-left: 1px solid rgba(255,255,255,0.1); }
 .footer-brand-name { font-family: var(--font-display); font-size: 1.7rem; font-weight: 600; line-height: 1; color: white; margin-bottom: 0.55rem; letter-spacing: -0.02em; }
 .footer-brand-sub { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold-light); }
 .footer-desc { font-size: 0.9rem; line-height: 1.75; color: rgba(255,255,255,0.68); margin-top: 1.35rem; max-width: 365px; }
@@ -884,6 +884,8 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
   color: var(--gold-light); margin-bottom: 1.15rem;
 }
 .footer-list { display: grid; gap: 0.7rem; justify-items: start; }
+.footer-links-columns { grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 1.5rem; row-gap: 0.7rem; }
+.footer-meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); }
 .footer-link { display: block; font-size: 0.89rem; color: rgba(255,255,255,0.64); text-align: left; text-decoration: none; cursor: pointer; transition: color 0.2s; }
 .footer-link:hover { color: white; }
 .footer-contact-text { display: block; font-size: 0.89rem; color: rgba(255,255,255,0.64); line-height: 1.6; text-align: left; text-decoration: none; transition: color 0.2s; }
@@ -895,6 +897,11 @@ a.footer-contact-text:hover { color: white; }
   display: flex; justify-content: space-between; align-items: center;
   font-size: 0.82rem; color: rgba(255,255,255,0.35);
   flex-wrap: wrap; gap: 1rem;
+}
+
+@media (max-width: 720px) {
+  .footer-links-columns { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .footer-meta { grid-template-columns: 1fr; gap: 1.75rem; }
 }
 
 /* ─── SUPPORT WIDGET ─── */
@@ -1989,25 +1996,27 @@ export default function App() {
                                 <cite>— 1 Timothy 4:12</cite>
                             </div>
                         </div>
-                        <div>
+                        <div className="footer-directory">
                             <div className="footer-col-title">Quick Links</div>
-                            <div className="footer-list">
+                            <div className="footer-list footer-links-columns">
                                 {NAV_LINKS.map(l => <a key={l} className="footer-link" href={pageToPath(l)} onClick={e => { e.preventDefault(); navigate(l); }}>{l}</a>)}
                             </div>
-                        </div>
-                        <div>
-                            <div className="footer-col-title">Service Times</div>
-                            <div className="footer-list">
-                                <div className="footer-link">Devotion · 8:00 AM</div>
-                                <div className="footer-link">Youth Service · 8:30 AM</div>
-                                <div className="footer-link">Bible Study · 11:00 AM</div>
-                            </div>
-                        </div>
-                        <div>
-                            <div className="footer-col-title">Contact</div>
-                            <div className="footer-list">
-                                <div className="footer-contact-text">ACK St Paul's Cathedral<br />Embu Town, Kenya</div>
-                                <a className="footer-contact-text" href="mailto:ictcathedral2@gmail.com">ictcathedral2@gmail.com</a>
+                            <div className="footer-meta">
+                                <div>
+                                    <div className="footer-col-title">Service Times</div>
+                                    <div className="footer-list">
+                                        <div className="footer-link">Devotion · 8:00 AM</div>
+                                        <div className="footer-link">Youth Service · 8:30 AM</div>
+                                        <div className="footer-link">Bible Study · 11:00 AM</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div className="footer-col-title">Contact</div>
+                                    <div className="footer-list">
+                                        <div className="footer-contact-text">ACK St Paul's Cathedral<br />Embu Town, Kenya</div>
+                                        <a className="footer-contact-text" href="mailto:ictcathedral2@gmail.com">ictcathedral2@gmail.com</a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
