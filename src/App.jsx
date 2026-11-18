@@ -1519,6 +1519,7 @@ nav.scrolled { box-shadow: 0 5px 18px rgba(70,44,55,0.12); }
 .hero-slider-detail .hero-slider-desc { margin-bottom: 0.75rem; }
 .hero-slider-detail blockquote { margin: 0; }
 .hero-slider-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.mobile-home-intro { display: none; }
 .hero-slider .btn-gold { background: var(--gold); color: var(--navy); }
 .hero-slider .btn-gold:hover { background: var(--gold-light); }
 .hero-slider .btn-sermon { background: var(--crimson); border-color: var(--crimson); color: white; }
@@ -1596,10 +1597,43 @@ nav.scrolled { box-shadow: 0 5px 18px rgba(70,44,55,0.12); }
   .mobile-search-panel form { display: flex; gap: 0.55rem; }
   .mobile-search-panel input { min-width: 0; flex: 1; height: 44px; padding: 0 0.8rem; border: 1px solid #B7C6D4; border-radius: 4px; color: var(--navy); background: white; }
   .mobile-search-panel button { min-width: 82px; border: 0; border-radius: 4px; background: var(--navy); color: white; font-size: 0.78rem; font-weight: 700; cursor: pointer; }
+  .mobile-home-intro {
+    display: block;
+    padding: 6.25rem 1.25rem 2rem;
+    text-align: center;
+    background: #F8FBFE;
+  }
+  .mobile-home-intro p {
+    margin-bottom: 0.65rem;
+    color: var(--crimson);
+    font-family: var(--font-mono);
+    font-size: 0.63rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+  }
+  .mobile-home-intro h1 {
+    max-width: 17ch;
+    margin: 0 auto 0.7rem;
+    color: var(--navy);
+    font-family: var(--font-display);
+    font-size: clamp(1.7rem, 7.5vw, 2.25rem);
+    font-weight: 600;
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+  }
+  .mobile-home-intro span { color: #60738A; font-size: 0.88rem; }
 
   .hero-slider {
-    padding-top: 74px;
+    min-height: 540px;
+    padding-top: 0;
   }
+  .hero-slider-content {
+    min-height: 540px;
+    padding: 3rem 1.25rem 1.65rem;
+  }
+  .dark-mode .mobile-home-intro { background: #120C1C; }
+  .dark-mode .mobile-home-intro h1 { color: #F7F3FB; }
+  .dark-mode .mobile-home-intro span { color: #CBBFD6; }
 }
 
 `;
@@ -2684,6 +2718,11 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
 
     return (
         <>
+            <section className="mobile-home-intro" aria-label="Welcome">
+                <p>WELCOME TO ACK ST PAUL&apos;S YOUTHS</p>
+                <h1>Faith, friendship and purpose for every young person.</h1>
+                <span>Come as you are. Grow with us.</span>
+            </section>
             {/* HERO — a full-width rotating feature, inspired by the reference site's changing campus slides. */}
             <section className="hero-slider" aria-label="Welcome highlights">
                 {previousHero && (
