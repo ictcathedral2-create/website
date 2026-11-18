@@ -1472,28 +1472,34 @@ nav.scrolled { box-shadow: 0 5px 18px rgba(6,45,87,0.09); }
 }
 
 @media (max-width: 1100px) {
-  nav { background: rgba(255,255,255,0.98); box-shadow: 0 3px 14px rgba(6,45,87,0.08); }
-  .nav-inner { height: 72px; padding: 0 1.25rem; gap: 0.75rem; }
+  nav { background: rgba(255,255,255,0.98); border-bottom: 2px solid var(--gold); box-shadow: 0 3px 14px rgba(6,45,87,0.08); }
+  .nav-inner { height: 68px; padding: 0 1.25rem; gap: 0.75rem; }
   .logo-cross { width: 42px; height: 42px; }
-  .mobile-menu-btn { margin-left: auto; gap: 0.45rem; }
-  .menu-toggle { width: 42px; height: 42px; border: 1px solid #D9E4EF; border-radius: 9px; background: #F6F9FC; }
-  .menu-toggle:hover { background: #EAF1F7; }
-  .mobile-drawer { top: 72px; padding: 1.4rem max(1.25rem, calc((100vw - 720px) / 2)) 2.5rem; background: linear-gradient(160deg, #F8FBFE 0%, #FFFFFF 45%, #F5F8FB 100%); box-shadow: 0 14px 30px rgba(6,45,87,0.14); }
-  .mobile-drawer .nav-link { max-width: 680px; min-height: 52px; margin: 0 auto; padding: 0.85rem 1rem; border: 0; border-radius: 0; background: transparent; color: var(--navy); font-size: 0.92rem; font-weight: 700; letter-spacing: 0.025em; box-shadow: none; }
-  .mobile-drawer .nav-link:hover { background: transparent; }
-  .mobile-drawer .nav-link.active { background: transparent; border-color: transparent; color: var(--navy); box-shadow: none; }
-  .mobile-drawer-group { margin-top: 1.25rem; margin-bottom: 0.55rem; font-size: 0.66rem; letter-spacing: 0.14em; color: var(--gold-dark); }
-  .mobile-drawer-group:first-child { margin-top: 0; }
-  .mobile-drawer .btn { width: min(100%, 680px); min-height: 48px; margin-left: auto; margin-right: auto; border-radius: 9px; }
-  .dark-mode .mobile-drawer { background: linear-gradient(160deg, #130D1E 0%, #1A1226 100%) !important; }
-  .dark-mode .mobile-drawer .nav-link { background: transparent; border-color: transparent; color: #F7F3FB; }
-  .dark-mode .mobile-drawer .nav-link.active { background: transparent; border-color: transparent; color: var(--gold-light); }
+  .mobile-menu-btn { margin-left: auto; gap: 0.65rem; }
+  .menu-toggle { width: 44px; height: 44px; border: 0; border-radius: 50%; background: var(--navy); color: white !important; }
+  .menu-toggle:hover { background: var(--navy-mid); }
+  .mobile-drawer { top: 68px; padding: 1.75rem max(1.25rem, calc((100vw - 720px) / 2)) 2.5rem; background: #FFFFFF; box-shadow: 0 14px 30px rgba(6,45,87,0.14); }
+  .mobile-drawer-heading { max-width: 680px; width: 100%; margin: 0 auto 1.75rem; padding-bottom: 1.25rem; border-bottom: 1px solid #DCE5F0; }
+  .mobile-drawer-kicker { display: block; margin-bottom: 0.35rem; color: var(--crimson); font-size: 0.66rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; }
+  .mobile-drawer-heading strong { color: var(--navy); font-family: var(--font-display); font-size: 1.65rem; font-weight: 600; letter-spacing: -0.02em; }
+  .mobile-drawer .nav-link { max-width: 680px; min-height: 52px; margin: 0 auto; padding: 0.95rem 0; border: 0; border-bottom: 1px solid #E4EBF2; border-radius: 0; background: transparent; color: var(--navy); font-size: 1rem; font-weight: 700; letter-spacing: 0.01em; box-shadow: none; }
+  .mobile-drawer .nav-link:hover { background: transparent; color: var(--crimson); }
+  .mobile-drawer .nav-link.active { background: transparent; border-color: #E4EBF2; color: var(--crimson); box-shadow: none; }
+  .mobile-drawer-group { margin-top: 1.75rem; margin-bottom: 0.35rem; font-size: 0.66rem; letter-spacing: 0.14em; color: var(--gold-dark); }
+  .mobile-drawer-heading + .mobile-drawer-group { margin-top: 0; }
+  .mobile-drawer .btn { width: min(100%, 680px); min-height: 50px; margin-left: auto; margin-right: auto; border-radius: 4px; }
+  .dark-mode .menu-toggle { background: var(--gold); color: var(--navy) !important; }
+  .dark-mode .mobile-drawer { background: #130D1E !important; }
+  .dark-mode .mobile-drawer-heading { border-bottom-color: rgba(180,131,39,0.25); }
+  .dark-mode .mobile-drawer-heading strong { color: #F7F3FB; }
+  .dark-mode .mobile-drawer .nav-link { background: transparent; border-color: rgba(180,131,39,0.16); color: #F7F3FB; }
+  .dark-mode .mobile-drawer .nav-link.active { background: transparent; border-color: rgba(180,131,39,0.16); color: var(--gold-light); }
 }
 @media (max-width: 640px) {
   .nav-inner { padding: 0 1rem; }
   .logo-text { font-size: 1.02rem; }
   .logo-sub { font-size: 0.55rem; }
-  .mobile-drawer { padding: 1.15rem 1rem 2rem; }
+  .mobile-drawer { padding: 1.4rem 1rem 2rem; }
 }
 
 /* Full-width rotating hero: one changing image and one changing message,
@@ -1940,6 +1946,10 @@ export default function App() {
 
                 {/* ─── MOBILE DRAWER ─── */}
                 <div id="mobile-navigation" className={`mobile-drawer${mobileMenuOpen ? " open" : ""}`} aria-hidden={!mobileMenuOpen}>
+                    <div className="mobile-drawer-heading">
+                        <span className="mobile-drawer-kicker">ACK St Paul's Cathedral</span>
+                        <strong>Explore the youth community</strong>
+                    </div>
                     <div className="mobile-drawer-group">Main</div>
                     {NAV_MENU.map(item => (
                         <button key={item.label} className={`nav-link${isNavItemActive(item) ? " active" : ""}`} onClick={() => navigate(item.page)}>{item.label}</button>
