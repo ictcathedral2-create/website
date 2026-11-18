@@ -1559,8 +1559,8 @@ nav.scrolled { box-shadow: 0 5px 18px rgba(6,45,87,0.09); }
   .hero-slider-detail .hero-slider-desc { font-size: 0.8rem; line-height: 1.5; margin-bottom: 0.7rem; }
   .hero-slider-detail blockquote { font-size: 0.74rem; line-height: 1.45; margin: 0; padding-left: 0.7rem; }
   .hero-slider-detail blockquote cite { font-size: 0.58rem; margin-top: 0.3rem; }
-  .hero-slider-actions { display: grid; grid-template-columns: 1fr; }
-  .hero-slider-actions .btn { width: 100%; }
+  .hero-slider-actions { display: flex; align-items: center; gap: 0.6rem; }
+  .hero-slider-actions .btn { width: auto; min-height: 42px; padding: 0.6rem 0.9rem; }
 }
 
 `;
