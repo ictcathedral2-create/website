@@ -1488,7 +1488,7 @@ nav.scrolled { box-shadow: 0 5px 18px rgba(6,45,87,0.09); }
 
 @media (min-width: 641px) {
   .hero-slider-image { background-image: none !important; background-color: var(--navy); }
-  .hero-slider-image-backdrop { display: block; position: absolute; inset: -24px; background-repeat: no-repeat; background-position: center; background-size: cover; filter: blur(18px); opacity: 0.62; }
+  .hero-slider-image-backdrop { display: none; }
   .hero-slider-image-fit { display: block; position: absolute; inset: 0; background-repeat: no-repeat; background-position: center; background-size: contain; }
 }
 
