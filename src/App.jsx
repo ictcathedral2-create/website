@@ -1459,14 +1459,14 @@ nav.scrolled { box-shadow: 0 5px 18px rgba(6,45,87,0.09); }
   .mobile-menu-btn { display: none; }
 }
 
-/* Navigation refinements: pill-style desktop controls and touch-friendly mobile cards. */
+/* Navigation refinements: keep the menu lightweight and text-led. */
 @media (min-width: 1101px) {
   .nav-inner { height: 80px; padding: 0 clamp(1.5rem, 3vw, 3rem); gap: 1.5rem; }
-  .nav-links { flex: 0 1 auto; padding: 0.28rem; gap: 0.2rem; border: 1px solid #DCE5F0; border-radius: 11px; background: #F6F9FC; }
-  .nav-link { min-height: 42px; padding: 0.65rem 0.82rem; border-radius: 7px; font-size: 0.75rem; letter-spacing: 0.045em; }
-  .nav-links .nav-link::after { display: none; }
-  .nav-link:hover { background: white; color: var(--navy); box-shadow: 0 2px 8px rgba(6,45,87,0.08); }
-  .nav-link.active { background: var(--navy); color: white; box-shadow: 0 3px 9px rgba(6,45,87,0.2); }
+  .nav-links { flex: 0 1 auto; padding: 0; gap: 0.35rem; border: 0; border-radius: 0; background: transparent; }
+  .nav-link { min-height: 42px; padding: 0.65rem 0.82rem; border-radius: 0; font-size: 0.75rem; letter-spacing: 0.045em; }
+  .nav-links .nav-link::after { display: block; }
+  .nav-link:hover { background: transparent; color: var(--navy); box-shadow: none; }
+  .nav-link.active { background: transparent; color: var(--navy); box-shadow: none; }
   .nav-cta { min-height: 42px; padding: 0.7rem 1.15rem; border-radius: 8px; background: var(--gold); color: var(--navy); box-shadow: 0 3px 10px rgba(139,101,19,0.2); }
   .nav-cta:hover { background: var(--gold-light); }
 }
