@@ -2438,6 +2438,9 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
     const galleryImages = (galleryData || []).slice().sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
     const heroImage = galleryImages[0]?.imageData || heroService;
     const secondaryHeroImage = galleryImages[1]?.imageData || youthFellowship;
+    const thirdHeroImage = galleryImages[2]?.imageData || heroService;
+    const fourthHeroImage = galleryImages[3]?.imageData || youthFellowship;
+    const fifthHeroImage = galleryImages[4]?.imageData || heroService;
     const heroSlides = useMemo(() => [
         {
             eyebrow: "ACK St Paul's Cathedral · Embu",
@@ -2463,10 +2466,28 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
             desc: "Discover ministries, practical opportunities, and a generation committed to making the love of Christ visible in Embu and beyond.",
             verse: "Let your light shine before others, that they may see your good deeds and glorify your Father in heaven.",
             cite: "Matthew 5:16",
-            image: heroService,
+            image: thirdHeroImage,
             position: "center 35%",
         },
-    ], [heroImage, secondaryHeroImage]);
+        {
+            eyebrow: "Rooted in hope",
+            title: "Growing together for the glory of God.",
+            desc: "Come as you are, worship wholeheartedly, and take your next step with a community that walks alongside you.",
+            verse: "Let us consider how we may spur one another on toward love and good deeds.",
+            cite: "Hebrews 10:24",
+            image: fourthHeroImage,
+            position: "center 40%",
+        },
+        {
+            eyebrow: "Join the journey",
+            title: "Faith that goes beyond Sunday.",
+            desc: "Experience a youth community that prays, serves, learns, and shares the love of Jesus in Embu and beyond.",
+            verse: "Whatever you do, do it all for the glory of God.",
+            cite: "1 Corinthians 10:31",
+            image: fifthHeroImage,
+            position: "center 35%",
+        },
+    ], [heroImage, secondaryHeroImage, thirdHeroImage, fourthHeroImage, fifthHeroImage]);
     const [activeHeroSlide, setActiveHeroSlide] = useState(0);
 
     useEffect(() => {
