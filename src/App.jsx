@@ -1508,6 +1508,7 @@ nav.scrolled { box-shadow: 0 5px 18px rgba(6,45,87,0.09); }
 .hero-slider { position: relative; min-height: 680px; padding-top: 110px; overflow: hidden; background: var(--navy); isolation: isolate; }
 .hero-slider-image { position: absolute; inset: 0; z-index: -2; background-repeat: no-repeat; background-size: cover; animation: heroImageFadeIn 2.2s ease-out both; }
 .hero-slider-image.leaving { animation: heroImageFadeOut 2.4s ease-in both; pointer-events: none; }
+.hero-slider-image.transition-splash { animation-name: heroImageSplashIn; }
 .hero-slider-image.transition-zoom { animation-name: heroImageZoomIn; }
 .hero-slider-image.transition-drift { animation-name: heroImageDriftIn; }
 .hero-slider-image-backdrop, .hero-slider-image-fit { display: none; }
@@ -1532,12 +1533,13 @@ nav.scrolled { box-shadow: 0 5px 18px rgba(6,45,87,0.09); }
 .hero-slider-controls button.active { width: 62px; background: var(--gold); }
 @keyframes heroImageFadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes heroImageFadeOut { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(1.025); } }
+@keyframes heroImageSplashIn { 0% { opacity: 0; clip-path: circle(0% at 50% 50%); transform: scale(1.08); } 45% { opacity: 1; } 100% { opacity: 1; clip-path: circle(150% at 50% 50%); transform: scale(1); } }
 @keyframes heroImageZoomIn { from { opacity: 0; transform: scale(1.08); } to { opacity: 1; transform: scale(1); } }
 @keyframes heroImageDriftIn { from { opacity: 0; transform: scale(1.035) translateX(1.5%); } to { opacity: 1; transform: scale(1) translateX(0); } }
 @keyframes heroCopyIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-slider-image, .hero-slider-image.leaving, .hero-slider-image.transition-zoom, .hero-slider-image.transition-drift, .hero-slider-copy { animation: none; }
+  .hero-slider-image, .hero-slider-image.leaving, .hero-slider-image.transition-splash, .hero-slider-image.transition-zoom, .hero-slider-image.transition-drift, .hero-slider-copy { animation: none; }
 }
 
 @media (min-width: 641px) {
@@ -2582,7 +2584,7 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
 
     const activeHero = heroSlides[activeHeroSlide];
     const previousHero = heroTransition.previous === null ? null : heroSlides[heroTransition.previous];
-    const heroTransitionClass = ["transition-fade", "transition-zoom", "transition-drift"][activeHeroSlide % 3];
+    const heroTransitionClass = ["transition-splash", "transition-fade", "transition-zoom", "transition-drift", "transition-fade"][activeHeroSlide % 5];
 
     const handleNewsletterSubmit = () => {
         if (!validateEmail(newsletter.formData.email)) return;
