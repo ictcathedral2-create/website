@@ -1446,13 +1446,18 @@ nav.scrolled { box-shadow: 0 5px 18px rgba(6,45,87,0.09); }
   .section-sm { padding-top: 2.75rem; padding-bottom: 2.75rem; }
 }
 
-/* The primary navigation deliberately follows the reference's uncluttered
-   institution-header treatment: information band, white masthead, one menu. */
-.nav-links, .nav-cta, .nav-sub { display: none; }
+/* The primary navigation deliberately follows the reference's institution
+   header treatment: information band, white masthead, then one clear menu. */
+.nav-sub { display: none; }
 .mobile-menu-btn { display: flex; align-items: center; gap: 0.75rem; }
 .mobile-drawer { top: 110px; padding: 2rem max(2rem, calc((100vw - 1180px) / 2)); background: rgba(255,255,255,0.99); }
 .mobile-drawer .nav-link { max-width: 760px; margin: 0 auto; padding: 1.05rem 0; color: var(--navy); }
 .mobile-drawer-group { max-width: 760px; width: 100%; margin-left: auto; margin-right: auto; color: var(--crimson); }
+@media (min-width: 1101px) {
+  .nav-links { display: flex; }
+  .nav-cta { display: inline-flex; }
+  .mobile-menu-btn { display: none; }
+}
 
 /* Full-width rotating hero: one changing image and one changing message,
    rather than a permanent two-column composition. */
