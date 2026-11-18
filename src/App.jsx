@@ -1490,14 +1490,13 @@ nav.scrolled { box-shadow: 0 5px 18px rgba(6,45,87,0.09); }
   .hero-slider { min-height: 710px; }
   .hero-slider-overlay { background: linear-gradient(180deg, rgba(3,27,55,0.5) 0%, rgba(3,36,71,0.12) 58%, rgba(3,27,55,0.46) 100%); }
   .hero-slider-content { min-height: 640px; padding: 4.5rem 1.25rem 2rem; }
-  .hero-slider-copy { max-width: 330px; padding: 1rem 1.05rem 1.1rem; border: 1px solid rgba(255,255,255,0.28); border-left: 3px solid var(--gold); border-radius: 10px; background: rgba(3,27,55,0.78); box-shadow: 0 10px 26px rgba(0,0,0,0.18); backdrop-filter: blur(6px); }
-  .hero-slider-eyebrow { font-size: 0.58rem; letter-spacing: 0.12em; margin-bottom: 0.55rem; }
-  .hero-slider h1 { font-size: clamp(2.15rem, 10vw, 2.7rem); line-height: 1.02; margin-bottom: 0.65rem; }
-  .hero-slider-desc { font-size: 0.8rem; line-height: 1.5; margin-bottom: 0.65rem; }
-  .hero-slider blockquote { font-size: 0.74rem; line-height: 1.45; margin-bottom: 0.9rem; padding-left: 0.7rem; }
-  .hero-slider blockquote cite { font-size: 0.58rem; margin-top: 0.3rem; }
+  .hero-slider h1 { font-size: clamp(2.45rem, 11vw, 3.25rem); }
+  .hero-slider-detail { max-width: 330px; margin-bottom: 1.6rem; padding: 0.9rem 1rem; border: 1px solid rgba(255,255,255,0.28); border-left: 3px solid var(--gold); border-radius: 10px; background: rgba(3,27,55,0.78); box-shadow: 0 10px 26px rgba(0,0,0,0.18); backdrop-filter: blur(6px); }
+  .hero-slider-detail .hero-slider-desc { font-size: 0.8rem; line-height: 1.5; margin-bottom: 0.7rem; }
+  .hero-slider-detail blockquote { font-size: 0.74rem; line-height: 1.45; margin: 0; padding-left: 0.7rem; }
+  .hero-slider-detail blockquote cite { font-size: 0.58rem; margin-top: 0.3rem; }
   .hero-slider-actions { display: grid; grid-template-columns: 1fr; }
-  .hero-slider-actions .btn { width: 100%; min-height: 38px; padding: 0.55rem 0.8rem; font-size: 0.78rem; }
+  .hero-slider-actions .btn { width: 100%; }
 }
 
 `;
@@ -2492,11 +2491,13 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
                     <div key={`copy-${activeHeroSlide}`} className="hero-slider-copy">
                         <p className="hero-slider-eyebrow">{activeHero.eyebrow}</p>
                         <h1>{activeHero.title}</h1>
-                        <p className="hero-slider-desc">{activeHero.desc}</p>
-                        <blockquote>
-                            “{activeHero.verse}”
-                            <cite>{activeHero.cite}</cite>
-                        </blockquote>
+                        <div className="hero-slider-detail">
+                            <p className="hero-slider-desc">{activeHero.desc}</p>
+                            <blockquote>
+                                “{activeHero.verse}”
+                                <cite>{activeHero.cite}</cite>
+                            </blockquote>
+                        </div>
                         <div className="hero-slider-actions">
                             <button className="btn btn-gold" onClick={onJoinUs}>Join us this Sunday</button>
                             <button className="btn btn-outline" onClick={() => navigate("Sermons")}>Watch a sermon</button>
