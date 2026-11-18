@@ -140,6 +140,7 @@ nav {
 }
 nav.scrolled { box-shadow: 0 1px 3px rgba(33,22,52,0.07); }
 .dark-mode nav.scrolled { box-shadow: 0 6px 24px rgba(0,0,0,0.35) !important; }
+.scroll-progress { position: absolute; bottom: -3px; left: 0; height: 3px; background: var(--gold); transition: width 0.12s linear; }
 
 .nav-inner {
   max-width: 1440px; margin: 0 auto;
@@ -899,9 +900,15 @@ a.footer-contact-text:hover { color: white; }
   flex-wrap: wrap; gap: 1rem;
 }
 
+.back-to-top { position: fixed; left: 1.5rem; bottom: 1.5rem; z-index: 1001; min-height: 42px; padding: 0.6rem 0.9rem; border: 1px solid rgba(6,45,87,0.16); border-radius: 4px; background: white; color: var(--navy); box-shadow: 0 8px 20px rgba(6,45,87,0.14); font: inherit; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; transition: transform 0.2s ease, background 0.2s ease; }
+.back-to-top:hover { background: var(--navy); color: white; transform: translateY(-2px); }
+.dark-mode .back-to-top { border-color: rgba(180,131,39,0.35); background: #1A1226; color: var(--gold-light); }
+.dark-mode .back-to-top:hover { background: var(--gold); color: var(--navy); }
+
 @media (max-width: 720px) {
   .footer-links-columns { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .footer-meta { grid-template-columns: 1fr; gap: 1.75rem; }
+  .back-to-top { left: 1rem; bottom: 1rem; }
 }
 
 /* ─── SUPPORT WIDGET ─── */
@@ -1714,7 +1721,14 @@ function TeamCard({ t }) {
 
 export default function App() {
     const [activePage, setActivePage] = useState(() => pageFromPath(window.location.pathname));
-    const [dark, setDark] = useState(false);
+    const [dark, setDark] = useState(() => {
+        try {
+            const savedTheme = window.localStorage.getItem("ack-st-pauls-theme");
+            return savedTheme ? savedTheme === "dark" : window.matchMedia?.("(prefers-color-scheme: dark)").matches;
+        } catch {
+            return false;
+        }
+    });
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [joinUsOpen, setJoinUsOpen] = useState(() => window.location.pathname === joinUsRegistrationPath);
     // Without IntersectionObserver, or when the visitor prefers reduced motion,
@@ -1725,6 +1739,8 @@ export default function App() {
     const [statsVisible, setStatsVisible] = useState(statsInstant);
     const [activeTab, setActiveTab] = useState("Video");
     const [scrolled, setScrolled] = useState(false);
+    const [scrollProgress, setScrollProgress] = useState(0);
+    const [showBackToTop, setShowBackToTop] = useState(false);
     // Callback ref: attaches the observer whenever the stats section mounts,
     // including when the visitor reaches Home from another page.
     const statsRef = useCallback(node => {
@@ -1765,11 +1781,30 @@ export default function App() {
     const stat4 = useAnimatedCount(800, statsVisible, statsInstant);
 
     useEffect(() => {
-        const onScroll = () => setScrolled(window.scrollY > 12);
+        const onScroll = () => {
+            const scrollTop = window.scrollY;
+            const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+            setScrolled(scrollTop > 12);
+            setShowBackToTop(scrollTop > 560);
+            setScrollProgress(scrollableHeight > 0 ? (scrollTop / scrollableHeight) * 100 : 0);
+        };
         onScroll();
         window.addEventListener("scroll", onScroll, { passive: true });
-        return () => window.removeEventListener("scroll", onScroll);
+        window.addEventListener("resize", onScroll, { passive: true });
+        return () => {
+            window.removeEventListener("scroll", onScroll);
+            window.removeEventListener("resize", onScroll);
+        };
     }, []);
+
+    useEffect(() => {
+        try {
+            window.localStorage.setItem("ack-st-pauls-theme", dark ? "dark" : "light");
+            document.documentElement.style.colorScheme = dark ? "dark" : "light";
+        } catch {
+            // Theme controls still work when browser storage is unavailable.
+        }
+    }, [dark]);
 
     useEffect(() => {
         if (!mobileMenuOpen) return undefined;
@@ -1887,6 +1922,7 @@ export default function App() {
             <div className={dark ? "dark-mode" : ""} style={{ minHeight: "100vh" }}>
                 {/* ─── NAV ─── */}
                 <nav className={scrolled ? "scrolled" : ""}>
+                    <div className="scroll-progress" style={{ width: `${Math.min(100, Math.max(0, scrollProgress))}%` }} aria-hidden="true" />
                     <div className="nav-utility">
                         <div className="nav-utility-inner">
                             <span>ACK St Paul&apos;s Cathedral · Embu Town, Kenya</span>
@@ -1914,7 +1950,7 @@ export default function App() {
                             <button className="nav-cta" onClick={openJoinUs}>Join Us</button>
                         </div>
                         <div className="mobile-menu-btn">
-                            <button className={`theme-toggle${dark ? " dark" : ""}`} onClick={() => setDark(!dark)} aria-label="Toggle dark mode">
+                            <button className={`theme-toggle${dark ? " dark" : ""}`} onClick={() => setDark(current => !current)} aria-label="Toggle dark mode">
                                 <div className="toggle-thumb" />
                             </button>
                             <button className="menu-toggle" style={{ fontSize: "1.4rem", color: dark ? "#EFEAF5" : "var(--navy)" }} onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label={mobileMenuOpen ? "Close menu" : "Open menu"} aria-expanded={mobileMenuOpen} aria-controls="mobile-navigation">
@@ -1934,7 +1970,7 @@ export default function App() {
                                 ))}
                                 <button
                                     className={`theme-toggle${dark ? " dark" : ""}`}
-                                    onClick={() => setDark(!dark)}
+                                    onClick={() => setDark(current => !current)}
                                     aria-label="Toggle dark mode"
                                     title={dark ? "Light mode" : "Dark mode"}
                                 >
@@ -1961,6 +1997,8 @@ export default function App() {
                     ))}
                     <button className="btn btn-gold" style={{ marginTop: "1.25rem" }} onClick={() => { setMobileMenuOpen(false); openJoinUs(); }}>Join Us</button>
                 </div>
+
+                {showBackToTop && <button className="back-to-top" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>Top</button>}
 
                 {/* ─── PAGES ─── */}
                 <main id="main-content" className="app-content" tabIndex={-1}>
