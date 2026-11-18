@@ -83,7 +83,7 @@ export const styles = `
 }
 
 html { font-size: 16px; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
-body { font-family: var(--font-body); font-size: 0.97rem; font-weight: 400; line-height: 1.65; letter-spacing: 0; background: var(--white); color: var(--gray-800); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+body { font-family: var(--font-body); font-size: 0.97rem; font-weight: 400; line-height: 1.65; letter-spacing: 0; background: #F7F1EE; color: var(--gray-800); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
 .tabular { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
 button, input, select, textarea { font: inherit; }
 .font-display { font-family: var(--font-display); }
@@ -1369,15 +1369,15 @@ a.footer-contact-text:hover { color: white; }
 .nav-utility a, .nav-utility button { color: rgba(255,255,255,0.9); background: none; border: 0; padding: 0; font: inherit; cursor: pointer; text-decoration: none; }
 .nav-utility a:hover, .nav-utility button:hover { color: var(--gold-light); }
 .nav-utility-dot { color: var(--gold); }
-nav { background: var(--navy); border-bottom-color: rgba(180,131,39,0.4); }
-nav.scrolled { box-shadow: 0 5px 18px rgba(3,27,55,0.28); }
+nav { background: #F7F1EE; border-bottom-color: #E8D9D3; }
+nav.scrolled { box-shadow: 0 5px 18px rgba(70,44,55,0.12); }
 .nav-inner { height: 76px; }
 .logo-cross { width: 46px; height: 46px; border-radius: 0; }
-.logo-text { font-size: 1.16rem; color: white; }
-.logo-sub { color: var(--gold-light); }
+.logo-text { font-size: 1.16rem; color: var(--navy); }
+.logo-sub { color: var(--crimson); }
 .nav-links { gap: 0.35rem; }
-.nav-link { min-height: 48px; padding: 0.7rem 0.82rem; border-radius: 0; font-size: 0.79rem; font-weight: 650; color: rgba(255,255,255,0.78); text-transform: uppercase; letter-spacing: 0.035em; }
-.nav-link:hover, .nav-link.active { color: var(--gold-light); }
+.nav-link { min-height: 48px; padding: 0.7rem 0.82rem; border-radius: 0; font-size: 0.79rem; font-weight: 650; color: #5F5260; text-transform: uppercase; letter-spacing: 0.035em; }
+.nav-link:hover, .nav-link.active { color: var(--navy); }
 .nav-links .nav-link::after { left: 0.82rem; right: 0.82rem; height: 3px; background: var(--gold); }
 .nav-cta { border-radius: 4px; padding: 0.68rem 1.15rem; background: var(--crimson); box-shadow: 0 4px 12px rgba(7,92,172,0.18); }
 .nav-cta:hover { background: var(--crimson-hover); }
@@ -1461,14 +1461,14 @@ nav.scrolled { box-shadow: 0 5px 18px rgba(3,27,55,0.28); }
   .nav-links { flex: 0 1 auto; padding: 0; gap: 0.35rem; border: 0; border-radius: 0; background: transparent; }
   .nav-link { min-height: 42px; padding: 0.65rem 0.82rem; border-radius: 0; font-size: 0.75rem; letter-spacing: 0.045em; }
   .nav-links .nav-link::after { display: block; }
-  .nav-link:hover { background: transparent; color: var(--gold-light); box-shadow: none; }
-  .nav-link.active { background: transparent; color: var(--gold-light); box-shadow: none; }
+  .nav-link:hover { background: transparent; color: var(--navy); box-shadow: none; }
+  .nav-link.active { background: transparent; color: var(--navy); box-shadow: none; }
   .nav-cta { min-height: 42px; padding: 0.7rem 1.15rem; border-radius: 8px; background: var(--gold); color: var(--navy); box-shadow: 0 3px 10px rgba(139,101,19,0.2); }
   .nav-cta:hover { background: var(--gold-light); }
 }
 
 @media (max-width: 1100px) {
-  nav { background: var(--navy); border-bottom: 2px solid var(--gold); box-shadow: 0 3px 14px rgba(3,27,55,0.28); }
+  nav { background: #F7F1EE; border-bottom: 2px solid var(--gold); box-shadow: 0 3px 14px rgba(70,44,55,0.12); }
   .nav-inner { height: 68px; padding: 0 1.25rem; gap: 0.75rem; }
   .logo-cross { width: 42px; height: 42px; }
   .mobile-menu-btn { margin-left: auto; gap: 0.65rem; }
@@ -1519,6 +1519,7 @@ nav.scrolled { box-shadow: 0 5px 18px rgba(3,27,55,0.28); }
 .hero-slider-detail .hero-slider-desc { margin-bottom: 0.75rem; }
 .hero-slider-detail blockquote { margin: 0; }
 .hero-slider-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.mobile-hero-feature { display: none; }
 .hero-slider .btn-gold { background: var(--gold); color: var(--navy); }
 .hero-slider .btn-gold:hover { background: var(--gold-light); }
 .hero-slider .btn-sermon { background: var(--crimson); border-color: var(--crimson); color: white; }
@@ -1561,6 +1562,107 @@ nav.scrolled { box-shadow: 0 5px 18px rgba(3,27,55,0.28); }
   .hero-slider-detail blockquote cite { font-size: 0.58rem; margin-top: 0.3rem; }
   .hero-slider-actions { display: flex; align-items: center; gap: 0.6rem; }
   .hero-slider-actions .btn { width: auto; min-height: 42px; padding: 0.6rem 0.9rem; }
+}
+
+/* Mobile home: a calm, stacked welcome like the supplied phone reference.
+   The feature image follows the calls-to-action rather than sitting behind copy. */
+@media (max-width: 640px) {
+  nav {
+    background: rgba(255, 255, 255, 0.98);
+    border-bottom: 1px solid #E0E8F0;
+    box-shadow: 0 2px 14px rgba(6, 45, 87, 0.08);
+  }
+  .nav-inner { height: 74px; padding: 0 1.2rem; }
+  .logo-cross { width: 46px; height: 46px; }
+  .logo-text { font-size: 1.05rem; }
+  .mobile-menu-btn { gap: 0.3rem; }
+  .theme-toggle { transform: scale(0.9); }
+  .menu-toggle { width: 42px; height: 42px; background: transparent; color: var(--navy) !important; font-size: 1.85rem !important; }
+  .menu-toggle:hover { background: #EEF4F8; }
+  .dark-mode .menu-toggle { background: transparent; color: var(--gold-light) !important; }
+
+  .hero-slider {
+    min-height: 0;
+    padding-top: 74px;
+    background: #F8FBFE;
+  }
+  .hero-slider-image,
+  .hero-slider-image.leaving,
+  .hero-slider-overlay { display: none; }
+  .hero-slider-content {
+    min-height: 0;
+    padding: 2.3rem 1.25rem 1.5rem;
+    text-align: center;
+    display: block;
+  }
+  .hero-slider-copy { max-width: none; animation: none; }
+  .hero-slider-eyebrow {
+    margin-bottom: 0.75rem;
+    color: var(--crimson);
+    font-size: 0.65rem;
+  }
+  .hero-slider h1 {
+    max-width: 12ch;
+    margin: 0 auto 1rem;
+    color: var(--navy);
+    font-size: clamp(2.2rem, 10.5vw, 3rem);
+    line-height: 1.02;
+    text-shadow: none;
+  }
+  .hero-slider-detail {
+    max-width: 35rem;
+    margin: 0 auto 1.5rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+  .hero-slider-detail .hero-slider-desc {
+    margin: 0;
+    color: #52657A;
+    font-size: 0.93rem;
+    line-height: 1.65;
+  }
+  .hero-slider-detail blockquote { display: none; }
+  .hero-slider-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.7rem;
+  }
+  .hero-slider-actions .btn {
+    width: 100%;
+    min-height: 56px;
+    padding: 0.7rem 0.5rem;
+    border-radius: 2px;
+    font-size: 0.83rem;
+  }
+  .hero-slider .btn-gold { background: var(--navy); color: white; }
+  .hero-slider .btn-sermon { background: white; border: 1px solid var(--navy); color: var(--navy); }
+  .mobile-hero-feature {
+    display: block;
+    height: min(76vw, 370px);
+    margin-top: 1.4rem;
+    border: 1px solid #DFE8F0;
+    border-radius: 14px;
+    background-color: #EAF1F6;
+    background-repeat: no-repeat;
+    background-size: cover;
+    box-shadow: 0 14px 28px rgba(6, 45, 87, 0.12);
+  }
+  .hero-slider-controls {
+    justify-content: center;
+    gap: 0.45rem;
+    margin-top: 1rem;
+  }
+  .hero-slider-controls button { width: 22px; height: 3px; background: #B7C6D4; }
+  .hero-slider-controls button.active { width: 38px; background: var(--crimson); }
+  .dark-mode .hero-slider { background: #120C1C; }
+  .dark-mode .hero-slider h1 { color: #F7F3FB; }
+  .dark-mode .hero-slider-detail .hero-slider-desc { color: #CBBFD6; }
+  .dark-mode .hero-slider .btn-gold { background: var(--gold); color: var(--navy); }
+  .dark-mode .hero-slider .btn-sermon { background: transparent; border-color: var(--gold-light); color: var(--gold-light); }
+  .dark-mode .mobile-hero-feature { border-color: rgba(255,255,255,0.16); }
 }
 
 `;
@@ -2641,6 +2743,11 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
                             <button className="btn btn-gold" onClick={onJoinUs}>Join Us</button>
                             <button className="btn btn-sermon" onClick={() => navigate("Sermons")}>Watch Sermon</button>
                         </div>
+                        <div
+                            className="mobile-hero-feature"
+                            style={{ backgroundImage: `url(${activeHero.image})`, backgroundPosition: activeHero.position }}
+                            aria-hidden="true"
+                        />
                     </div>
                     <div className="hero-slider-controls" aria-label="Choose a welcome highlight">
                         {heroSlides.map((slide, index) => (
