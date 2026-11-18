@@ -1463,6 +1463,7 @@ nav.scrolled { box-shadow: 0 5px 18px rgba(6,45,87,0.09); }
    rather than a permanent two-column composition. */
 .hero-slider { position: relative; min-height: 680px; padding-top: 110px; overflow: hidden; background: var(--navy); isolation: isolate; }
 .hero-slider-image { position: absolute; inset: 0; z-index: -2; background-repeat: no-repeat; background-size: cover; animation: heroImageIn 0.8s ease both; }
+.hero-slider-image-backdrop, .hero-slider-image-fit { display: none; }
 .hero-slider-overlay { position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(3,27,55,0.45) 0%, rgba(3,36,71,0.26) 43%, rgba(3,36,71,0.08) 75%, transparent 100%); }
 .hero-slider-content { position: relative; z-index: 1; min-height: 570px; padding: clamp(4rem, 9vw, 8.5rem) max(2rem, calc((100vw - 1280px) / 2)) 3rem; display: flex; flex-direction: column; justify-content: space-between; }
 .hero-slider-copy { max-width: 650px; animation: heroCopyIn 0.7s 0.08s ease both; }
@@ -1484,6 +1485,12 @@ nav.scrolled { box-shadow: 0 5px 18px rgba(6,45,87,0.09); }
 .hero-slider-controls button.active { width: 62px; background: var(--gold); }
 @keyframes heroImageIn { from { opacity: 0.55; transform: scale(1.035); } to { opacity: 1; transform: scale(1); } }
 @keyframes heroCopyIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (min-width: 641px) {
+  .hero-slider-image { background-image: none !important; background-color: var(--navy); }
+  .hero-slider-image-backdrop { display: block; position: absolute; inset: -24px; background-repeat: no-repeat; background-position: center; background-size: cover; filter: blur(18px); opacity: 0.62; }
+  .hero-slider-image-fit { display: block; position: absolute; inset: 0; background-repeat: no-repeat; background-position: center; background-size: contain; }
+}
 
 @media (max-width: 1100px) {
   .mobile-drawer { top: 70px; padding: 1.5rem 2rem 5rem; }
@@ -2511,7 +2518,10 @@ function HomePage({ countdown, nextEvent, eventPhase, events, navigate, statsRef
         <>
             {/* HERO — a full-width rotating feature, inspired by the reference site's changing campus slides. */}
             <section className="hero-slider" aria-label="Welcome highlights">
-                <div key={activeHeroSlide} className="hero-slider-image" style={{ backgroundImage: `url(${activeHero.image})`, backgroundPosition: activeHero.position }} />
+                <div key={activeHeroSlide} className="hero-slider-image" style={{ backgroundImage: `url(${activeHero.image})`, backgroundPosition: activeHero.position }}>
+                    <div className="hero-slider-image-backdrop" style={{ backgroundImage: `url(${activeHero.image})` }} />
+                    <div className="hero-slider-image-fit" style={{ backgroundImage: `url(${activeHero.image})`, backgroundPosition: activeHero.position }} />
+                </div>
                 <div className="hero-slider-overlay" />
                 <div className="container hero-slider-content">
                     <div key={`copy-${activeHeroSlide}`} className="hero-slider-copy">
