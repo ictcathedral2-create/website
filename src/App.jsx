@@ -859,58 +859,39 @@ a.footer-link:focus-visible, .nav-link:focus-visible, .social-btn:focus-visible 
 /* ─── FOOTER ─── */
 .footer {
   position: relative; background: #0C0814; color: rgba(255,255,255,0.7);
-  padding: 5rem 2rem 2rem; overflow: hidden;
+  padding: 4.5rem 2rem 1.5rem; overflow: hidden;
 }
 .footer::before {
   content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
   background: rgba(255,255,255,0.1);
 }
 .footer-grid {
-  position: relative; display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr;
-  gap: 3rem; max-width: 1280px; margin: 0 auto;
+  position: relative; display: grid; grid-template-columns: 1.65fr repeat(3, minmax(0, 1fr));
+  gap: 2.5rem; max-width: 1280px; margin: 0 auto;
 }
-.footer-grid > div + div { padding-left: 2.5rem; border-left: 1px solid rgba(255,255,255,0.06); }
-.footer-brand-name { font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; line-height: 0.95; color: white; margin-bottom: 0.45rem; letter-spacing: 0.01em; }
-.footer-brand-sub { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.14em; color: var(--gold); }
-.footer-desc { font-size: 0.88rem; line-height: 1.8; color: rgba(255,255,255,0.6); margin-top: 1.1rem; max-width: 340px; }
+.footer-grid > div + div { padding-left: 2rem; border-left: 1px solid rgba(255,255,255,0.1); }
+.footer-brand-name { font-family: var(--font-display); font-size: 1.7rem; font-weight: 600; line-height: 1; color: white; margin-bottom: 0.55rem; letter-spacing: -0.02em; }
+.footer-brand-sub { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold-light); }
+.footer-desc { font-size: 0.9rem; line-height: 1.75; color: rgba(255,255,255,0.68); margin-top: 1.35rem; max-width: 365px; }
 .footer-verse {
-  margin-top: 1.5rem; padding: 1.25rem 1.4rem;
-  background: rgba(180,131,39,0.08); border-left: 3px solid var(--gold);
-  border-radius: 0 10px 10px 0; font-size: 0.85rem; font-style: italic;
+  margin-top: 1.5rem; padding: 0 0 0 1rem;
+  border-left: 2px solid var(--gold); font-size: 0.84rem; font-style: italic;
   line-height: 1.7; color: rgba(255,255,255,0.75);
 }
 .footer-verse cite { display: block; font-style: normal; font-weight: 600; color: var(--gold); margin-top: 0.6rem; font-size: 0.75rem; letter-spacing: 0.04em; }
 .footer-col-title {
-  font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em;
-  color: var(--gold); margin-bottom: 1.4rem; padding-bottom: 0.6rem;
-  border-bottom: 1px solid rgba(180,131,39,0.25); display: inline-block;
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em;
+  color: var(--gold-light); margin-bottom: 1.15rem;
 }
-.footer-link { display: block; font-size: 0.89rem; color: rgba(255,255,255,0.55); text-decoration: none; margin-bottom: 0.75rem; cursor: pointer; transition: all 0.2s; }
+.footer-list { display: grid; gap: 0.7rem; justify-items: start; }
+.footer-link { display: block; font-size: 0.89rem; color: rgba(255,255,255,0.64); text-align: left; text-decoration: none; cursor: pointer; transition: color 0.2s; }
 .footer-link:hover { color: white; }
-.footer-socials { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
-.social-btn {
-  width: 38px; height: 38px; border-radius: 10px;
-  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.9rem; color: rgba(255,255,255,0.6); cursor: pointer; transition: all 0.2s;
-}
-.social-btn:hover { background: var(--crimson); border-color: var(--crimson); color: white; }
-
-.footer-contact-row { display: flex; align-items: center; gap: 12px; margin-bottom: 1.1rem; text-decoration: none; cursor: default; }
-a.footer-contact-row { cursor: pointer; }
-.footer-contact-icon {
-  width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0;
-  background: rgba(180,131,39,0.1); border: 1px solid rgba(180,131,39,0.22);
-  display: flex; align-items: center; justify-content: center;
-  color: var(--gold-light); transition: all 0.2s;
-}
-.footer-contact-text { font-size: 0.89rem; color: rgba(255,255,255,0.6); line-height: 1.4; transition: color 0.2s; }
-a.footer-contact-row:hover .footer-contact-icon { background: var(--crimson); border-color: var(--crimson); color: white; }
-a.footer-contact-row:hover .footer-contact-text { color: white; }
+.footer-contact-text { display: block; font-size: 0.89rem; color: rgba(255,255,255,0.64); line-height: 1.6; text-align: left; text-decoration: none; transition: color 0.2s; }
+a.footer-contact-text:hover { color: white; }
 
 .footer-bottom {
-  position: relative; max-width: 1280px; margin: 3.5rem auto 0;
-  padding-top: 1.75rem; border-top: 1px solid rgba(255,255,255,0.08);
+  position: relative; max-width: 1280px; margin: 3.75rem auto 0;
+  padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.12);
   display: flex; justify-content: space-between; align-items: center;
   font-size: 0.82rem; color: rgba(255,255,255,0.35);
   flex-wrap: wrap; gap: 1rem;
@@ -2000,42 +1981,34 @@ export default function App() {
                 <footer className="footer">
                     <div className="footer-grid">
                         <div>
-                            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-                                <div className="logo-cross"><img src={logo} alt="ACK St Pauls Cathedral crest" /></div>
-                                <div>
-                                    <div className="footer-brand-name">ACK St Pauls Youths</div>
-                                    <div className="footer-brand-sub">ACK St Paul's Cathedral, Embu</div>
-                                </div>
-                            </div>
+                            <div className="footer-brand-name">ACK St Pauls Youths</div>
+                            <div className="footer-brand-sub">ACK St Paul's Cathedral, Embu</div>
                             <div className="footer-desc">The youth church of ACK St Paul's Cathedral, Embu (Anglican Church of Kenya): faith-filled young people growing together in Christ and serving Embu and beyond.</div>
                             <div className="footer-verse">
                                 "Don't let anyone look down on you because you are young, but set an example in speech, conduct, love, faith, and purity."
                                 <cite>— 1 Timothy 4:12</cite>
                             </div>
-                            <div className="footer-socials">
-                                {["facebook", "youtube", "whatsapp"].map(s => <div key={s} className="social-btn"><SocialIcon name={s} /></div>)}
-                            </div>
                         </div>
                         <div>
                             <div className="footer-col-title">Quick Links</div>
-                            {NAV_LINKS.map(l => <a key={l} className="footer-link" href={pageToPath(l)} onClick={e => { e.preventDefault(); navigate(l); }}>{l}</a>)}
+                            <div className="footer-list">
+                                {NAV_LINKS.map(l => <a key={l} className="footer-link" href={pageToPath(l)} onClick={e => { e.preventDefault(); navigate(l); }}>{l}</a>)}
+                            </div>
                         </div>
                         <div>
                             <div className="footer-col-title">Service Times</div>
-                            <div className="footer-link">Devotion · 8:00 AM</div>
-                            <div className="footer-link">Youth Service · 8:30 AM</div>
-                            <div className="footer-link">Bible Study · 11:00 AM</div>
+                            <div className="footer-list">
+                                <div className="footer-link">Devotion · 8:00 AM</div>
+                                <div className="footer-link">Youth Service · 8:30 AM</div>
+                                <div className="footer-link">Bible Study · 11:00 AM</div>
+                            </div>
                         </div>
                         <div>
                             <div className="footer-col-title">Contact</div>
-                            <div className="footer-contact-row">
-                                <div className="footer-contact-icon"><SocialIcon name="pin" size={16} /></div>
-                                <div className="footer-contact-text">ACK St Paul's Cathedral, Embu Town, Kenya</div>
+                            <div className="footer-list">
+                                <div className="footer-contact-text">ACK St Paul's Cathedral<br />Embu Town, Kenya</div>
+                                <a className="footer-contact-text" href="mailto:ictcathedral2@gmail.com">ictcathedral2@gmail.com</a>
                             </div>
-                            <a className="footer-contact-row" href="mailto:ictcathedral2@gmail.com">
-                                <div className="footer-contact-icon"><SocialIcon name="mail" size={16} /></div>
-                                <div className="footer-contact-text">ictcathedral2@gmail.com</div>
-                            </a>
                         </div>
                     </div>
                     <div className="footer-bottom">
